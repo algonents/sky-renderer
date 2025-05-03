@@ -1,31 +1,3 @@
-# sky-renderer
-
-A 2D engine for rendering aviation data (waypoints, airways, holdings, etc...) on radar displays.
-This is an initial release, containing some basic opengl bindings. In other words, this crate is pretty much unusable in its current state and will potentially introduce many backwards incompatible changes from one version to another.
-
-Although this crate is meant to provide a tool for visualizing ATC-related data, nothing will stop you from using it as a general-purpose 2D engine.
-
-
-
-## How to build
-
-On Linux, make sure you have all dependencies installed on your system:
-
-```shell script
-sudo apt-get install libgl1-mesa-dev
-sudo apt install mesa-utils
-sudo apt install libglfw3-dev
-```
-You will also need a C/C++ compiler as well as CMake installed on your system.
-
-You can then simply add this crate as a dependency to your project. When building your project, cargo will first trigger a C/C++ build (using cmake) of a static library containing ffi bindings to opengl.
-
-This crate currently provides very low-level bindings to opengl. Future versions of the library will provide higher-level abstractions to encapsulate the opengl API.
-
-
-The following application illustrates some of the basic OpenGL APIs currently available:
-
-```rust
 extern crate sky_renderer;
 
 use std::mem;
@@ -134,14 +106,3 @@ fn main() {
     }
     glfw_terminate();
 }
-```
-
-A screenshot of the App is shown next:
-
-<img src="images/HelloTriangle.png" alt="Example Image" width="400"/>
-
-
-
-
-
-
