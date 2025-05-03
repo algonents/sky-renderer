@@ -26,21 +26,21 @@ This crate currently provides very low-level bindings to opengl. Future versions
 The following application illustrates some of the basic OpenGL APIs currently available:
 
 ```rust
-extern crate skytracker;
+extern crate sky_renderer;
 
 use std::mem;
 
-use skytracker::windowmanager::ffi::{
-    glfw_create_window, glfw_poll_events, glfw_swap_buffers, glfw_terminate,
-    glfw_window_should_close, GLFWwindow,
+use sky_renderer::windowing::glfw::{
+    GLFWwindow, glfw_create_window, glfw_poll_events, glfw_swap_buffers, glfw_terminate,
+    glfw_window_should_close,
 };
 
-use skytracker::renderer::opengl::{
-    gl_attach_shader, gl_bind_buffer, gl_bind_vertex_array, gl_buffer_data, gl_clear_color,
-    gl_compile_shader, gl_create_fragment_shader, gl_create_program, gl_create_vertex_shader,
-    gl_draw_arrays, gl_enable_vertex_attrib_array, gl_gen_buffer, gl_gen_vertex_array,
-    gl_link_program, gl_shader_source, gl_use_program, gl_vertex_attrib_pointer_float, gl_viewport,
-    GLboolean, GLfloat, GLsizei, GL_ARRAY_BUFFER, GL_TRIANGLES,
+use sky_renderer::renderer::opengl::{
+    GL_ARRAY_BUFFER, GL_TRIANGLES, GLboolean, GLfloat, GLsizei, gl_attach_shader, gl_bind_buffer,
+    gl_bind_vertex_array, gl_buffer_data, gl_clear_color, gl_compile_shader,
+    gl_create_fragment_shader, gl_create_program, gl_create_vertex_shader, gl_draw_arrays,
+    gl_enable_vertex_attrib_array, gl_gen_buffer, gl_gen_vertex_array, gl_link_program,
+    gl_shader_source, gl_use_program, gl_vertex_attrib_pointer_float, gl_viewport,
 };
 
 extern "C" fn on_viewport_resized(_window: *const GLFWwindow, width: i32, height: i32) {
@@ -136,7 +136,7 @@ fn main() {
 }
 ```
 
-A screenshot of the resulting app is shown below:
+A screenshot of the App is shown next:
 
 <img src="images/HelloTriangle.png" alt="Example Image" width="400"/>
 
