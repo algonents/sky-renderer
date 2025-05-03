@@ -1,35 +1,46 @@
+use std::env;
 use std::fs;
-use std::path::Path;
+use std::path::PathBuf;
 
 use cmake::Config;
 
 fn main() {
-    let dst = Config::new("cpp").build_target("glrenderer").build();
+    let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
 
-    println!("Build folder: {}", dst.display());
+    // Build the C++ project
+    let dst = Config::new("cpp")
+        .build_target("glrenderer")
+        .out_dir(&out_dir) // make sure it builds into OUT_DIR
+        .build();
 
-    let target_os = std::env::var("CARGO_CFG_TARGET_OS").unwrap();
+    // Platform-specific library file
+    let lib_filename = if cfg!(target_os = "linux") {
+        "libglrenderer.so"
+    } else if cfg!(target_os = "macos") {
+        "libglrenderer.dylib"
+    } else if cfg!(target_os = "windows") {
+        "glrenderer.dll"
+    } else {
+        panic!("Unsupported platform");
+    };
 
-    if target_os == "linux" {
-        let libs_dir = "target";
+    // Path to the generated lib inside the cmake build directory
+    let built_lib_path = dst.join("build").join(lib_filename);
 
-        let cargo_build_output = dst.join("build/libglrenderer.so");
-        println!("Cargo build output: {}", cargo_build_output.display());
+    // Final location: OUT_DIR
+    let final_lib_path = out_dir.join(lib_filename);
 
-        let dest_path = Path::new(&libs_dir).join("libglrenderer.so");
-        println!("Copying to destination: {}", dest_path.display());
+    // Copy to OUT_DIR
+    fs::copy(&built_lib_path, &final_lib_path)
+        .unwrap_or_else(|e| panic!("Failed to copy {} to OUT_DIR: {}", lib_filename, e));
 
-        if !Path::new(libs_dir).exists() {
-            match fs::create_dir(libs_dir) {
-                Ok(_) => println!("Destination directory created successfully."),
-                Err(e) => eprintln!("Failed to create destination directory: {}", e),
-            }
-        }
+    // Emit link instructions
+    println!("cargo:rustc-link-search=native={}", out_dir.display());
+    println!("cargo:rustc-link-lib=dylib=glrenderer");
 
-        fs::copy(cargo_build_output, dest_path)
-            .expect("Failed to copy build artifact to the destination");
-
-        println!("cargo:rustc-link-search=native={}", libs_dir);
-        println!("cargo:rustc-link-lib=dylib=glrenderer");
-    }
+    // Optionally export the path to the lib for the client crate to use at runtime
+    println!(
+        "cargo:rustc-env=DEP_GLRENDERER_LIB_PATH={}",
+        final_lib_path.display()
+    );
 }
