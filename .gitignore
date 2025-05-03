@@ -1,0 +1,13 @@
+# IDEs and editors
+.vscode/
+*.swp
+*.bak
+*~
+
+# Rust build artifacts
+**/target/
+**/Cargo.lock
+
+# CMake build artifacts
+**/build/
+
