@@ -11,10 +11,10 @@ fn main() {
     let target_os = std::env::var("CARGO_CFG_TARGET_OS").unwrap();
 
     if target_os == "linux" {
-        let libs_dir = "build";
+        let libs_dir = "target";
 
         let cargo_build_output = dst.join("build/libglrenderer.so");
-        println!("Cargp build output: {}", cargo_build_output.display());
+        println!("Cargo build output: {}", cargo_build_output.display());
 
         let dest_path = Path::new(&libs_dir).join("libglrenderer.so");
         println!("Copying to destination: {}", dest_path.display());
