@@ -1,46 +1,20 @@
-use std::env;
-use std::fs;
-use std::path::PathBuf;
-
-use cmake::Config;
-
 fn main() {
-    let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
+    println!("cargo:rerun-if-changed=cpp/CMakeLists.txt");
+    println!("cargo:rerun-if-changed=cpp/src/glrenderer.cpp");
+    println!("cargo:rerun-if-changed=cpp/include/glrenderer.h");
 
-    // Build the C++ project
-    let dst = Config::new("cpp")
+    let dst = cmake::Config::new("cpp")
         .build_target("glrenderer")
-        .out_dir(&out_dir) // make sure it builds into OUT_DIR
+        .static_crt(true)
         .build();
 
-    // Platform-specific library file
-    let lib_filename = if cfg!(target_os = "linux") {
-        "libglrenderer.so"
-    } else if cfg!(target_os = "macos") {
-        "libglrenderer.dylib"
-    } else if cfg!(target_os = "windows") {
-        "glrenderer.dll"
-    } else {
-        panic!("Unsupported platform");
-    };
+    let lib_dir = dst.join("build");
 
-    // Path to the generated lib inside the cmake build directory
-    let built_lib_path = dst.join("build").join(lib_filename);
+    println!("cargo:rustc-link-search=native={}", lib_dir.display());
+    println!("cargo:rustc-link-lib=static=glrenderer");
 
-    // Final location: OUT_DIR
-    let final_lib_path = out_dir.join(lib_filename);
-
-    // Copy to OUT_DIR
-    fs::copy(&built_lib_path, &final_lib_path)
-        .unwrap_or_else(|e| panic!("Failed to copy {} to OUT_DIR: {}", lib_filename, e));
-
-    // Emit link instructions
-    println!("cargo:rustc-link-search=native={}", out_dir.display());
-    println!("cargo:rustc-link-lib=dylib=glrenderer");
-
-    // Optionally export the path to the lib for the client crate to use at runtime
-    println!(
-        "cargo:rustc-env=DEP_GLRENDERER_LIB_PATH={}",
-        final_lib_path.display()
-    );
+    // Link against required system libraries
+    println!("cargo:rustc-link-lib=dylib=glfw");
+    println!("cargo:rustc-link-lib=dylib=GL");
+    println!("cargo:rustc-link-lib=dylib=stdc++"); // use c++ on macOS
 }

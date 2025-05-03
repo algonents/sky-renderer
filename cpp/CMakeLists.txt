@@ -7,7 +7,7 @@ find_package(OpenGL REQUIRED)
 
 include_directories(glad/include)
 
-add_library(glrenderer SHARED glrenderer.cpp glad/src/glad.c)
+add_library(glrenderer STATIC glrenderer.cpp glad/src/glad.c)
 
 target_link_libraries(glrenderer glfw)
 target_link_libraries(glrenderer OpenGL::GL)
