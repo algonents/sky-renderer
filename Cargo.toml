@@ -9,7 +9,7 @@ description = "A high-performance 2D engine for rendering aviation data on radar
 repository = "https://github.com/algonents/sky-renderer"
 readme = "README.md"
 keywords = ["opengl", "aviation", "atc", "visualization"]
-categories = ["graphics", "aviation", "rendering"]
+categories = ["graphics", "rendering"]
 
 [dependencies]
 
