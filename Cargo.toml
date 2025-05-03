@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 authors = ["Anwar Ludin anwar.ludin@algonents.com"]
 license = "MIT"
-description = "A high-performance 2D engine for rendering aviation data in radar displays."
+description = "A high-performance 2D engine for rendering aviation data on radar displays."
 
 [dependencies]
 
