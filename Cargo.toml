@@ -9,7 +9,7 @@ description = "A high-performance minimalistic 2D rendering engine"
 repository = "https://github.com/algonents/sky-renderer"
 readme = "README.md"
 keywords = ["opengl", "visualization", "2D"]
-categories = ["graphics", "rendering", "API bindings"]
+categories = ["graphics", "rendering", "api-bindings"]
 
 [dependencies]
 
