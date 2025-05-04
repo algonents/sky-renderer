@@ -1,14 +1,14 @@
 [package]
 name = "sky_renderer"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2024"
 authors = ["Anwar Ludin anwar.ludin@algonents.com"]
 license = "MIT"
 
-description = "A high-performance 2D engine for rendering aviation data on radar displays"
+description = "A high-performance minimalistic 2D rendering engine"
 repository = "https://github.com/algonents/sky-renderer"
 readme = "README.md"
-keywords = ["opengl", "aviation", "atc", "visualization"]
+keywords = ["opengl", "visualization"]
 categories = ["graphics", "rendering"]
 
 [dependencies]

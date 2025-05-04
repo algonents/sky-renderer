@@ -1,13 +1,13 @@
 # sky_renderer
 
-**sky_renderer** is a lightweight, high-performance 2D rendering engine built in Rust with native bindings to OpenGL.
-This initial release provides only low-level, minimalistic OpenGL bindings and is not yet usable for real applications. Future versions will add support for drawing primitives (lines, shapes, text) and a higher-level rendering API on top of OpenGL.
+**sky_renderer** is a high-performance minimalistic 2D rendering engine built in Rust with native bindings to OpenGL.
+This initial release provides only basic low-level bindings to OpenGL and is not yet usable for real applications. Future versions will add support for additional drawing primitives such as lines, shapes, and texts as well as a higher-level rendering API on top of OpenGL.
 
 ## 🚧 Status
 
 Early release on crates.io.
 The current version provides only low-level OpenGL bindings and is not yet suitable for production use.
-Future versions will include 2D primitives, text rendering, and higher-level abstractions.
+The bindings can nonetheless be used in your own code if you are looking for a minimalistic API to OpenGL. If a specific binding for your use-case is missing, please let me know.
 
 ## 🔧 Installation
 
