@@ -1,6 +1,6 @@
 [package]
 name = "sky_renderer"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2024"
 authors = ["Anwar Ludin anwar.ludin@algonents.com"]
 license = "MIT"
@@ -8,8 +8,8 @@ license = "MIT"
 description = "A high-performance minimalistic 2D rendering engine"
 repository = "https://github.com/algonents/sky-renderer"
 readme = "README.md"
-keywords = ["opengl", "visualization"]
-categories = ["graphics", "rendering"]
+keywords = ["opengl", "visualization", "2D"]
+categories = ["graphics", "rendering", "API bindings"]
 
 [dependencies]
 
