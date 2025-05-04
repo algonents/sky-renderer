@@ -1,146 +1,37 @@
-# sky-renderer
+# sky_renderer
 
-A 2D engine for rendering aviation data (waypoints, airways, holdings, etc...) on radar displays.
-This is an initial release, containing some basic opengl bindings. In other words, this crate is pretty much unusable in its current state and will potentially introduce many backwards incompatible changes from one version to another.
+**sky_renderer** is a lightweight, high-performance 2D rendering engine built in Rust with native bindings to OpenGL.
+This initial release provides only low-level, minimalistic OpenGL bindings and is not yet usable for real applications. Future versions will add support for drawing primitives (lines, shapes, text) and a higher-level rendering API on top of OpenGL.
 
-Although this crate is meant to provide a tool for visualizing ATC-related data, nothing will stop you from using it as a general-purpose 2D engine.
+## 🚧 Status
 
+Early release on crates.io.
+The current version provides only low-level OpenGL bindings and is not yet suitable for production use.
+Future versions will include 2D primitives, text rendering, and higher-level abstractions.
 
+## 🔧 Installation
 
-## How to build
-
-On Linux, make sure you have all dependencies installed on your system:
+### Linux
+Make sure you have all dependencies installed on your system:
 
 ```shell script
 sudo apt-get install libgl1-mesa-dev
 sudo apt install mesa-utils
 sudo apt install libglfw3-dev
 ```
-You will also need a C/C++ compiler as well as CMake installed on your system.
+You will also need a C/C++ compiler as well as cmake installed on your system.
 
-You can then simply add this crate as a dependency to your project. When building your project, cargo will first trigger a C/C++ build (using cmake) of a static library containing ffi bindings to opengl.
+You can simply add **sky_renderer** as a dependency to your project. When building your project, cargo will first trigger a C/C++ build (using cmake) of the static library (libglrenderer) containing the **sky_renderer** ffi bindings to OpenGL. The entire process should be totally transparent to your project.
 
-This crate currently provides very low-level bindings to opengl. Future versions of the library will provide higher-level abstractions to encapsulate the opengl API.
+### MacOS
+Coming soon...
 
+### Windows
+Coming soon...
 
-The following application illustrates some of the basic OpenGL APIs currently available:
+### 📦 Examples
 
-```rust
-extern crate sky_renderer;
-
-use std::mem;
-
-use sky_renderer::windowing::glfw::{
-    GLFWwindow, glfw_create_window, glfw_poll_events, glfw_swap_buffers, glfw_terminate,
-    glfw_window_should_close,
-};
-
-use sky_renderer::renderer::opengl::{
-    GL_ARRAY_BUFFER, GL_TRIANGLES, GLboolean, GLfloat, GLsizei, gl_attach_shader, gl_bind_buffer,
-    gl_bind_vertex_array, gl_buffer_data, gl_clear_color, gl_compile_shader,
-    gl_create_fragment_shader, gl_create_program, gl_create_vertex_shader, gl_draw_arrays,
-    gl_enable_vertex_attrib_array, gl_gen_buffer, gl_gen_vertex_array, gl_link_program,
-    gl_shader_source, gl_use_program, gl_vertex_attrib_pointer_float, gl_viewport,
-};
-
-extern "C" fn on_viewport_resized(_window: *const GLFWwindow, width: i32, height: i32) {
-    println!("Viewport resized, width: {}, height: {}", width, height);
-    gl_viewport(0, 0, width, height);
-}
-
-fn main() {
-    let window = glfw_create_window("Hello, Triangle", 800, 600, Some(on_viewport_resized));
-
-    let vertex_shader_source = "
-    #version 330 core
-    layout (location = 0) in vec3 aPos;
-    layout (location = 1) in vec3 aColor;
-    out vec3 ourColor;
-    void main()
-    {
-       gl_Position = vec4(aPos, 1.0);
-       ourColor = aColor;
-    }
-    ";
-
-    let fragment_shader_source = "
-    #version 330 core
-    in vec3 ourColor;
-    out vec4 FragColor;
-    void main()
-    {
-        FragColor = vec4(ourColor, 1.0f);
-    }
-    ";
-
-    let vertex_shader = gl_create_vertex_shader();
-    gl_shader_source(vertex_shader, vertex_shader_source);
-    gl_compile_shader(vertex_shader);
-
-    let fragment_shader = gl_create_fragment_shader();
-
-    gl_shader_source(fragment_shader, fragment_shader_source);
-    gl_compile_shader(fragment_shader);
-
-    let shader_program = gl_create_program();
-    gl_attach_shader(shader_program, vertex_shader);
-    gl_attach_shader(shader_program, fragment_shader);
-    gl_link_program(shader_program);
-
-    let vertices: Vec<GLfloat> = vec![
-        /*vertex bottom right*/ 0.5, -0.5, 0.0, /*color */ 1.0, 0.0, 0.0,
-        /*vertex bottom left*/ -0.5, -0.5, 0.0, /*color */ 0.0, 1.0, 0.0,
-        /*vertex top */ 0.0, 0.5, 0.0, /*color */ 0.0, 0.0, 1.0,
-    ];
-
-    let vbo = gl_gen_buffer();
-    let vao = gl_gen_vertex_array();
-
-    gl_bind_vertex_array(vao);
-    gl_bind_buffer(GL_ARRAY_BUFFER, vbo);
-    gl_buffer_data(GL_ARRAY_BUFFER, &vertices);
-
-    gl_vertex_attrib_pointer_float(
-        0,
-        3,
-        GLboolean::FALSE,
-        (6 * mem::size_of::<GLfloat>()) as GLsizei,
-        0,
-    );
-    gl_enable_vertex_attrib_array(0);
-
-    gl_vertex_attrib_pointer_float(
-        1,
-        3,
-        GLboolean::FALSE,
-        (6 * mem::size_of::<GLfloat>()) as GLsizei,
-        (3 * mem::size_of::<GLfloat>()) as GLsizei,
-    );
-    gl_enable_vertex_attrib_array(1);
-
-    gl_bind_buffer(GL_ARRAY_BUFFER, 0);
-    gl_bind_vertex_array(0);
-
-    while !glfw_window_should_close(window) {
-        gl_clear_color(0.2, 0.3, 0.3, 1.0);
-
-        gl_use_program(shader_program);
-        gl_bind_vertex_array(vao);
-
-        gl_draw_arrays(GL_TRIANGLES, 0, 3);
-
-        glfw_swap_buffers(window);
-        glfw_poll_events();
-    }
-    glfw_terminate();
-}
-```
-
-A screenshot of the App is shown next:
-
-<img src="images/HelloTriangle.png" alt="Example Image" width="400"/>
-
-
+Please refer to the [examples](https://github.com/algonents/sky-renderer/tree/master/examples) provided in the **sky_renderer** GitHub repository.  These will be updated as new features are added.
 
 
 
