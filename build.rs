@@ -11,10 +11,11 @@ fn main() {
     let lib_dir = dst.join("build");
 
     println!("cargo:rustc-link-search=native={}", lib_dir.display());
+    println!("cargo:rustc-link-search=native={}", "/opt/homebrew/lib");
     println!("cargo:rustc-link-lib=static=glrenderer");
 
     // Link against required system libraries
     println!("cargo:rustc-link-lib=dylib=glfw");
-    println!("cargo:rustc-link-lib=dylib=GL");
-    println!("cargo:rustc-link-lib=dylib=stdc++"); // use c++ on macOS
+    //println!("cargo:rustc-link-lib=dylib=GL"); // Not needed on macOS
+    println!("cargo:rustc-link-lib=dylib=c++"); // use c++ on macOS
 }
