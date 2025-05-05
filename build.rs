@@ -8,18 +8,17 @@ fn main() {
     let target = env::var("TARGET").unwrap();
 
     let dst = cmake::Config::new("cpp")
-        .define("CMAKE_PREFIX_PATH", "D:/GitHub/vcpkg/installed/x64-windows")
         .build_target("glrenderer")
         .static_crt(true)
         .build();
 
-    let lib_dir = dst.join("build");
+    let cmake_build_output = dst.join("build");
 
     
     // handle platform-specific configuration
     if target.contains("linux") {
         
-        println!("cargo:rustc-link-search=native={}", lib_dir.display());
+        println!("cargo:rustc-link-search=native={}", cmake_build_output.display());
         println!("cargo:rustc-link-lib=static=glrenderer");
     
         println!("cargo:rustc-link-lib=dylib=glfw");
@@ -28,7 +27,7 @@ fn main() {
     
     } else if target.contains("apple") {
         
-        println!("cargo:rustc-link-search=native={}", lib_dir.display());
+        println!("cargo:rustc-link-search=native={}", cmake_build_output.display());
         println!("cargo:rustc-link-lib=static=glrenderer");
     
         let homebrew_lib_location = "/opt/homebrew/lib";
@@ -39,11 +38,17 @@ fn main() {
 
     } else if target.contains("windows") {
         
-        println!("cargo:rustc-link-search=native={}", lib_dir.join("Debug").display());
-        println!("cargo:rustc-link-lib=static=glrenderer");
-    
+        let profile = std::env::var("PROFILE").unwrap();
+        let is_debug = profile == "debug";
         
-        let vcpkg_lib_location = "D:/GitHub/vcpkg/installed/x64-windows/lib";
+        if is_debug {
+            println!("cargo:rustc-link-search=native={}", cmake_build_output.join("Debug").display());
+        } else {
+            println!("cargo:rustc-link-search=native={}", cmake_build_output.join("Release").display());
+        };
+        println!("cargo:rustc-link-lib=static=glrenderer");
+
+        let vcpkg_lib_location = std::env::var("VCPKG_LIB_PATH").expect("VCPKG_LIB_PATH environment variable must be set");
         println!("cargo:rustc-link-search=native={}", vcpkg_lib_location);
         println!("cargo:rustc-link-lib=dylib=glfw3dll");
     }
