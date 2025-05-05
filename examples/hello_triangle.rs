@@ -99,8 +99,7 @@ fn main() {
     while !glfw_window_should_close(window) {
         gl_clear_color(0.2, 0.3, 0.3, 1.0);
         gl_get_integerv(GL_VIEWPORT, viewport.as_mut_ptr() as *mut c_void);
-        println!("viewport dimensions: {:?}", viewport);
-
+        
         gl_use_program(shader_program);
         gl_bind_vertex_array(vao);
 

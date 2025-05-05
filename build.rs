@@ -12,21 +12,44 @@ fn main() {
         .static_crt(true)
         .build();
 
-    let lib_dir = dst.join("build");
+    let cmake_build_output = dst.join("build");
 
-    println!("cargo:rustc-link-search=native={}", lib_dir.display());
-    println!("cargo:rustc-link-lib=static=glrenderer");
-    println!("cargo:rustc-link-lib=dylib=glfw");
-
+    
     // handle platform-specific configuration
     if target.contains("linux") {
+        
+        println!("cargo:rustc-link-search=native={}", cmake_build_output.display());
+        println!("cargo:rustc-link-lib=static=glrenderer");
+    
+        println!("cargo:rustc-link-lib=dylib=glfw");
         println!("cargo:rustc-link-lib=dylib=GL");
         println!("cargo:rustc-link-lib=dylib=stdc++");
+    
     } else if target.contains("apple") {
+        
+        println!("cargo:rustc-link-search=native={}", cmake_build_output.display());
+        println!("cargo:rustc-link-lib=static=glrenderer");
+    
         let homebrew_lib_location = "/opt/homebrew/lib";
         println!("cargo:rustc-link-search=native={}", homebrew_lib_location);
+        println!("cargo:rustc-link-lib=dylib=glfw");
+
         println!("cargo:rustc-link-lib=dylib=c++");
+
     } else if target.contains("windows") {
-        // todo
+        
+        let profile = std::env::var("PROFILE").unwrap();
+        let is_debug = profile == "debug";
+        
+        if is_debug {
+            println!("cargo:rustc-link-search=native={}", cmake_build_output.join("Debug").display());
+        } else {
+            println!("cargo:rustc-link-search=native={}", cmake_build_output.join("Release").display());
+        };
+        println!("cargo:rustc-link-lib=static=glrenderer");
+
+        let vcpkg_lib_location = std::env::var("VCPKG_LIB_PATH").expect("VCPKG_LIB_PATH environment variable must be set");
+        println!("cargo:rustc-link-search=native={}", vcpkg_lib_location);
+        println!("cargo:rustc-link-lib=dylib=glfw3dll");
     }
 }
