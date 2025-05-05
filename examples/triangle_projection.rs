@@ -3,7 +3,7 @@ extern crate sky_renderer;
 use std::ffi::c_void;
 use std::mem;
 
-use glam::Mat4;
+use glam::{Mat4, Vec3};
 
 use sky_renderer::windowing::glfw::{
     GLFWwindow, glfw_create_window, glfw_poll_events, glfw_swap_buffers, glfw_terminate,
@@ -24,7 +24,7 @@ extern "C" fn on_viewport_resized(_window: *const GLFWwindow, width: i32, height
 }
 
 fn ortho_2_d(width: f32, height: f32) -> Mat4 {
-    Mat4::orthographic_rh_gl(0.0, width, height, 0.0, -1.0, 1.0)
+    Mat4::orthographic_rh_gl(0.0, width, height, 0.0, 0.0, 1.0)
 }
 
 fn main() {
@@ -64,9 +64,9 @@ fn main() {
     gl_link_program(shader_program);
 
     let vertices: Vec<GLfloat> = vec![
-        400.0, 295.0, // Bottom-center
-        390.0, 305.0, // Top-left
-        410.0, 305.0, // Top-right
+        -10.0, 0.0, // bottom-left
+        10.0, 0.0, // bottom-right
+        0.0, 10.0, // top-center
     ];
 
     let vao = gl_gen_vertex_array();
@@ -92,7 +92,16 @@ fn main() {
 
     while !glfw_window_should_close(window) {
         gl_get_integerv(GL_VIEWPORT, viewport.as_mut_ptr() as *mut c_void);
+
+        let local_to_world = Mat4::from_scale(Vec3::new(1.0, -1.0, 1.0));
         let projection = ortho_2_d(viewport[2] as f32, viewport[3] as f32);
+        let model = Mat4::from_translation(glam::vec3(
+            viewport[2] as f32 / 2.0,
+            viewport[3] as f32 / 2.0,
+            0.0,
+        ));
+
+        let transform = projection * model * local_to_world;
 
         gl_clear_color(0.2, 0.3, 0.3, 1.0);
 
@@ -104,7 +113,7 @@ fn main() {
             projection_location,
             1,
             GLboolean::FALSE,
-            projection.to_cols_array().as_ptr(),
+            transform.to_cols_array().as_ptr(),
         );
 
         gl_draw_arrays(GL_TRIANGLES, 0, 3);
