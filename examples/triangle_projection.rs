@@ -70,12 +70,14 @@ fn main() {
     ];
 
     let vao = gl_gen_vertex_array();
+    let vbo = gl_gen_buffer();
+
     gl_bind_vertex_array(vao);
 
-    let vbo = gl_gen_buffer();
     gl_bind_buffer(GL_ARRAY_BUFFER, vbo);
     gl_buffer_data(GL_ARRAY_BUFFER, &vertices);
 
+    gl_enable_vertex_attrib_array(0);
     gl_vertex_attrib_pointer_float(
         0,
         2,
@@ -83,7 +85,6 @@ fn main() {
         (2 * mem::size_of::<GLfloat>()) as GLsizei,
         0,
     );
-    gl_enable_vertex_attrib_array(0);
 
     gl_bind_buffer(GL_ARRAY_BUFFER, 0);
     gl_bind_vertex_array(0);
@@ -94,7 +95,9 @@ fn main() {
         gl_get_integerv(GL_VIEWPORT, viewport.as_mut_ptr() as *mut c_void);
 
         let local_to_world = Mat4::from_scale(Vec3::new(1.0, -1.0, 1.0));
+
         let projection = ortho_2_d(viewport[2] as f32, viewport[3] as f32);
+
         let model = Mat4::from_translation(glam::vec3(
             viewport[2] as f32 / 2.0,
             viewport[3] as f32 / 2.0,
