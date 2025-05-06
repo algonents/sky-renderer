@@ -73,6 +73,7 @@ fn main() {
     gl_bind_buffer(GL_ARRAY_BUFFER, vbo);
     gl_buffer_data(GL_ARRAY_BUFFER, &vertices);
 
+    gl_enable_vertex_attrib_array(0);
     gl_vertex_attrib_pointer_float(
         0,
         3,
@@ -80,8 +81,8 @@ fn main() {
         (6 * mem::size_of::<GLfloat>()) as GLsizei,
         0,
     );
-    gl_enable_vertex_attrib_array(0);
 
+    gl_enable_vertex_attrib_array(1);
     gl_vertex_attrib_pointer_float(
         1,
         3,
@@ -89,7 +90,6 @@ fn main() {
         (6 * mem::size_of::<GLfloat>()) as GLsizei,
         (3 * mem::size_of::<GLfloat>()) as GLsizei,
     );
-    gl_enable_vertex_attrib_array(1);
 
     gl_bind_buffer(GL_ARRAY_BUFFER, 0);
     gl_bind_vertex_array(0);
@@ -99,7 +99,7 @@ fn main() {
     while !glfw_window_should_close(window) {
         gl_clear_color(0.2, 0.3, 0.3, 1.0);
         gl_get_integerv(GL_VIEWPORT, viewport.as_mut_ptr() as *mut c_void);
-        
+
         gl_use_program(shader_program);
         gl_bind_vertex_array(vao);
 
