@@ -260,6 +260,16 @@ extern "C"
         glDrawArrays(mode, first, count);
     }
 
+    void _glDrawArraysInstanced(GLenum mode, GLint first, GLsizei count, GLsizei instancecount)
+    {
+        glDrawArraysInstanced(mode, first, count, instancecount);
+    }
+
+    void _glVertexAttribDivisor(GLuint index, GLuint divisor)
+    {
+        glVertexAttribDivisor(index, divisor);
+    }
+
     void _glDrawElements(GLenum mode, GLsizei count, GLenum type, GLuint offset)
     {
         glDrawElements(mode, count, type, (void *)(offset));

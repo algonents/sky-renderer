@@ -53,6 +53,9 @@ extern "C"
     void _glEnableVertexAttribArray(GLuint index);
 
     void _glDrawArrays(GLenum mode, GLint first, GLsizei count);
+    void _glDrawArraysInstanced(GLenum mode, GLint first, GLsizei count, GLsizei instancecount);
+    void _glVertexAttribDivisor(GLuint index, GLuint divisor);
+
     void _glDrawElements(GLenum mode, GLsizei count, GLenum type, GLuint offset);
     GLint _glGetUniformLocation(GLuint program, GLchar *name);
     void _glUniform1f(GLint location, GLfloat v0);
