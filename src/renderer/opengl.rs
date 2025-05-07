@@ -94,6 +94,8 @@ unsafe extern "C" {
     );
     fn _glEnableVertexAttribArray(index: GLuint);
     fn _glDrawArrays(mode: GLenum, first: GLint, count: GLsizei);
+    fn _glDrawArraysInstanced(mode: GLenum, first: GLint, count: GLsizei, instancecount: GLsizei);
+    fn _glVertexAttribDivisor(index: GLuint, divisor: GLuint);
     fn _glDrawElements(mode: GLenum, count: GLsizei, element_type: GLenum, offset: GLuint);
 
     fn _glGetUniformLocation(program: GLuint, name: *const GLchar) -> GLint;
@@ -224,6 +226,12 @@ pub fn gl_buffer_sub_data<T>(target: GLenum, offset: GLsizeiptr, data: &[T]) {
     }
 }
 
+pub fn gl_enable_vertex_attrib_array(index: GLuint) {
+    unsafe {
+        _glEnableVertexAttribArray(index);
+    }
+}
+
 pub fn gl_vertex_attrib_pointer_float(
     index: GLuint,
     size: GLint,
@@ -236,15 +244,26 @@ pub fn gl_vertex_attrib_pointer_float(
     }
 }
 
-pub fn gl_enable_vertex_attrib_array(index: GLuint) {
-    unsafe {
-        _glEnableVertexAttribArray(index);
-    }
-}
-
 pub fn gl_draw_arrays(mode: GLenum, first: GLint, count: GLsizei) {
     unsafe {
         _glDrawArrays(mode, first, count);
+    }
+}
+
+pub fn gl_draw_arrays_instanced(
+    mode: GLenum,
+    first: GLint,
+    count: GLsizei,
+    instance_cout: GLsizei,
+) {
+    unsafe {
+        _glDrawArraysInstanced(mode, first, count, instance_cout);
+    }
+}
+
+pub fn gl_vertex_attrib_divisor(index: GLuint, divisor: GLuint) {
+    unsafe {
+        _glVertexAttribDivisor(index, divisor);
     }
 }
 
