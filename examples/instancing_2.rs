@@ -1,8 +1,6 @@
 extern crate sky_renderer;
 
-use std::ffi::c_void;
 use std::mem;
-use std::ptr;
 
 use glam::{Mat4, Vec3};
 use sky_renderer::renderer::opengl::{
