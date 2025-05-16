@@ -9,6 +9,10 @@ add support for additional drawing primitives such as lines, shapes, and texts a
 This is a (very) early release: this version provides a limited set of bindings to OpenGL and is not yet suitable for production use.
 The bindings can nonetheless be used in your own code if you wish to experiment with a minimalistic API to OpenGL. If a specific binding for your use-case is missing, please let me know.
 
+## 🐞 Issues
+
+You can raise issues directly on [Github](https://github.com/algonents/sky-renderer/issues).
+
 ## 🔧 Installation
 
 ### Linux
@@ -25,8 +29,8 @@ You can simply add **sky_renderer** as a dependency to your project. When buildi
 
 ### Windows
 
-Make sure you are are using release 0.1.7 or later (there was no Windows support for earlier versions). Also ensure you have Visual C/C++ and CMake installed on your system.
-Use [vcpkg](https://learn.microsoft.com/en-us/vcpkg/get_started/overview) to install glfw on your system:
+Make sure you are are using release 0.1.7 or later (there was no Windows support for earlier versions). Ensure you have Visual C/C++ and CMake installed on your system.
+Also use [vcpkg](https://learn.microsoft.com/en-us/vcpkg/get_started/overview) to install glfw on your system:
 
 ```shell script
 git clone https://github.com/microsoft/vcpkg.git
@@ -53,6 +57,10 @@ brew info glfw
 
 Once glfw is installed, the crate's build script will look for the glfw libraries under `/opt/homebrew/lib`
 
-### 📦 Examples
+## 📖 Docs
+
+Refer to the **sky_renderer** GitHub [wiki](https://github.com/algonents/sky-renderer/wiki), which will be updated soon.
+
+## 📦 Examples
 
 Refer to the [examples](https://github.com/algonents/sky-renderer/tree/master/examples) provided in the **sky_renderer** GitHub repository. These will be updated as new features are added.
