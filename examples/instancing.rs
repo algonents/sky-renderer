@@ -110,19 +110,19 @@ fn main() {
     gl_buffer_data(GL_ARRAY_BUFFER, &instance_transforms);
 
     // Bind instance matrix as 4 separate vec4 attributes (mat4 = 4 * vec4)
-    // stride to ne next matrix.
-    let stride = 4 * (4 * mem::size_of::<GLfloat>() as GLsizei);
+    // stride is the distance in bytes to the next matrix.
+    let stride = (16 * mem::size_of::<GLfloat>() as GLsizei);
     for i in 0..4 {
         let location = 1 + i;
-        gl_enable_vertex_attrib_array(location);
         gl_vertex_attrib_pointer_float(
             location,
             4,
             GLboolean::FALSE,
             stride,
-            (i as usize * 4 * mem::size_of::<f32>()) as i32,
+            (i as usize * 4 * mem::size_of::<f32>()) as i32, // distance in bytes to the next column
         );
         gl_vertex_attrib_divisor(location, 1);
+        gl_enable_vertex_attrib_array(location);
     }
 
     gl_bind_buffer(GL_ARRAY_BUFFER, 0);
