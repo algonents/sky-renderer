@@ -1,7 +1,7 @@
 # sky_renderer
 
 **sky_renderer** is a minimalistic 2D rendering engine built in Rust with native bindings to OpenGL.
-This crate currently only provides low-level bindings to OpenGL and is not yet production-ready. Future versions will 
+This version only provides low-level bindings to OpenGL and is not yet production-ready. Future versions will
 add support for additional drawing primitives such as lines, shapes, and texts as well as a higher-level rendering API on top of OpenGL.
 
 ## 🚧 Status
@@ -12,36 +12,33 @@ The bindings can nonetheless be used in your own code if you wish to experiment 
 ## 🔧 Installation
 
 ### Linux
-Make sure you have all dependencies installed on your system:
+
+Make sure you have all dependencies installed on your system (including a C/C++ compiler and CMake):
 
 ```shell script
 sudo apt-get install libgl1-mesa-dev
 sudo apt install mesa-utils
 sudo apt install libglfw3-dev
 ```
-You will also need a C/C++ compiler with CMake installed on your system.
 
 You can simply add **sky_renderer** as a dependency to your project. When building your project, cargo will first trigger a C/C++ build (using CMake) of a static library containing the **sky_renderer** ffi bindings to OpenGL. The entire process should be totally transparent to your project.
 
 ### Windows
-Make sure you are are using release 0.1.7 or later. 
 
-
+Make sure you are are using release 0.1.7 or later (there was no Windows support for earlier versions). Also ensure you have Visual C/C++ and CMake installed on your system.
 
 ### macOS
-This crate's build script expects glfw to be already installed on your system using [Homebrew](https://brew.sh/). Make sure CMake and a C++ compiler are also installed.
+
+Ensure you have CMake and a C/C++ compiler installed on your system.
+Use [Homebrew](https://brew.sh/) to install glfw on your system:
 
 ```shell script
 brew install glfw
 brew info glfw
 ```
 
-Once glfw is installed on your system, the build script will look for the glfw libraries under `/opt/homebrew/lib`
+Once glfw is installed, the crate's build script will look for the glfw libraries under `/opt/homebrew/lib`
 
 ### 📦 Examples
 
-Please refer to the [examples](https://github.com/algonents/sky-renderer/tree/master/examples) provided in the **sky_renderer** GitHub repository.  These will be updated as new features are added.
-
-
-
-
+Refer to the [examples](https://github.com/algonents/sky-renderer/tree/master/examples) provided in the **sky_renderer** GitHub repository. These will be updated as new features are added.
