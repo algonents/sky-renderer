@@ -26,6 +26,20 @@ You can simply add **sky_renderer** as a dependency to your project. When buildi
 ### Windows
 
 Make sure you are are using release 0.1.7 or later (there was no Windows support for earlier versions). Also ensure you have Visual C/C++ and CMake installed on your system.
+Use [vcpkg](https://learn.microsoft.com/en-us/vcpkg/get_started/overview) to install glfw on your system:
+
+```shell script
+git clone https://github.com/microsoft/vcpkg.git
+cd vcpkg
+.\bootstrap-vcpkg.bat
+.\vcpkg install glfw3
+```
+
+You must also update your system's environment variables:
+
+- Define the `VCPKG_LIB_PATH` environment variable to point to vcpkg's lib folder (this is where glfw3.lib is installed, for example `D:\GitHub\vcpkg\installed\x64-windows\lib`)
+
+- Update your system's `PATH` environment variable to point to vcpkg's bin folder (this is where glfw3.dll is installed, for example `D:\GitHub\vcpkg\installed\x64-windows\bin`)
 
 ### macOS
 
