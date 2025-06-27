@@ -1,2 +1,3 @@
-pub mod renderer;
+pub mod core;
+pub mod engine;
 pub mod windowing;
