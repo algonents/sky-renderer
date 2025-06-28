@@ -1,6 +1,5 @@
 extern crate sky_renderer;
 
-use std::f32::consts::PI;
 use std::ffi::c_void;
 
 use glam::{Mat4, Vec3};
