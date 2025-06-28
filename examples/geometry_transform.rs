@@ -9,7 +9,7 @@ use sky_renderer::core::mesh::Mesh;
 use sky_renderer::core::renderer::Renderer;
 use sky_renderer::core::shader::Shader;
 
-use sky_renderer::renderengine::opengl::{
+use sky_renderer::engine::opengl::{
     GL_TRIANGLES, GL_VIEWPORT, GLfloat, gl_clear_color, gl_get_integerv, gl_viewport,
 };
 
@@ -72,8 +72,8 @@ fn main() {
     while !glfw_window_should_close(window) {
         gl_clear_color(0.2, 0.3, 0.3, 1.0);
 
-        // invert the triangle and double its size
-        let local_to_world = Mat4::from_scale(Vec3::new(1.5, -1.5, 1.5));
+        // invert the triangle and scale it by 1.3
+        let local_to_world = Mat4::from_scale(Vec3::new(1.3, -1.3, 1.3));
 
         // define orthographic projection using the viewport size
         gl_get_integerv(GL_VIEWPORT, viewport.as_mut_ptr() as *mut c_void);

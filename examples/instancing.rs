@@ -10,7 +10,7 @@ use sky_renderer::windowing::glfw::{
     glfw_window_should_close,
 };
 
-use sky_renderer::renderengine::opengl::{
+use sky_renderer::engine::opengl::{
     GL_ARRAY_BUFFER, GL_TRIANGLES, GL_VIEWPORT, GLboolean, GLfloat, GLsizei, gl_attach_shader,
     gl_bind_buffer, gl_bind_vertex_array, gl_buffer_data, gl_clear_color, gl_compile_shader,
     gl_create_fragment_shader, gl_create_program, gl_create_vertex_shader,

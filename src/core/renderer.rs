@@ -2,9 +2,7 @@ use glam::Mat4;
 
 use crate::{
     core::mesh::Mesh,
-    renderengine::opengl::{
-        GLboolean, gl_draw_arrays, gl_get_uniform_location, gl_uniform_matrix_4fv,
-    },
+    engine::opengl::{GLboolean, gl_draw_arrays, gl_get_uniform_location, gl_uniform_matrix_4fv},
 };
 
 pub struct Renderer {

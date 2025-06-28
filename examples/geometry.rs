@@ -5,7 +5,7 @@ use sky_renderer::core::mesh::Mesh;
 use sky_renderer::core::renderer::Renderer;
 use sky_renderer::core::shader::Shader;
 
-use sky_renderer::renderengine::opengl::{GL_TRIANGLES, GLfloat, gl_clear_color, gl_viewport};
+use sky_renderer::engine::opengl::{GL_TRIANGLES, GLfloat, gl_clear_color, gl_viewport};
 
 use sky_renderer::windowing::glfw::{
     GLFWwindow, glfw_create_window, glfw_poll_events, glfw_swap_buffers, glfw_terminate,

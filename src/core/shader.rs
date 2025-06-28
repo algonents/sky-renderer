@@ -1,4 +1,4 @@
-use crate::renderengine::opengl::{
+use crate::engine::opengl::{
     GLuint, gl_attach_shader, gl_compile_shader, gl_create_fragment_shader, gl_create_program,
     gl_create_vertex_shader, gl_link_program, gl_shader_source, gl_use_program,
 };

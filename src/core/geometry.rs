@@ -1,4 +1,4 @@
-use crate::renderengine::opengl::{
+use crate::engine::opengl::{
     GL_ARRAY_BUFFER, GLboolean, GLenum, GLfloat, GLint, GLsizei, GLuint, gl_bind_buffer,
     gl_bind_vertex_array, gl_buffer_data, gl_enable_vertex_attrib_array, gl_gen_buffer,
     gl_gen_vertex_array, gl_vertex_attrib_pointer_float,
