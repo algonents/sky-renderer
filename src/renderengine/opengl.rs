@@ -9,6 +9,7 @@ pub type GLuint = c_uint;
 pub type GLfloat = c_float;
 pub type GLvoid = c_void;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(C)]
 pub enum GLboolean {
     FALSE = 0,

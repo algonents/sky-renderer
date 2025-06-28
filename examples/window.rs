@@ -5,7 +5,7 @@ use sky_renderer::windowing::glfw::{
     glfw_window_should_close,
 };
 
-use sky_renderer::engine::opengl::{gl_clear_color, gl_viewport};
+use sky_renderer::renderengine::opengl::{gl_clear_color, gl_viewport};
 
 extern "C" fn on_viewport_resized(_window: *const GLFWwindow, width: i32, height: i32) {
     println!("Viewport resized, width: {}, height: {}", width, height);
