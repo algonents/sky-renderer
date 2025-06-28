@@ -1,6 +1,7 @@
 extern crate sky_renderer;
 
 use sky_renderer::core::geometry::{Attribute, Geometry};
+use sky_renderer::core::mesh::Mesh;
 use sky_renderer::core::renderer::Renderer;
 use sky_renderer::core::shader::Shader;
 use sky_renderer::renderengine::opengl::{GL_TRIANGLES, GLfloat, gl_clear_color, gl_viewport};
@@ -55,7 +56,7 @@ fn main() {
 
     let position_attribute =
         Attribute::new(0, position_values_per_vertex, values_per_vertex as usize, 0);
-    
+
     geometry.add_vertex_attribute(position_attribute);
 
     let color_attribute = Attribute::new(
@@ -64,19 +65,20 @@ fn main() {
         values_per_vertex as usize,
         position_values_per_vertex as usize,
     );
-    
+
     geometry.add_vertex_attribute(color_attribute);
 
     let shader = Shader::compile(vertex_shader_source, fragment_shader_source)
         .expect("Failed to compile shader");
+
+    let mesh = Mesh::new(geometry, shader);
 
     let renderer = Renderer::new();
 
     while !glfw_window_should_close(window) {
         gl_clear_color(0.2, 0.3, 0.3, 1.0);
 
-        shader.use_program();
-        renderer.draw_geometry(&geometry);
+        renderer.draw_mesh(&mesh);
 
         glfw_swap_buffers(window);
         glfw_poll_events();
