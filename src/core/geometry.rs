@@ -1,5 +1,5 @@
 use crate::renderengine::opengl::{
-    GL_ARRAY_BUFFER, GL_TRIANGLES, GLboolean, GLfloat, GLint, GLsizei, GLuint, gl_bind_buffer,
+    GL_ARRAY_BUFFER, GLboolean, GLenum, GLfloat, GLint, GLsizei, GLuint, gl_bind_buffer,
     gl_bind_vertex_array, gl_buffer_data, gl_enable_vertex_attrib_array, gl_gen_buffer,
     gl_gen_vertex_array, gl_vertex_attrib_pointer_float,
 };
@@ -11,20 +11,6 @@ pub struct Attribute {
     pub normalize: GLboolean,
     pub stride: GLsizei,
     offset: GLsizei,
-}
-
-pub struct Geometry {
-    vao: GLuint,
-    vbo: GLuint,
-    pub vertex_count: i32,
-    pub drawing_mode: u32,
-    pub attributes: Vec<Attribute>,
-}
-
-impl Default for Geometry {
-    fn default() -> Self {
-        Geometry::new()
-    }
 }
 
 impl Attribute {
@@ -39,16 +25,32 @@ impl Attribute {
     }
 }
 
+pub struct Geometry {
+    vao: GLuint,
+    vbo: GLuint,
+    vertex_count: i32,
+    drawing_mode: GLenum,
+    attributes: Vec<Attribute>,
+}
+
 impl Geometry {
-    pub fn new() -> Self {
+    pub fn new(drawing_mode: GLenum) -> Self {
         let vao = gl_gen_vertex_array();
         Geometry {
             vao,
             vbo: 0,
             vertex_count: 0,
             attributes: Vec::new(),
-            drawing_mode: GL_TRIANGLES,
+            drawing_mode,
         }
+    }
+
+    pub fn drawing_mode(&self) -> GLenum {
+        self.drawing_mode
+    }
+
+    pub fn vertex_count(&self) -> i32 {
+        self.vertex_count
     }
 
     pub fn bind(&self) {
@@ -78,5 +80,6 @@ impl Geometry {
             attribute.stride,
             attribute.offset,
         );
+        self.attributes.push(attribute);
     }
 }
