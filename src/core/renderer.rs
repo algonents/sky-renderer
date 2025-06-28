@@ -1,6 +1,15 @@
-use crate::{core::mesh::Mesh, renderengine::opengl::gl_draw_arrays};
+use glam::Mat4;
 
-pub struct Renderer {}
+use crate::{
+    core::mesh::Mesh,
+    renderengine::opengl::{
+        GLboolean, gl_draw_arrays, gl_get_uniform_location, gl_uniform_matrix_4fv,
+    },
+};
+
+pub struct Renderer {
+    transform: Mat4,
+}
 
 impl Default for Renderer {
     fn default() -> Self {
@@ -10,16 +19,32 @@ impl Default for Renderer {
 
 impl Renderer {
     pub fn new() -> Self {
-        Renderer {}
+        Renderer {
+            transform: Mat4::IDENTITY,
+        }
+    }
+
+    pub fn set_transform(&mut self, transform: Mat4) {
+        self.transform = transform
     }
 
     pub fn draw_mesh(&self, mesh: &Mesh) {
         mesh.shader.use_program();
         mesh.geometry.bind();
+
+        let transform_loc = gl_get_uniform_location(mesh.shader.program(), "transform");
+        gl_uniform_matrix_4fv(
+            transform_loc,
+            1,
+            GLboolean::FALSE,
+            self.transform.to_cols_array().as_ptr(),
+        );
+
         gl_draw_arrays(
             mesh.geometry.drawing_mode(),
             0,
             mesh.geometry.vertex_count(),
         );
+        mesh.geometry.unbind();
     }
 }

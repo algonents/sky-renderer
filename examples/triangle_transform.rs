@@ -33,10 +33,10 @@ fn main() {
     let vertex_shader_source = "
     #version 330 core
     layout (location = 0) in vec2 aPos;
-    uniform mat4 projection;
+    uniform mat4 transform;
     void main()
     {
-       gl_Position = projection * vec4(aPos.x, aPos.y, 0.0, 1.0);
+       gl_Position = transform * vec4(aPos.x, aPos.y, 0.0, 1.0);
     }
     ";
 
@@ -96,24 +96,24 @@ fn main() {
 
         let local_to_world = Mat4::from_scale(Vec3::new(1.0, -1.0, 1.0));
 
-        let projection = ortho_2_d(viewport[2] as f32, viewport[3] as f32);
+        let ortho_2d_projection = ortho_2_d(viewport[2] as f32, viewport[3] as f32);
 
-        let model = Mat4::from_translation(glam::vec3(
+        let translation = Mat4::from_translation(glam::vec3(
             viewport[2] as f32 / 2.0,
             viewport[3] as f32 / 2.0,
             0.0,
         ));
 
-        let transform = projection * model * local_to_world;
+        let transform = ortho_2d_projection * translation * local_to_world;
 
         gl_clear_color(0.2, 0.3, 0.3, 1.0);
 
         gl_use_program(shader_program);
         gl_bind_vertex_array(vao);
 
-        let projection_location = gl_get_uniform_location(shader_program, "projection");
+        let transform_loc = gl_get_uniform_location(shader_program, "transform");
         gl_uniform_matrix_4fv(
-            projection_location,
+            transform_loc,
             1,
             GLboolean::FALSE,
             transform.to_cols_array().as_ptr(),

@@ -4,6 +4,7 @@ use sky_renderer::core::geometry::{Attribute, Geometry};
 use sky_renderer::core::mesh::Mesh;
 use sky_renderer::core::renderer::Renderer;
 use sky_renderer::core::shader::Shader;
+
 use sky_renderer::renderengine::opengl::{GL_TRIANGLES, GLfloat, gl_clear_color, gl_viewport};
 
 use sky_renderer::windowing::glfw::{
@@ -20,10 +21,11 @@ fn main() {
     #version 330 core
     layout (location = 0) in vec2 aPos;
     layout (location = 1) in vec3 aColor;
+    uniform mat4 transform;
     out vec3 ourColor;
     void main()
     {
-       gl_Position = vec4(aPos, 0.0, 1.0);
+       gl_Position = transform * vec4(aPos, 0.0, 1.0);
        ourColor = aColor;
     }
     ";
@@ -49,14 +51,13 @@ fn main() {
     let color_values_per_vertex = 3;
     let values_per_vertex = 5;
 
-    let window = glfw_create_window("Hello, Geometry", 800, 600, Some(on_viewport_resized));
+    let window = glfw_create_window("Geometry", 800, 600, Some(on_viewport_resized));
 
     let mut geometry = Geometry::new(GL_TRIANGLES);
     geometry.add_buffer(&vertices, values_per_vertex);
 
     let position_attribute =
         Attribute::new(0, position_values_per_vertex, values_per_vertex as usize, 0);
-
     geometry.add_vertex_attribute(position_attribute);
 
     let color_attribute = Attribute::new(
@@ -65,7 +66,6 @@ fn main() {
         values_per_vertex as usize,
         position_values_per_vertex as usize,
     );
-
     geometry.add_vertex_attribute(color_attribute);
 
     let shader = Shader::compile(vertex_shader_source, fragment_shader_source)
