@@ -6,7 +6,7 @@ use crate::renderengine::opengl::{
 
 #[derive(Debug, Clone)]
 pub struct Attribute {
-    pub index: GLuint,
+    pub location: GLuint,
     pub size: GLint,
     pub normalize: GLboolean,
     pub stride: GLsizei,
@@ -14,13 +14,18 @@ pub struct Attribute {
 }
 
 impl Attribute {
-    pub fn new(index: u32, size: i32, indice_stride: usize, offset: GLsizei) -> Self {
+    pub fn new(
+        location: u32,
+        size: i32,
+        stride_components: usize,
+        offset_components: usize,
+    ) -> Self {
         Self {
-            index,
+            location,
             size,
             normalize: GLboolean::FALSE,
-            stride: (indice_stride * std::mem::size_of::<GLfloat>()) as GLsizei,
-            offset,
+            stride: (stride_components * std::mem::size_of::<GLfloat>()) as GLsizei,
+            offset: (offset_components * std::mem::size_of::<GLfloat>()) as GLsizei,
         }
     }
 }
@@ -72,14 +77,17 @@ impl Geometry {
     }
 
     pub fn add_vertex_attribute(&mut self, attribute: Attribute) {
-        gl_enable_vertex_attrib_array(attribute.index);
+        gl_bind_vertex_array(self.vao);
+
+        gl_enable_vertex_attrib_array(attribute.location);
         gl_vertex_attrib_pointer_float(
-            attribute.index,
+            attribute.location,
             attribute.size,
             attribute.normalize,
             attribute.stride,
             attribute.offset,
         );
+        gl_bind_vertex_array(0);
         self.attributes.push(attribute);
     }
 }
