@@ -2,7 +2,10 @@ use glam::Mat4;
 
 use crate::{
     core::mesh::Mesh,
-    engine::opengl::{GLboolean, gl_draw_arrays, gl_get_uniform_location, gl_uniform_matrix_4fv},
+    engine::opengl::{
+        GLboolean, GLfloat, gl_draw_arrays, gl_get_uniform_location, gl_point_size,
+        gl_uniform_matrix_4fv,
+    },
 };
 
 pub struct Renderer {
@@ -24,6 +27,10 @@ impl Renderer {
 
     pub fn set_transform(&mut self, transform: Mat4) {
         self.transform = transform
+    }
+
+    pub fn set_point_size(&self, point_size: GLfloat) {
+        gl_point_size(point_size);
     }
 
     pub fn draw_mesh(&self, mesh: &Mesh) {

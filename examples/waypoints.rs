@@ -1,7 +1,7 @@
 extern crate sky_renderer;
 
 use sky_renderer::core::{Attribute, Geometry, Mesh, Renderer, Shader};
-use sky_renderer::engine::opengl::{GL_POINTS, gl_clear_color, gl_point_size, gl_viewport};
+use sky_renderer::engine::opengl::{GL_POINTS, gl_clear_color, gl_viewport};
 
 use sky_renderer::windowing::glfw::{
     GLFWwindow, glfw_create_window, glfw_poll_events, glfw_swap_buffers, glfw_terminate,
@@ -40,10 +40,10 @@ fn main() {
     let mesh = Mesh::new(geometry, shader);
 
     let renderer = Renderer::new();
+    renderer.set_point_size(5.0);
 
     while !glfw_window_should_close(window) {
         gl_clear_color(0.2, 0.3, 0.3, 1.0);
-        gl_point_size(3.0);
 
         mesh.set_uniform_4f("map_bounds", &switzerland_bounds);
         renderer.draw_mesh(&mesh);
