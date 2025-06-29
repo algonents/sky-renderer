@@ -1,7 +1,6 @@
 extern crate sky_renderer;
 
 use sky_renderer::core::{Attribute, Geometry, Mesh, Renderer, Shader};
-
 use sky_renderer::engine::opengl::{GL_TRIANGLES, GLfloat, gl_clear_color, gl_viewport};
 
 use sky_renderer::windowing::glfw::{
