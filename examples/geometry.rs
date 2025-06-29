@@ -44,7 +44,7 @@ fn main() {
     );
     geometry.add_vertex_attribute(color_attribute);
 
-    let shader = Shader::compile(vertex_shader_source, fragment_shader_source)
+    let shader = Shader::compile(vertex_shader_source, fragment_shader_source, None)
         .expect("Failed to compile shader");
 
     let mesh = Mesh::new(geometry, shader);

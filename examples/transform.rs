@@ -37,7 +37,7 @@ fn main() {
 
     geometry.add_vertex_attribute(Attribute::new(0, 2, 2, 0));
 
-    let shader = Shader::compile(vertex_shader_source, fragment_shader_source)
+    let shader = Shader::compile(vertex_shader_source, fragment_shader_source, None)
         .expect("Failed to compile shader");
 
     let mut mesh = Mesh::new(geometry, shader);

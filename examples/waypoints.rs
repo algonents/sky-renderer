@@ -47,6 +47,7 @@ fn main() {
 
     let vertex_shader_source = include_str!("shaders/waypoints.vert");
     let fragment_shader_source = include_str!("shaders/waypoints.frag");
+    let geometry_shader_source = include_str!("shaders/waypoints.geom");
 
     let window = glfw_create_window("Waypoints", 800, 600, Some(on_viewport_resized));
     glfw_set_scroll_callback(window, Some(on_scroll));
@@ -56,8 +57,12 @@ fn main() {
     geometry.add_buffer(&wgs84_coordinates, 2);
     geometry.add_vertex_attribute(Attribute::new(0, 2, 2 as usize, 0));
 
-    let shader = Shader::compile(vertex_shader_source, fragment_shader_source)
-        .expect("Failed to compile shader");
+    let shader = Shader::compile(
+        vertex_shader_source,
+        fragment_shader_source,
+        Some(geometry_shader_source),
+    )
+    .expect("Failed to compile shader");
 
     let mesh = Mesh::new(geometry, shader);
 
