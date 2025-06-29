@@ -49,7 +49,7 @@ fn main() {
     let fragment_shader_source = include_str!("shaders/waypoints.frag");
     let geometry_shader_source = include_str!("shaders/waypoints.geom");
 
-    let window = glfw_create_window("Waypoints", 800, 600, Some(on_viewport_resized));
+    let window = glfw_create_window("Switzerland Waypoints", 800, 600, Some(on_viewport_resized));
     glfw_set_scroll_callback(window, Some(on_scroll));
 
     let mut geometry = Geometry::new(GL_POINTS);
