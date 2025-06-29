@@ -1,6 +1,6 @@
 [package]
 name = "sky_renderer"
-version = "0.1.7"
+version = "0.1.8"
 edition = "2024"
 authors = ["Anwar Ludin anwar.ludin@algonents.com"]
 license = "MIT"
@@ -12,7 +12,7 @@ keywords = ["opengl", "visualization", "2D"]
 categories = ["graphics", "rendering", "api-bindings"]
 
 [dependencies]
-glam = "0.27"
+glam = "0.30.4"
 
 
 [build-dependencies]

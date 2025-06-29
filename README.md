@@ -1,13 +1,30 @@
 # sky_renderer
 
 **sky_renderer** is a minimalistic 2D rendering engine built in Rust with native bindings to OpenGL.
-This version only provides low-level bindings to OpenGL and is not yet production-ready. Future versions will
-add support for additional drawing primitives such as lines, shapes, and texts as well as a higher-level rendering API on top of OpenGL.
+This version provides low-level bindings to OpenGL and is not yet production-ready. Future versions will
+add support for additional drawing primitives such as lines, texts and other shapes, as well as a higher-level rendering API abstracting OpenGL.
 
 ## 🚧 Status
 
-This is a (very) early release: this version provides a limited set of bindings to OpenGL and is not yet suitable for production use.
-The bindings can nonetheless be used in your own code if you wish to experiment with a minimalistic API to OpenGL. If a specific binding for your use-case is missing, please let me know.
+This is a (very) early release: this version provides a limited set of bindings to OpenGL and is not yet suitable for production use. The bindings can nonetheless be used in your own code if you wish to experiment with a minimalistic API for OpenGL. Note that the bindings are focusing on providing a 2D rendering API. If you feel that a binding is missing, please let me know.
+
+This release (0.1.8) introduces a set of higher-level APIs for reducing boiler-plate code. You still need to understand a fair amount of OpenGL to be able to work with the APIs. 
+
+For examples on how to use the higher-level APIs, refer to `geometry.rs` and `transform.rs` in the [examples](https://github.com/algonents/sky-renderer/tree/master/examples) folder.
+
+Because the API is evolving, please make sure to always use the latest release.
+
+## 📖 Docs
+
+### Wiki
+
+Refer to the **sky_renderer** GitHub [wiki](https://github.com/algonents/sky-renderer/wiki), which will be updated soon.
+
+### 📦 Examples
+
+Refer to the [examples](https://github.com/algonents/sky-renderer/tree/master/examples) provided in the **sky_renderer** GitHub repository. 
+The examples will be updated as new features are added.
+
 
 ## 🐞 Issues
 
@@ -25,7 +42,8 @@ sudo apt install mesa-utils
 sudo apt install libglfw3-dev
 ```
 
-You can simply add **sky_renderer** as a dependency to your project. When building your project, cargo will first trigger a C/C++ build (using CMake) of a static library containing the **sky_renderer** ffi bindings to OpenGL. The entire process should be totally transparent to your project.
+You can add **sky_renderer** as a dependency to your project. When building your project, cargo will first build (using CMake with your system's C/C++ compiler) a static library containing the **sky_renderer** ffi bindings to OpenGL (the ffi bindings can be found [here](https://github.com/algonents/sky-renderer/tree/master/cpp))
+
 
 ### Windows
 
@@ -57,10 +75,3 @@ brew info glfw
 
 Once glfw is installed, the crate's build script will look for the glfw libraries under `/opt/homebrew/lib`
 
-## 📖 Docs
-
-Refer to the **sky_renderer** GitHub [wiki](https://github.com/algonents/sky-renderer/wiki), which will be updated soon.
-
-## 📦 Examples
-
-Refer to the [examples](https://github.com/algonents/sky-renderer/tree/master/examples) provided in the **sky_renderer** GitHub repository. These will be updated as new features are added.

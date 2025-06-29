@@ -3,7 +3,7 @@ extern crate sky_renderer;
 use std::mem;
 
 use glam::{Mat4, Vec3};
-use sky_renderer::renderer::opengl::{
+use sky_renderer::engine::opengl::{
     GL_ARRAY_BUFFER, GL_TRIANGLES, GLboolean, GLsizei, gl_attach_shader, gl_bind_buffer,
     gl_bind_vertex_array, gl_buffer_data, gl_clear_color, gl_compile_shader,
     gl_create_fragment_shader, gl_create_program, gl_create_vertex_shader,
@@ -21,7 +21,7 @@ const MATRICES_LOCATION: u32 = 1;
 const NUM_INSTANCES: usize = 1000;
 
 extern "C" fn on_viewport_resized(_window: *const GLFWwindow, width: i32, height: i32) {
-    sky_renderer::renderer::opengl::gl_viewport(0, 0, width, height);
+    sky_renderer::engine::opengl::gl_viewport(0, 0, width, height);
 }
 
 fn main() {
