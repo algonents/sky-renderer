@@ -40,7 +40,7 @@ sudo apt install mesa-utils
 sudo apt install libglfw3-dev
 ```
 
-You can simply add **sky_renderer** as a dependency to your project. When building your project, cargo will first trigger a C/C++ build (using CMake) of a static library containing the **sky_renderer** ffi bindings to OpenGL. The entire process should be totally transparent to your project.
+You can add **sky_renderer** as a dependency to your project. When building your project, cargo will first trigger a C/C++ build (using CMake) of a static library containing the **sky_renderer** ffi bindings to OpenGL. The entire process should be totally transparent to your project.
 
 ### Windows
 
