@@ -28,13 +28,14 @@ impl Renderer {
         mesh.geometry.bind();
 
         let transform_loc = gl_get_uniform_location(mesh.shader.program(), "transform");
-        gl_uniform_matrix_4fv(
-            transform_loc,
-            1,
-            GLboolean::FALSE,
-            mesh.transform().to_cols_array().as_ptr(),
-        );
-
+        if transform_loc != -1 {
+            gl_uniform_matrix_4fv(
+                transform_loc,
+                1,
+                GLboolean::FALSE,
+                mesh.transform().to_cols_array().as_ptr(),
+            );
+        }
         gl_draw_arrays(
             mesh.geometry.drawing_mode(),
             0,
