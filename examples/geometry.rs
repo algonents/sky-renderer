@@ -13,28 +13,8 @@ extern "C" fn on_viewport_resized(_window: *const GLFWwindow, width: i32, height
 }
 
 fn main() {
-    let vertex_shader_source = "
-    #version 330 core
-    layout (location = 0) in vec2 aPos;
-    layout (location = 1) in vec3 aColor;
-    uniform mat4 transform;
-    out vec3 ourColor;
-    void main()
-    {
-       gl_Position = transform * vec4(aPos, 0.0, 1.0);
-       ourColor = aColor;
-    }
-    ";
-
-    let fragment_shader_source = "
-    #version 330 core
-    in vec3 ourColor;
-    out vec4 FragColor;
-    void main()
-    {
-        FragColor = vec4(ourColor, 1.0f);
-    }
-    ";
+    let vertex_shader_source = include_str!("shaders_src/geometry.vert");
+    let fragment_shader_source = include_str!("shaders_src/geometry.frag");
 
     /* 6 values per vertex */
     let vertices: Vec<GLfloat> = vec![
