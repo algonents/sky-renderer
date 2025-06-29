@@ -1,5 +1,3 @@
-use glam::Mat4;
-
 use crate::{
     core::mesh::Mesh,
     engine::opengl::{
@@ -8,9 +6,7 @@ use crate::{
     },
 };
 
-pub struct Renderer {
-    transform: Mat4,
-}
+pub struct Renderer {}
 
 impl Default for Renderer {
     fn default() -> Self {
@@ -20,13 +16,7 @@ impl Default for Renderer {
 
 impl Renderer {
     pub fn new() -> Self {
-        Renderer {
-            transform: Mat4::IDENTITY,
-        }
-    }
-
-    pub fn set_transform(&mut self, transform: Mat4) {
-        self.transform = transform
+        Renderer {}
     }
 
     pub fn set_point_size(&self, point_size: GLfloat) {
@@ -42,7 +32,7 @@ impl Renderer {
             transform_loc,
             1,
             GLboolean::FALSE,
-            self.transform.to_cols_array().as_ptr(),
+            mesh.transform().to_cols_array().as_ptr(),
         );
 
         gl_draw_arrays(

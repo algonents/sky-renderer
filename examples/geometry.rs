@@ -13,8 +13,8 @@ extern "C" fn on_viewport_resized(_window: *const GLFWwindow, width: i32, height
 }
 
 fn main() {
-    let vertex_shader_source = include_str!("shaders_src/geometry.vert");
-    let fragment_shader_source = include_str!("shaders_src/geometry.frag");
+    let vertex_shader_source = include_str!("shaders/geometry.vert");
+    let fragment_shader_source = include_str!("shaders/geometry.frag");
 
     /* 6 values per vertex */
     let vertices: Vec<GLfloat> = vec![

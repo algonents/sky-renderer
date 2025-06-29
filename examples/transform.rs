@@ -1,6 +1,5 @@
 extern crate sky_renderer;
 
-use std::ffi::c_void;
 use glam::{Mat4, Vec3};
 use sky_renderer::core::{Attribute, Geometry, Mesh, Renderer, Shader};
 use sky_renderer::engine::opengl::{
@@ -10,6 +9,7 @@ use sky_renderer::windowing::glfw::{
     GLFWwindow, glfw_create_window, glfw_poll_events, glfw_swap_buffers, glfw_terminate,
     glfw_window_should_close,
 };
+use std::ffi::c_void;
 
 extern "C" fn on_viewport_resized(_window: *const GLFWwindow, width: i32, height: i32) {
     gl_viewport(0, 0, width, height);
@@ -20,24 +20,8 @@ fn ortho_2_d(width: f32, height: f32) -> Mat4 {
 }
 
 fn main() {
-    let vertex_shader_source = "
-    #version 330 core
-    layout (location = 0) in vec2 aPos;
-    uniform mat4 transform;
-    void main()
-    {
-       gl_Position = transform * vec4(aPos.x, aPos.y, 0.0, 1.0);
-    }
-    ";
-
-    let fragment_shader_source = "
-    #version 330 core
-    out vec4 FragColor;
-    void main()
-    {
-        FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
-    }
-    ";
+    let vertex_shader_source = include_str!("shaders/transform.vert");
+    let fragment_shader_source = include_str!("shaders/transform.frag");
 
     let vertices: Vec<GLfloat> = vec![
         -10.0, 0.0, // bottom-left
@@ -56,9 +40,9 @@ fn main() {
     let shader = Shader::compile(vertex_shader_source, fragment_shader_source)
         .expect("Failed to compile shader");
 
-    let mesh = Mesh::new(geometry, shader);
+    let mut mesh = Mesh::new(geometry, shader);
 
-    let mut renderer = Renderer::new();
+    let renderer = Renderer::new();
 
     let mut viewport = [0, 0, 0, 0];
 
@@ -82,7 +66,7 @@ fn main() {
         // Finally combine into a single transformation
         let transform = ortho_2d_projection * translation * local_to_world;
 
-        renderer.set_transform(transform);
+        mesh.set_transform(transform);
 
         renderer.draw_mesh(&mesh);
 

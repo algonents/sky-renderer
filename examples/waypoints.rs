@@ -24,8 +24,8 @@ fn main() {
         9.8355, 46.4908, // St-Moritz
     ];
 
-    let vertex_shader_source = include_str!("shaders_src/waypoints.vert");
-    let fragment_shader_source = include_str!("shaders_src/waypoints.frag");
+    let vertex_shader_source = include_str!("shaders/waypoints.vert");
+    let fragment_shader_source = include_str!("shaders/waypoints.frag");
 
     let window = glfw_create_window("Geometry", 800, 600, Some(on_viewport_resized));
 
