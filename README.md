@@ -14,9 +14,11 @@ Finallly, because the API is evolving, please make sure to always use the latest
 
 ## 📖 Docs
 
+### Wiki
+
 Refer to the **sky_renderer** GitHub [wiki](https://github.com/algonents/sky-renderer/wiki), which will be updated soon.
 
-## 📦 Examples
+### 📦 Examples
 
 Refer to the [examples](https://github.com/algonents/sky-renderer/tree/master/examples) provided in the **sky_renderer** GitHub repository. 
 The examples will be updated as new features are added.
