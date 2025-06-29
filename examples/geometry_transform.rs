@@ -1,9 +1,7 @@
 extern crate sky_renderer;
 
 use std::ffi::c_void;
-
 use glam::{Mat4, Vec3};
-
 use sky_renderer::core::{Attribute, Geometry, Mesh, Renderer, Shader};
 use sky_renderer::engine::opengl::{
     GL_TRIANGLES, GL_VIEWPORT, GLfloat, gl_clear_color, gl_get_integerv, gl_viewport,
