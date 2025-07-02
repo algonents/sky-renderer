@@ -3,7 +3,7 @@
 *.swp
 *.bak
 *~
-
+**/.idea/**
 # Rust build artifacts
 **/target/
 **/Cargo.lock
