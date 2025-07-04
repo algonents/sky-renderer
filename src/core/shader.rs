@@ -36,9 +36,9 @@ impl Shader {
             return Err(gl_get_shader_info_log(fragment_shader));
         }*/
 
-        if let Some(geonetry_code) = geometry_src {
+        if let Some(geometry_code) = geometry_src {
             let geometry_shader = gl_create_geometry_shader();
-            gl_shader_source(geometry_shader, geonetry_code);
+            gl_shader_source(geometry_shader, geometry_code);
             gl_compile_shader(geometry_shader);
             gl_attach_shader(program, geometry_shader);
         }
