@@ -7,8 +7,7 @@ fn main() {
     window.set_on_resize(move |w, h| {
         println!("window resized, width:{}, height: {}", w, h);
     });
-    
-    let app = App::new(window);
 
+    let app = App::new(window);
     app.run();
 }
