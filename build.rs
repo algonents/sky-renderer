@@ -1,6 +1,10 @@
 use std::env;
 
 fn main() {
+    if std::env::var("DOCS_RS").is_ok() {
+        // don't build native dependencies for doc generation
+        return;
+    }
     println!("cargo:rerun-if-changed=cpp/CMakeLists.txt");
     println!("cargo:rerun-if-changed=cpp/src/glrenderer.cpp");
     println!("cargo:rerun-if-changed=cpp/include/glrenderer.h");
