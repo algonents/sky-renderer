@@ -5,10 +5,11 @@ use sky_renderer::core::{App, Attribute, Geometry, Mesh, Renderer, Shader, Windo
 use sky_renderer::engine::opengl::{GL_TRIANGLES, GLfloat};
 use sky_renderer::graphics;
 
-const SCALE_FACTOR: f32 = 1.3;
+const SCALE_FACTOR: f32 = 2.0;
 
-fn build_transform(viewport_width: f32, viewport_height: f32) -> Mat4 {
+fn build_transform(viewport_width: f32, viewport_height: f32, time: f64) -> Mat4 {
     let scale = Mat4::from_scale(Vec3::new(SCALE_FACTOR, -SCALE_FACTOR, SCALE_FACTOR));
+    let rotation = Mat4::from_rotation_z(2.0*time as f32);
 
     // Translate triangle to center of the screen
     let translation = Mat4::from_translation(Vec3::new(
@@ -19,7 +20,7 @@ fn build_transform(viewport_width: f32, viewport_height: f32) -> Mat4 {
 
     let projection = graphics::ortho_2d(viewport_width, viewport_height);
 
-    projection * translation * scale
+    projection * translation * rotation * scale
 }
 
 fn main() {
@@ -48,8 +49,9 @@ fn main() {
     app.on_render(move || {
         // Get current viewport size in case window was resized
         let (width, height) = renderer.viewport_size();
+        let time = renderer.get_time();
 
-        let transform = build_transform(width as f32, height as f32);
+        let transform = build_transform(width as f32, height as f32, renderer.get_time());
         mesh.set_transform(transform);
 
         renderer.draw_mesh(&mesh)
