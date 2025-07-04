@@ -1,6 +1,8 @@
 # sky_renderer
 
-**sky_renderer** is a minimalistic 2D rendering engine built in Rust with native bindings to OpenGL.
+**sky_renderer** is a minimalistic 2D rendering engine built in Rust with native bindings to OpenGL. Ultimately, the 
+goal for sky_renderer is to provide a robust platform for visualizing 2D data in real-time.
+
 This version provides low-level bindings to OpenGL and is not yet production-ready. Future versions will
 add support for additional drawing primitives such as lines, texts and other shapes, as well as a higher-level rendering API abstracting OpenGL.
 

@@ -5,7 +5,7 @@ use std::mem;
 
 use glam::{Mat4, Vec3};
 
-use sky_renderer::windowing::glfw::{
+use sky_renderer::engine::glfw::{
     GLFWwindow, glfw_create_window, glfw_poll_events, glfw_swap_buffers, glfw_terminate,
     glfw_window_should_close,
 };

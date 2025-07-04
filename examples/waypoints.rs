@@ -5,7 +5,7 @@ use std::cell::RefCell;
 use sky_renderer::core::{Attribute, Geometry, Mesh, Renderer, Shader};
 use sky_renderer::engine::opengl::{GL_POINTS, gl_clear_color, gl_viewport};
 
-use sky_renderer::windowing::glfw::{
+use sky_renderer::engine::glfw::{
     GLFWwindow, glfw_create_window, glfw_poll_events, glfw_set_scroll_callback, glfw_swap_buffers,
     glfw_terminate, glfw_window_should_close,
 };
@@ -55,7 +55,7 @@ fn main() {
     let mut geometry = Geometry::new(GL_POINTS);
 
     geometry.add_buffer(&wgs84_coordinates, 2);
-    geometry.add_vertex_attribute(Attribute::new(0, 2, 2 as usize, 0));
+    geometry.add_vertex_attribute(Attribute::new(0, 2, 2usize, 0));
 
     let shader = Shader::compile(
         vertex_shader_source,

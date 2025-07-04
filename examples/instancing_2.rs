@@ -11,7 +11,7 @@ use sky_renderer::engine::opengl::{
     gl_link_program, gl_shader_source, gl_use_program, gl_vertex_attrib_divisor,
     gl_vertex_attrib_pointer_float,
 };
-use sky_renderer::windowing::glfw::{
+use sky_renderer::engine::glfw::{
     GLFWwindow, glfw_create_window, glfw_poll_events, glfw_swap_buffers, glfw_terminate,
     glfw_window_should_close,
 };
