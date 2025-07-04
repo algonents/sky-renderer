@@ -4,8 +4,12 @@ use sky_renderer::core::{App, Window};
 
 fn main() {
     let mut  window = Window::new("Hello Window", 800, 600);
-    window.set_on_resize(move |w, h| {
+    window.on_resize(move |w, h| {
         println!("window resized, width:{}, height: {}", w, h);
+    });
+
+    window.on_scroll(move |x_offset, y_offset| {
+        println!("Mouse scrolled, x_offset:{}, y_offset: {}", x_offset, y_offset);
     });
 
     let app = App::new(window);
