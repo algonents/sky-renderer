@@ -11,11 +11,11 @@ fn main() {
     let vertex_shader_source = include_str!("shaders/geometry.vert");
     let fragment_shader_source = include_str!("shaders/geometry.frag");
 
-    /* 6 values per vertex */
+    /* 5 values per vertex: x,y,r,g,b */
     let vertices: Vec<GLfloat> = vec![
-        /*vertex bottom right*/ 0.5, -0.5, /*color */ 1.0, 0.0, 0.0,
-        /*vertex bottom left*/ -0.5, -0.5, /*color */ 0.0, 1.0, 0.0,
-        /*vertex top */ 0.0, 0.5, /*color */ 0.0, 0.0, 1.0,
+        /* bottom right */ 0.5, -0.5, /*color */ 1.0, 0.0, 0.0,
+        /* bottom left */ -0.5, -0.5, /*color */ 0.0, 1.0, 0.0,
+        /* top */ 0.0, 0.5, /*color */ 0.0, 0.0, 1.0,
     ];
 
     let position_values_per_vertex = 2;
