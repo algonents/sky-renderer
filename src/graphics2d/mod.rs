@@ -37,6 +37,57 @@ impl Drawable {
     pub fn new(mesh: Mesh, x: f32, y: f32) -> Self {
         Self { mesh, x, y }
     }
+
+    pub fn line(
+        x1: GLfloat,
+        y1: GLfloat,
+        x2: GLfloat,
+        y2: GLfloat,
+        r: GLfloat,
+        g: GLfloat,
+        b: GLfloat,
+    ) -> Self {
+        // Shift line coordinates so that the line starts at (0,0)
+        let rel_x2 = x2 - x1;
+        let rel_y2 = y2 - y1;
+
+        // Build geometry with points relative to (0,0)
+        let geometry = graphics2d::line_geometry(0.0, 0.0, rel_x2, rel_y2, r, g, b);
+        let mesh = Mesh::new(geometry, graphics2d::default_shader());
+
+        // Drawable positioned at the original start point (x1, y1)
+        Drawable::new(mesh, x1, y1)
+    }
+    pub fn rectangle(
+        x: f32,
+        y: f32,
+        width: f32,
+        height: f32,
+        r: f32,
+        g: f32,
+        b: f32,
+    ) -> Self {
+        // Geometry is created at (0, 0) with given width and height
+        let geometry = rectangle_geometry(width, height, r, g, b);
+        let mesh = Mesh::new(geometry, default_shader());
+        // Drawable will be positioned at (x, y) — the top-left corner
+        Self::new(mesh, x, y)
+    }
+    pub fn circle(
+        x: f32,
+        y: f32,
+        radius: f32,
+        r: f32,
+        g: f32,
+        b: f32,
+    ) -> Self {
+        // Geometry is built as a circle centered at (0, 0)
+        let geometry = circle_geometry(radius, 100, r, g, b);
+        let mesh = Mesh::new(geometry, default_shader());
+        // Drawable is positioned at (x, y), which will be the circle's center
+        Drawable::new(mesh, x, y)
+    }
+    
     pub fn draw(&mut self, renderer: &Renderer) {
         let (viewport_width, viewport_height) = renderer.viewport_size();
         let transform = graphics2d::ortho_2d(viewport_width as f32, viewport_height as f32)
@@ -46,29 +97,7 @@ impl Drawable {
         renderer.draw_mesh(&self.mesh);
     }
 }
-
-pub fn line(
-    x1: GLfloat,
-    y1: GLfloat,
-    x2: GLfloat,
-    y2: GLfloat,
-    r: GLfloat,
-    g: GLfloat,
-    b: GLfloat,
-) -> Drawable {
-    // Shift line coordinates so that the line starts at (0,0)
-    let rel_x2 = x2 - x1;
-    let rel_y2 = y2 - y1;
-
-    // Build geometry with points relative to (0,0)
-    let geometry = graphics2d::_line(0.0, 0.0, rel_x2, rel_y2, r, g, b);
-    let mesh = Mesh::new(geometry, graphics2d::default_shader());
-
-    // Drawable positioned at the original start point (x1, y1)
-    Drawable::new(mesh, x1, y1)
-}
-
-fn _line(
+fn line_geometry(
     x1: GLfloat,
     y1: GLfloat,
     x2: GLfloat,
@@ -106,8 +135,9 @@ fn _line(
     geometry
 }
 
-/// Creates a rectangle starting at (0, 0) with the given width and height, and RGB color.
-pub fn rectangle(
+
+
+fn rectangle_geometry(
     width: GLfloat,
     height: GLfloat,
     r: GLfloat,
@@ -149,7 +179,7 @@ pub fn rectangle(
     geometry
 }
 
-pub fn circle(
+fn circle_geometry(
     radius: GLfloat,
     segments: usize,
     r: GLfloat,
