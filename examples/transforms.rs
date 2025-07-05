@@ -3,7 +3,7 @@ extern crate sky_renderer;
 use glam::{Mat4, Vec3};
 use sky_renderer::core::{App, Attribute, Geometry, Mesh, Renderer, Shader, Window};
 use sky_renderer::engine::opengl::{GL_TRIANGLES, GLfloat};
-use sky_renderer::graphics;
+use sky_renderer::graphics2d;
 
 const SCALE_FACTOR: f32 = 2.0;
 
@@ -18,7 +18,7 @@ fn build_transform(viewport_width: f32, viewport_height: f32, time: f64) -> Mat4
         0.0,
     ));
 
-    let projection = graphics::ortho_2d(viewport_width, viewport_height);
+    let projection = graphics2d::ortho_2d(viewport_width, viewport_height);
 
     projection * translation * rotation * scale
 }

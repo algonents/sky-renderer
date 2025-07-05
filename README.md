@@ -1,18 +1,24 @@
 # sky_renderer
 
-**sky_renderer** is a minimalistic 2D rendering engine built in Rust with native bindings to OpenGL. Ultimately, the 
-goal for sky_renderer is to provide a robust platform for visualizing 2D data in real-time.
+**sky_renderer** is a minimalistic 2D graphics engine built in Rust with native bindings to OpenGL. Ultimately, the 
+goal for sky_renderer is to provide a robust platform for drawing shapes and visualizing data in real-time.
 
 This version provides low-level bindings to OpenGL and is not yet production-ready. Future versions will
-add support for additional drawing primitives such as lines, texts and other shapes, as well as a higher-level rendering API abstracting OpenGL.
+add support for additional drawing primitives such as lines, texts and other shapes, as well as a 
+higher-level rendering API abstracting OpenGL.
 
 ## 🚧 Status
 
-This is a (very) early release: this version provides a limited set of bindings to OpenGL and is not yet suitable for production use. The bindings can nonetheless be used in your own code if you wish to experiment with a minimalistic API for OpenGL. Note that the bindings are focusing on providing a 2D rendering API. If you feel that a binding is missing, please let me know.
+This is a (very) early release: this version provides a limited set of bindings to OpenGL and is not yet suitable 
+for production use. The bindings can nonetheless be used in your own code if you wish to experiment with a minimalistic 
+API for OpenGL. Note that the bindings are focusing on providing a 2D rendering API. If you feel that a binding is 
+missing, please let me know.
 
-This release (0.1.8) introduces a set of higher-level APIs for reducing boiler-plate code. You still need to understand a fair amount of OpenGL to be able to work with the APIs. 
+This release (0.1.8) introduces a set of higher-level APIs for reducing boilerplate code. You still need to 
+understand a fair amount of OpenGL to be able to work with the APIs. 
 
-For examples on how to use the higher-level APIs, refer to `geometry.rs` and `transform.rs` in the [examples](https://github.com/algonents/sky-renderer/tree/master/examples) folder.
+For examples on how to use the higher-level APIs, refer to `triangle.rs` and `transforms.rs` in 
+the [examples](https://github.com/algonents/sky-renderer/tree/master/examples) folder.
 
 Because the API is evolving, please make sure to always use the latest release.
 

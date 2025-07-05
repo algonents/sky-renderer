@@ -8,7 +8,7 @@ license = "MIT"
 description = "A minimalistic 2D rendering engine"
 repository = "https://github.com/algonents/sky-renderer"
 readme = "README.md"
-keywords = ["opengl", "visualization", "2D"]
+keywords = ["opengl", "visualization", "graphics2D"]
 categories = ["graphics", "rendering", "api-bindings"]
 
 [dependencies]
@@ -16,5 +16,9 @@ glam = "0.30.4"
 
 
 [build-dependencies]
-
 cmake = "0.1.52"
+
+[workspace]
+members = [
+    ".",
+]
