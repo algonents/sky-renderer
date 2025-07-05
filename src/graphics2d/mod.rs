@@ -1,14 +1,35 @@
 use std::rc::Rc;
-use std::sync::Arc;
-use glam::Mat4;
-use crate::core::{Attribute, Geometry, Shader};
-use crate::engine::opengl::{GLfloat, GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP};
-
+use glam::{Mat4, Vec3};
+use crate::core::{Attribute, Geometry, Mesh, Renderer, Shader};
+use crate::engine::opengl::{GLfloat, GL_LINES, GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP};
+use crate::graphics2d;
 
 pub fn default_shader() -> Rc<Shader> {
     let vert_src = include_str!("shaders/shape.vert");
     let frag_src = include_str!("shaders/shape.frag");
     Rc::new(Shader::compile(vert_src, frag_src, None).expect("Failed to compile shader"))
+}
+
+const SCALE_FACTOR: f32 = 1.0;
+
+pub struct Drawable {
+    mesh: Mesh,
+    x: f32,
+    y: f32,
+}
+
+impl Drawable {
+    pub fn new(mesh: Mesh, x: f32, y: f32) -> Self {
+        Self { mesh, x, y }
+    }
+    pub fn draw(&mut self, renderer: &Renderer) {
+        let (viewport_width, viewport_height) = renderer.viewport_size();
+        let transform = graphics2d::ortho_2d(viewport_width as f32, viewport_height as f32)
+            * Mat4::from_translation(Vec3::new(self.x, self.y, 0.0))
+            * Mat4::from_scale(Vec3::splat(SCALE_FACTOR));
+        self.mesh.set_transform(transform);
+        renderer.draw_mesh(&self.mesh);
+    }
 }
 
 
@@ -25,6 +46,66 @@ pub fn default_shader() -> Rc<Shader> {
 /// A [`Mat4`] representing the orthographic projection matrix suitable for OpenGL.
 pub fn ortho_2d(width: f32, height: f32) -> Mat4 {
     Mat4::orthographic_rh_gl(0.0, width, height, 0.0, 0.0, 1.0)
+}
+
+
+pub fn line(
+    x1: GLfloat,
+    y1: GLfloat,
+    x2: GLfloat,
+    y2: GLfloat,
+    r: GLfloat,
+    g: GLfloat,
+    b: GLfloat,
+) -> Drawable {
+    // Shift line coordinates so that the line starts at (0,0)
+    let rel_x2 = x2 - x1;
+    let rel_y2 = y2 - y1;
+
+    // Build geometry with points relative to (0,0)
+    let geometry = graphics2d::_line(0.0, 0.0, rel_x2, rel_y2, r, g, b);
+    let mesh = Mesh::new(geometry, graphics2d::default_shader());
+
+    // Drawable positioned at the original start point (x1, y1)
+    Drawable::new(mesh, x1, y1)
+}
+
+fn _line(
+    x1: GLfloat,
+    y1: GLfloat,
+    x2: GLfloat,
+    y2: GLfloat,
+    r: GLfloat,
+    g: GLfloat,
+    b: GLfloat,
+) -> Geometry {
+    let vertices: Vec<GLfloat> = vec![
+        x1, y1, r, g, b,  // start point
+        x2, y2, r, g, b,  // end point
+    ];
+
+    let position_values_per_vertex = 2;
+    let color_values_per_vertex = 3;
+    let values_per_vertex = position_values_per_vertex + color_values_per_vertex;
+
+    let mut geometry = Geometry::new(GL_LINES);
+    geometry.add_buffer(&vertices, values_per_vertex);
+
+    geometry.add_vertex_attribute(Attribute::new(
+        0,
+        position_values_per_vertex,
+        values_per_vertex as usize,
+        0,
+    ));
+
+    geometry.add_vertex_attribute(Attribute::new(
+        1,
+        color_values_per_vertex,
+        values_per_vertex as usize,
+        position_values_per_vertex as usize,
+    ));
+
+    geometry
 }
 
 /// Creates a rectangle starting at (0, 0) with the given width and height, and RGB color.
