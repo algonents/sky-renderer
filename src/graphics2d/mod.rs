@@ -1,6 +1,14 @@
+use std::sync::Arc;
 use glam::Mat4;
-use crate::core::{Attribute, Geometry};
+use crate::core::{Attribute, Geometry, Shader};
 use crate::engine::opengl::{GLfloat, GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP};
+
+
+pub fn default_shader() -> Arc<Shader> {
+    let vert_src = include_str!("shaders/shape.vert");
+    let frag_src = include_str!("shaders/shape.frag");
+    Arc::new(Shader::compile(vert_src, frag_src, None).expect("Failed to compile shader"))
+}
 
 
 /// Creates a right-handed orthographic projection matrix for 2D rendering.
