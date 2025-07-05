@@ -1,6 +1,6 @@
 extern crate sky_renderer;
 
-use std::sync::Arc;
+use std::rc::Rc;
 use glam::{Mat4, Vec3};
 use sky_renderer::core::{App, Attribute, Geometry, Mesh, Renderer, Shader, Window};
 use sky_renderer::engine::opengl::{GL_TRIANGLES, GLfloat};
@@ -43,7 +43,7 @@ fn main() {
     let shader = Shader::compile(vertex_shader_source, fragment_shader_source, None)
         .expect("Failed to compile shader");
 
-    let mut mesh = Mesh::new(geometry, Arc::new(shader));
+    let mut mesh = Mesh::new(geometry, Rc::new(shader));
     let renderer = Renderer::new();
     let mut app = App::new(window);
 

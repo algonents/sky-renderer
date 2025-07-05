@@ -1,7 +1,7 @@
 extern crate sky_renderer;
 
 use std::cell::RefCell;
-use std::sync::Arc;
+use std::rc::Rc;
 use sky_renderer::core::{App, Attribute, Geometry, Mesh, Renderer, Shader, Window};
 use sky_renderer::engine::opengl::{GL_POINTS};
 
@@ -57,7 +57,7 @@ fn main() {
     geometry.add_buffer(&wgs84_coordinates, 2);
     geometry.add_vertex_attribute(Attribute::new(0, 2, 2usize, 0));
 
-    let mesh = Mesh::new(geometry, Arc::new(shader));
+    let mesh = Mesh::new(geometry, Rc::new(shader));
 
     let renderer = Renderer::new();
     renderer.set_point_size(5.0);

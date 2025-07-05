@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::rc::Rc;
 use glam::Mat4;
 
 use crate::{
@@ -8,12 +8,12 @@ use crate::{
 
 pub struct Mesh {
     pub geometry: Geometry,
-    pub shader: Arc<Shader>,
+    pub shader: Rc<Shader>,
     transform: Mat4,
 }
 
 impl Mesh {
-    pub fn new(geometry: Geometry, shader: Arc<Shader>) -> Self {
+    pub fn new(geometry: Geometry, shader: Rc<Shader>) -> Self {
         Self {
             geometry,
             shader,
