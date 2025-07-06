@@ -40,6 +40,8 @@ impl Renderer {
         mesh.shader.use_program();
         mesh.geometry.bind();
 
+        // @TODO: This needs to be refactored. 
+        // Move setting uniforms in Mesh so that everything is in one place
         let transform_loc = gl_get_uniform_location(mesh.shader.program(), "transform");
         if transform_loc != -1 {
             gl_uniform_matrix_4fv(
