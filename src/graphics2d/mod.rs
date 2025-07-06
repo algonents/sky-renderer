@@ -34,7 +34,7 @@ pub struct Drawable {
 }
 
 impl Drawable {
-    pub fn new(mesh: Mesh, x: f32, y: f32) -> Self {
+    pub fn new(x: f32, y: f32, mesh: Mesh, ) -> Self {
         Self { mesh, x, y }
     }
 
@@ -56,7 +56,7 @@ impl Drawable {
         let mesh = Mesh::new(geometry, graphics2d::default_shader());
 
         // Drawable positioned at the original start point (x1, y1)
-        Drawable::new(mesh, x1, y1)
+        Drawable::new(x1, y1, mesh)
     }
     pub fn rectangle(
         x: f32,
@@ -71,7 +71,7 @@ impl Drawable {
         let geometry = rectangle_geometry(width, height, r, g, b);
         let mesh = Mesh::new(geometry, default_shader());
         // Drawable will be positioned at (x, y) — the top-left corner
-        Self::new(mesh, x, y)
+        Self::new(x, y, mesh)
     }
     pub fn circle(
         x: f32,
@@ -85,7 +85,7 @@ impl Drawable {
         let geometry = circle_geometry(radius, 100, r, g, b);
         let mesh = Mesh::new(geometry, default_shader());
         // Drawable is positioned at (x, y), which will be the circle's center
-        Drawable::new(mesh, x, y)
+        Drawable::new(x, y, mesh)
     }
     
     pub fn draw(&mut self, renderer: &Renderer) {
@@ -134,8 +134,6 @@ fn line_geometry(
 
     geometry
 }
-
-
 
 fn rectangle_geometry(
     width: GLfloat,
