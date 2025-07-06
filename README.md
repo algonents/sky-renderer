@@ -13,9 +13,9 @@ higher-level rendering API abstracting OpenGL.
 
 As of version 0.2.0 (this release), a higher-level API has been introduced. 
 You can now create and render shapes without leveraging the low-level OpenGL APIs. For an example on how to use 
-the higher-level APIs, refer to `shapes.rs` in the [examples](https://github.com/algonents/sky-renderer/tree/master/examples) folder:
+the higher-level APIs, refer to [shapes](https://github.com/algonents/sky-renderer/tree/master/examples/shapes.rs) in the examples folder:
 
-```
+```rust
 extern crate sky_renderer;
 
 use sky_renderer::core::{App, Renderer, Window};
