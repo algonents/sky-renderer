@@ -1,7 +1,7 @@
 use crate::engine::opengl::{
     GL_ARRAY_BUFFER, GLboolean, GLenum, GLfloat, GLint, GLsizei, GLuint, gl_bind_buffer,
-    gl_bind_vertex_array, gl_buffer_data, gl_enable_vertex_attrib_array, gl_gen_buffer,
-    gl_gen_vertex_array, gl_vertex_attrib_pointer_float,
+    gl_bind_vertex_array, gl_buffer_data, gl_delete_buffer, gl_enable_vertex_attrib_array,
+    gl_gen_buffer, gl_gen_vertex_array, gl_vertex_attrib_pointer_float,
 };
 
 #[derive(Debug, Clone)]
@@ -41,6 +41,17 @@ pub struct Geometry {
     vertex_count: i32,
     drawing_mode: GLenum,
     attributes: Vec<Attribute>,
+}
+
+impl Drop for Geometry {
+    fn drop(&mut self) {
+        if self.vbo != 0 {
+            gl_delete_buffer(self.vbo);
+        }
+        if self.vao != 0 {
+            //gl::DeleteVertexArrays(1, &self.vao);
+        }
+    }
 }
 
 impl Geometry {
@@ -145,6 +156,4 @@ impl Geometry {
     pub fn unbind(&self) {
         gl_bind_vertex_array(0)
     }
-
-    
 }

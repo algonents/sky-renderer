@@ -39,6 +39,7 @@ extern "C"
     void _glBindBuffer(GLenum target, GLuint buffer);
     void _glBufferData(GLenum mode, GLsizeiptr size, const GLvoid *data, GLenum usage);
     void _glBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, const GLvoid *data);
+    void _glDeleteBuffer(GLuint buffer);
 
     void _glActiveTexture(GLenum unit);
     GLint _glGenTexture();

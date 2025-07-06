@@ -69,6 +69,7 @@ unsafe extern "C" {
     fn _glBindBuffer(target: GLenum, buffer: GLuint);
     fn _glBufferData(target: GLenum, size: GLsizeiptr, data: *const GLvoid, usage: GLenum);
     fn _glBufferSubData(target: GLenum, offset: GLsizeiptr, size: GLsizeiptr, data: *const GLvoid);
+    fn _glDeleteBuffer(buffer: GLuint);
     fn _glGenVertexArray() -> GLuint;
     fn _glBindVertexArray(VAO: GLuint);
     fn _glVertexAttribPointer(
@@ -175,6 +176,11 @@ pub fn gl_use_program(program: GLuint) {
 
 pub fn gl_gen_buffer() -> GLuint {
     unsafe { _glGenBuffer() }
+}
+pub fn gl_delete_buffer(buffer: GLuint){
+    unsafe{
+        _glDeleteBuffer(buffer)
+    }
 }
 
 pub fn gl_gen_buffers(buffers: &mut Vec<GLuint>) {
