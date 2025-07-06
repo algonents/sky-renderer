@@ -21,7 +21,7 @@ pub fn default_shader() -> Rc<Shader> {
 ///
 /// # Returns
 /// A [`Mat4`] representing the orthographic projection matrix suitable for OpenGL.
-pub fn ortho_2d(width: f32, height: f32) -> Mat4 {
+fn ortho_2d(width: f32, height: f32) -> Mat4 {
     Mat4::orthographic_rh_gl(0.0, width, height, 0.0, 0.0, 1.0)
 }
 
