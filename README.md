@@ -45,7 +45,7 @@ fn main() {
     app.run();
 }
 ```
-![Shapes](images/resized.png)
+![Shapes](images/shapes.png)
 
 Note that this is still a (very) early release: this version provides a limited set of bindings to OpenGL and is 
 not yet suitable for production use. Additional `graphics2d` primitives need to be implemented and the APIs may 
