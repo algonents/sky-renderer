@@ -1,3 +1,4 @@
+use std::ffi::c_void;
 use crate::{
     core::mesh::Mesh,
     engine::opengl::{
@@ -5,6 +6,8 @@ use crate::{
         gl_uniform_matrix_4fv,
     },
 };
+use crate::engine::glfw::glfw_get_time;
+use crate::engine::opengl::{gl_get_integerv, GL_VIEWPORT};
 
 pub struct Renderer {}
 
@@ -21,6 +24,16 @@ impl Renderer {
 
     pub fn set_point_size(&self, point_size: GLfloat) {
         gl_point_size(point_size);
+    }
+
+    pub fn viewport_size(&self) -> (i32, i32) {
+        let mut viewport = [0, 0, 0, 0];
+        gl_get_integerv(GL_VIEWPORT, viewport.as_mut_ptr() as *mut c_void);
+        (viewport[2], viewport[3]) // width, height
+    }
+
+    pub fn get_time(&self)->f64{
+        glfw_get_time()
     }
 
     pub fn draw_mesh(&self, mesh: &Mesh) {
