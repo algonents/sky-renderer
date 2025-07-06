@@ -1,9 +1,10 @@
 extern crate sky_renderer;
 
 use sky_renderer::core::{App, Renderer, Window};
+use sky_renderer::graphics2d::shape::Rectangle;
 use sky_renderer::graphics2d::renderable::Renderable;
 use sky_renderer::graphics2d::renderable::RenderableShape;
-use sky_renderer::graphics2d::shape::Rectangle;
+
 
 fn main() {
     let window = Window::new("Shapes", 800, 600);
@@ -20,7 +21,6 @@ fn main() {
     let renderer = Renderer::new();
 
     app.on_render(move || {
-        // Get current viewport size in case window was resized
         for shape in &mut shapes {
             shape.render(&renderer);
         }
