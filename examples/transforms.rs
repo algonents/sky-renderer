@@ -18,9 +18,8 @@ fn build_transform(viewport_width: f32, viewport_height: f32, time: f64) -> Mat4
         viewport_height / 2.0,
         0.0,
     ));
-
-    let projection = graphics2d::ortho_2d(viewport_width, viewport_height);
-
+    
+    let projection = Mat4::orthographic_rh_gl(0.0, viewport_width, viewport_height, 0.0, 0.0, 1.0);
     projection * translation * rotation * scale
 }
 
