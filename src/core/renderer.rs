@@ -7,7 +7,7 @@ use crate::{
     },
 };
 use crate::engine::glfw::glfw_get_time;
-use crate::engine::opengl::{gl_get_integerv, GL_VIEWPORT};
+use crate::engine::opengl::{gl_get_integerv, gl_uniform_3f, GL_VIEWPORT};
 
 pub struct Renderer {}
 
@@ -40,8 +40,6 @@ impl Renderer {
         mesh.shader.use_program();
         mesh.geometry.bind();
 
-        // @TODO: This needs to be refactored. 
-        // Move setting uniforms in Mesh so that everything is in one place
         let transform_loc = gl_get_uniform_location(mesh.shader.program(), "transform");
         if transform_loc != -1 {
             gl_uniform_matrix_4fv(
@@ -50,6 +48,10 @@ impl Renderer {
                 GLboolean::FALSE,
                 mesh.transform().to_cols_array().as_ptr(),
             );
+        }
+        let color_loc = gl_get_uniform_location(mesh.shader.program(), "geometryColor");
+        if color_loc != -1 {
+            gl_uniform_3f(color_loc,mesh.color.red(), mesh.color.green(), mesh.color.blue());
         }
         gl_draw_arrays(
             mesh.geometry.drawing_mode(),

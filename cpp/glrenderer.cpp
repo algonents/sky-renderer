@@ -290,6 +290,11 @@ extern "C"
         glUniform2f(location, v0, v1);
     }
 
+    void _glUniform3f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2)
+    {
+        glUniform3f(location, v0, v1, v2);
+    }
+
     void _glUniform4f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3)
     {
         glUniform4f(location, v0, v1, v2, v3);

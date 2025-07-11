@@ -11,7 +11,7 @@ pub trait Shape{
     ///
     /// # Returns
     /// A [Geometry] object that contains vertex and index data for rendering.
-    fn to_geometry(&self, color: (f32, f32, f32))->Geometry;
+    fn to_geometry(&self)->Geometry;
 }
 
 pub struct Rectangle{
@@ -26,8 +26,8 @@ impl Rectangle {
 }
 
 impl Shape for Rectangle{
-    fn to_geometry(&self, color:(f32, f32, f32)) -> Geometry {
-        graphics2d::rectangle_geometry(self.width, self.height, color)
+    fn to_geometry(&self) -> Geometry {
+        graphics2d::rectangle_geometry(self.width, self.height)
     }
 }
 

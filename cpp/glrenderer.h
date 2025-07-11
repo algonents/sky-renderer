@@ -61,6 +61,7 @@ extern "C"
     GLint _glGetUniformLocation(GLuint program, GLchar *name);
     void _glUniform1f(GLint location, GLfloat v0);
     void _glUniform2f(GLint location, GLfloat v0, GLfloat v1);
+    void _glUniform3f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
     void _glUniform4f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
     void _glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value);
     void _glPointSize(GLfloat size);

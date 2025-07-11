@@ -5,19 +5,22 @@ use crate::{
     core::{geometry::Geometry, shader::Shader},
     engine::opengl::{gl_get_uniform_location, gl_uniform_4f},
 };
+use crate::core::color::Color;
 
 pub struct Mesh {
     pub geometry: Geometry,
     pub shader: Rc<Shader>,
     transform: Mat4,
+    pub color: Color
 }
 
 impl Mesh {
-    pub fn new(geometry: Geometry, shader: Rc<Shader>) -> Self {
+    pub fn new(shader: Rc<Shader>, geometry: Geometry, color: Color) -> Self {
         Self {
             geometry,
             shader,
             transform: Mat4::IDENTITY,
+            color
         }
     }
 

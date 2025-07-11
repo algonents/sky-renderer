@@ -1,6 +1,6 @@
 use std::rc::Rc;
 use glam::{Mat4, Vec3};
-use crate::core::{Mesh, Renderer, Shader};
+use crate::core::{Color, Mesh, Renderer, Shader};
 use crate::engine::opengl::GLfloat;
 use crate::graphics2d;
 use crate::graphics2d::{circle_geometry, rectangle_geometry};
@@ -53,9 +53,9 @@ impl RenderableShape {
         Self { mesh, x, y }
     }
 
-    pub fn from_shape<S: Shape>(x: f32, y: f32, shape: S, color:(f32, f32, f32)) -> Self {
-        let geometry = shape.to_geometry(color);
-        let mesh = Mesh::new(geometry, default_shader() );
+    pub fn from_shape<S: Shape>(x: f32, y: f32, shape: S, color: Color) -> Self {
+        let geometry = shape.to_geometry();
+        let mesh = Mesh::new(default_shader(), geometry, color);
         Self::new(x, y, mesh)
     }
 
@@ -64,15 +64,15 @@ impl RenderableShape {
         y1: GLfloat,
         x2: GLfloat,
         y2: GLfloat,
-        color:(f32, f32, f32)
+        color:Color
     ) -> Self {
         // Shift line coordinates so that the line starts at (0,0)
         let rel_x2 = x2 - x1;
         let rel_y2 = y2 - y1;
 
         // Build geometry with points relative to (0,0)
-        let geometry = graphics2d::line_geometry(0.0, 0.0, rel_x2, rel_y2, color);
-        let mesh = Mesh::new(geometry, default_shader());
+        let geometry = graphics2d::line_geometry(0.0, 0.0, rel_x2, rel_y2);
+        let mesh = Mesh::new(default_shader(), geometry, color );
 
         // Drawable positioned at the original start point (x1, y1)
         RenderableShape::new(x1, y1, mesh)
@@ -82,11 +82,11 @@ impl RenderableShape {
         y: f32,
         width: f32,
         height: f32,
-        color:(f32, f32, f32)
+        color:Color
     ) -> Self {
         // Geometry is created at (0, 0) with given width and height
-        let geometry = rectangle_geometry(width, height, color);
-        let mesh = Mesh::new(geometry, default_shader());
+        let geometry = rectangle_geometry(width, height);
+        let mesh = Mesh::new(default_shader(), geometry, color);
         // Drawable will be positioned at (x, y) — the top-left corner
         Self::new(x, y, mesh)
     }
@@ -94,11 +94,11 @@ impl RenderableShape {
         x: f32,
         y: f32,
         radius: f32,
-        color:(f32, f32, f32)
+        color:Color
     ) -> Self {
         // Geometry is built as a circle centered at (0, 0)
-        let geometry = circle_geometry(radius, 100, color);
-        let mesh = Mesh::new(geometry, default_shader());
+        let geometry = circle_geometry(radius, 100);
+        let mesh = Mesh::new(default_shader(), geometry, color);
         // Drawable is positioned at (x, y), which will be the circle's center
         RenderableShape::new(x, y, mesh)
     }
