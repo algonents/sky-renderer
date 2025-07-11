@@ -1,10 +1,10 @@
-use std::rc::Rc;
-use glam::{Mat4, Vec3};
-use crate::core::{Color, Mesh, Renderer, Shader};
+use crate::core::{Color, GeometryProvider, Mesh, Renderable, Renderer, Shader};
 use crate::engine::opengl::GLfloat;
 use crate::graphics2d;
-use crate::graphics2d::{circle_geometry, rectangle_geometry};
 use crate::graphics2d::shape::Shape;
+use crate::graphics2d::{circle_geometry, rectangle_geometry};
+use glam::{Mat4, Vec3};
+use std::rc::Rc;
 
 pub fn default_shader() -> Rc<Shader> {
     let vert_src = include_str!("shaders/shape.vert");
@@ -29,15 +29,13 @@ fn ortho_2d(width: f32, height: f32) -> Mat4 {
 
 const SCALE_FACTOR: f32 = 1.0;
 
-pub trait Renderable{
-    fn render(&mut self, renderer: &Renderer);
-}
-pub struct RenderableShape {
+
+pub struct ShapeRenderable {
     mesh: Mesh,
     x: f32,
     y: f32,
 }
-impl Renderable for RenderableShape {
+impl Renderable for ShapeRenderable {
     fn render(&mut self, renderer: &Renderer) {
         let (viewport_width, viewport_height) = renderer.viewport_size();
         let transform = ortho_2d(viewport_width as f32, viewport_height as f32)
@@ -48,58 +46,44 @@ impl Renderable for RenderableShape {
     }
 }
 
-impl RenderableShape {
-    pub fn new(x: f32, y: f32, mesh: Mesh, ) -> Self {
+impl ShapeRenderable {
+    pub fn new(x: f32, y: f32, mesh: Mesh) -> Self {
         Self { mesh, x, y }
     }
 
-    pub fn from_shape<S: Shape>(x: f32, y: f32, shape: S, color: Color) -> Self {
+    pub fn from_shape<S: Shape>(x: f32, y: f32, shape: S, color: Color) -> Self
+    where
+        S: Shape + GeometryProvider,
+    {
         let geometry = shape.to_geometry();
         let mesh = Mesh::new(default_shader(), geometry, color);
-        Self::new(x, y, mesh)
+        ShapeRenderable::new(x, y, mesh)
     }
 
-    pub fn line(
-        x1: GLfloat,
-        y1: GLfloat,
-        x2: GLfloat,
-        y2: GLfloat,
-        color:Color
-    ) -> Self {
+    pub fn line(x1: GLfloat, y1: GLfloat, x2: GLfloat, y2: GLfloat, color: Color) -> Self {
         // Shift line coordinates so that the line starts at (0,0)
         let rel_x2 = x2 - x1;
         let rel_y2 = y2 - y1;
 
         // Build geometry with points relative to (0,0)
         let geometry = graphics2d::line_geometry(0.0, 0.0, rel_x2, rel_y2);
-        let mesh = Mesh::new(default_shader(), geometry, color );
+        let mesh = Mesh::new(default_shader(), geometry, color);
 
         // Drawable positioned at the original start point (x1, y1)
-        RenderableShape::new(x1, y1, mesh)
+        ShapeRenderable::new(x1, y1, mesh)
     }
-    pub fn rectangle(
-        x: f32,
-        y: f32,
-        width: f32,
-        height: f32,
-        color:Color
-    ) -> Self {
+    pub fn rectangle(x: f32, y: f32, width: f32, height: f32, color: Color) -> Self {
         // Geometry is created at (0, 0) with given width and height
         let geometry = rectangle_geometry(width, height);
         let mesh = Mesh::new(default_shader(), geometry, color);
         // Drawable will be positioned at (x, y) — the top-left corner
-        Self::new(x, y, mesh)
+        ShapeRenderable::new(x, y, mesh)
     }
-    pub fn circle(
-        x: f32,
-        y: f32,
-        radius: f32,
-        color:Color
-    ) -> Self {
+    pub fn circle(x: f32, y: f32, radius: f32, color: Color) -> Self {
         // Geometry is built as a circle centered at (0, 0)
         let geometry = circle_geometry(radius, 100);
         let mesh = Mesh::new(default_shader(), geometry, color);
         // Drawable is positioned at (x, y), which will be the circle's center
-        RenderableShape::new(x, y, mesh)
+        ShapeRenderable::new(x, y, mesh)
     }
 }

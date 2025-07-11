@@ -3,7 +3,7 @@ use crate::core::{Attribute, Geometry};
 use crate::engine::opengl::{GLfloat, GL_LINES, GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP};
 
 pub mod shape;
-pub mod renderable;
+pub mod shaperenderable;
 
 
 fn line_geometry(

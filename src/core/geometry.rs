@@ -30,6 +30,26 @@ impl Attribute {
     }
 }
 
+/// A trait for types that can be converted into a [`Geometry`] object.
+///
+/// Types implementing this trait can produce a [`Geometry`] instance, which
+/// encapsulates vertex and index data suitable for rendering with a GPU pipeline.
+///
+///
+/// # See Also
+/// - [`Geometry`]: The output type containing renderable mesh data.
+pub trait GeometryProvider{
+    /// Converts the implementing type into a [`Geometry`] instance.
+    ///
+    /// This function returns a [`Geometry`] object containing the necessary
+    /// vertex and index buffers for rendering the shape.
+    ///
+    /// # Returns
+    /// A [`Geometry`] object that encapsulates all required GPU data.
+    fn to_geometry(&self) ->Geometry;
+}
+
+
 /// A GPU-backed buffer representing a drawable shape or mesh.
 ///
 /// `Geometry` encapsulates the OpenGL resources (such as VAOs and VBOs)  and metadata required to render

@@ -9,8 +9,11 @@ use crate::{
 use crate::engine::glfw::glfw_get_time;
 use crate::engine::opengl::{gl_get_integerv, gl_uniform_3f, GL_VIEWPORT};
 
-pub struct Renderer {}
 
+pub struct Renderer {}
+pub trait Renderable {
+    fn render(&mut self, renderer: &Renderer);
+}
 impl Default for Renderer {
     fn default() -> Self {
         Self::new()
