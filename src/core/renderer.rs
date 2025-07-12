@@ -42,7 +42,7 @@ impl Renderer {
     pub fn draw_mesh(&self, mesh: &Mesh) {
         mesh.shader.use_program();
         mesh.geometry.bind();
-
+        
         let transform_loc = gl_get_uniform_location(mesh.shader.program(), "transform");
         if transform_loc != -1 {
             gl_uniform_matrix_4fv(

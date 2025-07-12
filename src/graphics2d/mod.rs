@@ -1,10 +1,48 @@
 
 use crate::core::{Attribute, Geometry};
-use crate::engine::opengl::{GLfloat, GL_LINES, GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP};
+use crate::engine::opengl::{GLfloat, GL_LINES, GL_LINE_STRIP, GL_POINTS, GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP};
 
 pub mod shape;
 pub mod shaperenderable;
 
+
+fn point_geometry()-> Geometry{
+    let vertex = vec![0.0, 0.0];
+    let mut geometry = Geometry::new(GL_POINTS);
+    geometry.add_buffer(&vertex, 2 );
+
+    geometry.add_vertex_attribute(Attribute::new(
+        0,
+        2,
+        2,
+        0,
+    ));
+
+    geometry
+}
+
+pub fn multi_point_geometry(points: &[(GLfloat, GLfloat)]) -> Geometry {
+    let mut vertices = Vec::with_capacity(points.len() * 2);
+
+    for &(x, y) in points {
+        vertices.push(x);
+        vertices.push(y);
+    }
+
+    let values_per_vertex = 2;
+
+    let mut geometry = Geometry::new(GL_POINTS);
+    geometry.add_buffer(&vertices, values_per_vertex);
+
+    geometry.add_vertex_attribute(Attribute::new(
+        0, // position
+        values_per_vertex,
+        values_per_vertex as usize,
+        0,
+    ));
+
+    geometry
+}
 
 fn line_geometry(
     x1: GLfloat,
@@ -18,7 +56,7 @@ fn line_geometry(
     ];
 
     let position_values_per_vertex = 2;
-    
+
     let mut geometry = Geometry::new(GL_LINES);
     geometry.add_buffer(&vertices, position_values_per_vertex);
 
@@ -28,9 +66,39 @@ fn line_geometry(
         position_values_per_vertex as usize,
         0,
     ));
-    
+
     geometry
 }
+
+pub fn polyline_geometry(points: &[(GLfloat, GLfloat)]) -> Geometry {
+    assert!(points.len() >= 2, "Polyline requires at least two points");
+
+    // Use the first point as anchor/origin
+    let (x0, y0) = points[0];
+
+    let mut vertices: Vec<GLfloat> = Vec::with_capacity(points.len() * 2);
+
+    for &(x, y) in points.iter() {
+        let dx = x - x0;
+        let dy = y - y0;
+        vertices.extend_from_slice(&[dx, dy]);
+    }
+
+    let position_values_per_vertex = 2;
+
+    let mut geometry = Geometry::new(GL_LINE_STRIP); // use LINE_STRIP to connect segments
+    geometry.add_buffer(&vertices, position_values_per_vertex);
+
+    geometry.add_vertex_attribute(Attribute::new(
+        0,
+        position_values_per_vertex,
+        position_values_per_vertex as usize,
+        0,
+    ));
+
+    geometry
+}
+
 
 fn rectangle_geometry(
     width: GLfloat,

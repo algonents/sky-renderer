@@ -2,7 +2,7 @@ use crate::core::{Color, GeometryProvider, Mesh, Renderable, Renderer, Shader};
 use crate::engine::opengl::GLfloat;
 use crate::graphics2d;
 use crate::graphics2d::shape::Shape;
-use crate::graphics2d::{circle_geometry, rectangle_geometry};
+use crate::graphics2d::{circle_geometry, point_geometry, rectangle_geometry};
 use glam::{Mat4, Vec3};
 use std::rc::Rc;
 
@@ -11,6 +11,14 @@ pub fn default_shader() -> Rc<Shader> {
     let frag_src = include_str!("shaders/shape.frag");
     Rc::new(Shader::compile(vert_src, frag_src, None).expect("Failed to compile shader"))
 }
+
+pub fn point_shader() ->Rc<Shader>{
+    let vert_src = include_str!("shaders/shape.vert");
+    let frag_src = include_str!("shaders/point.frag");
+    Rc::new(Shader::compile(vert_src, frag_src, None).expect("Failed to compile shader"))
+}
+
+
 
 /// Creates a right-handed orthographic projection matrix for 2D rendering.
 ///
@@ -28,6 +36,8 @@ fn ortho_2d(width: f32, height: f32) -> Mat4 {
 }
 
 const SCALE_FACTOR: f32 = 1.0;
+
+
 
 
 pub struct ShapeRenderable {
@@ -49,7 +59,7 @@ impl Renderable for ShapeRenderable {
 
 impl ShapeRenderable {
     pub fn new(x: f32, y: f32, mesh: Mesh) -> Self {
-        Self { mesh, x, y }
+        Self {x, y, mesh }
     }
 
     pub fn from_shape<S: Shape>(x: f32, y: f32, shape: S, color: Color) -> Self
@@ -60,6 +70,19 @@ impl ShapeRenderable {
         let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
         ShapeRenderable::new(x, y, mesh)
     }
+
+    pub fn point(x:GLfloat, y:GLfloat, color: Color)->Self{
+        let geometry = point_geometry();
+        let mesh = Mesh::with_color(point_shader(), geometry, Some(color));
+        ShapeRenderable::new(x, y, mesh)
+    }
+
+    pub fn points(points: &[(GLfloat, GLfloat)], color: Color) -> Self {
+        let geometry = graphics2d::multi_point_geometry(points);
+        let mesh = Mesh::with_color(point_shader(), geometry, Some(color));
+        ShapeRenderable::new(0.0, 0.0, mesh)
+    }
+
 
     pub fn line(x1: GLfloat, y1: GLfloat, x2: GLfloat, y2: GLfloat, color: Color) -> Self {
         // Shift line coordinates so that the line starts at (0,0)
@@ -73,6 +96,18 @@ impl ShapeRenderable {
         // Drawable positioned at the original start point (x1, y1)
         ShapeRenderable::new(x1, y1, mesh)
     }
+
+    pub fn polyline(points: &[(GLfloat, GLfloat)], color: Color) -> Self {
+        assert!(points.len() >= 2, "Polyline requires at least two points");
+
+        let (x0, y0) = points[0];
+        let geometry = graphics2d::polyline_geometry(points);
+        let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
+
+        ShapeRenderable::new(x0, y0, mesh)
+    }
+
+
     pub fn rectangle(x: f32, y: f32, width: f32, height: f32, color: Color) -> Self {
         // Geometry is created at (0, 0) with given width and height
         let geometry = rectangle_geometry(width, height);
