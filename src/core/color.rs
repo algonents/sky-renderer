@@ -23,4 +23,15 @@ impl Color{
     }
     
     pub fn alpha(&self)->f32 { self.a }
+
+    pub fn to_hex(&self) -> String {
+        format!(
+            "#{:02X}{:02X}{:02X}",
+            (self.red() * 255.0) as u8,
+            (self.green() * 255.0) as u8,
+            (self.blue() * 255.0) as u8,
+        )
+    }
+    
+    
 }

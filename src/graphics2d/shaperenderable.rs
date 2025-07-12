@@ -1,7 +1,7 @@
 use crate::core::{Color, GeometryProvider, Mesh, Renderable, Renderer, Shader};
 use crate::engine::opengl::GLfloat;
 use crate::graphics2d;
-use crate::graphics2d::shape::Shape;
+use crate::graphics2d::shape::{Shape, ShapeKind};
 use crate::graphics2d::{circle_geometry, point_geometry, rectangle_geometry};
 use glam::{Mat4, Vec3};
 use std::rc::Rc;
@@ -12,13 +12,11 @@ pub fn default_shader() -> Rc<Shader> {
     Rc::new(Shader::compile(vert_src, frag_src, None).expect("Failed to compile shader"))
 }
 
-pub fn point_shader() ->Rc<Shader>{
+pub fn point_shader() -> Rc<Shader> {
     let vert_src = include_str!("shaders/shape.vert");
     let frag_src = include_str!("shaders/point.frag");
     Rc::new(Shader::compile(vert_src, frag_src, None).expect("Failed to compile shader"))
 }
-
-
 
 /// Creates a right-handed orthographic projection matrix for 2D rendering.
 ///
@@ -37,14 +35,11 @@ fn ortho_2d(width: f32, height: f32) -> Mat4 {
 
 const SCALE_FACTOR: f32 = 1.0;
 
-
-
-
 pub struct ShapeRenderable {
     x: f32,
     y: f32,
     mesh: Mesh,
-    
+    kind: ShapeKind,
 }
 impl Renderable for ShapeRenderable {
     fn render(&mut self, renderer: &Renderer) {
@@ -58,8 +53,8 @@ impl Renderable for ShapeRenderable {
 }
 
 impl ShapeRenderable {
-    pub fn new(x: f32, y: f32, mesh: Mesh) -> Self {
-        Self {x, y, mesh }
+    pub fn new(x: f32, y: f32, mesh: Mesh, kind: ShapeKind) -> Self {
+        Self { x, y, mesh, kind }
     }
 
     pub fn from_shape<S: Shape>(x: f32, y: f32, shape: S, color: Color) -> Self
@@ -68,21 +63,27 @@ impl ShapeRenderable {
     {
         let geometry = shape.to_geometry();
         let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
-        ShapeRenderable::new(x, y, mesh)
+        ShapeRenderable::new(x, y, mesh, shape.kind())
     }
 
-    pub fn point(x:GLfloat, y:GLfloat, color: Color)->Self{
+    pub fn point(x: GLfloat, y: GLfloat, color: Color) -> Self {
         let geometry = point_geometry();
         let mesh = Mesh::with_color(point_shader(), geometry, Some(color));
-        ShapeRenderable::new(x, y, mesh)
+        ShapeRenderable::new(x, y, mesh, ShapeKind::Point {})
     }
 
     pub fn points(points: &[(GLfloat, GLfloat)], color: Color) -> Self {
         let geometry = graphics2d::multi_point_geometry(points);
         let mesh = Mesh::with_color(point_shader(), geometry, Some(color));
-        ShapeRenderable::new(0.0, 0.0, mesh)
+        ShapeRenderable::new(
+            0.0,
+            0.0,
+            mesh,
+            ShapeKind::MultiPoint {
+                points: points.to_vec(),
+            },
+        )
     }
-
 
     pub fn line(x1: GLfloat, y1: GLfloat, x2: GLfloat, y2: GLfloat, color: Color) -> Self {
         // Shift line coordinates so that the line starts at (0,0)
@@ -94,7 +95,7 @@ impl ShapeRenderable {
         let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
 
         // Drawable positioned at the original start point (x1, y1)
-        ShapeRenderable::new(x1, y1, mesh)
+        ShapeRenderable::new(x1, y1, mesh, ShapeKind::Line { x2, y2 })
     }
 
     pub fn polyline(points: &[(GLfloat, GLfloat)], color: Color) -> Self {
@@ -104,22 +105,97 @@ impl ShapeRenderable {
         let geometry = graphics2d::polyline_geometry(points);
         let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
 
-        ShapeRenderable::new(x0, y0, mesh)
+        ShapeRenderable::new(x0, y0, mesh, ShapeKind::Polyline {points:points.to_vec()})
     }
-
 
     pub fn rectangle(x: f32, y: f32, width: f32, height: f32, color: Color) -> Self {
         // Geometry is created at (0, 0) with given width and height
         let geometry = rectangle_geometry(width, height);
         let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
         // Drawable will be positioned at (x, y) — the top-left corner
-        ShapeRenderable::new(x, y, mesh)
+        ShapeRenderable::new(x, y, mesh, ShapeKind::Rectangle {width, height})
     }
     pub fn circle(x: f32, y: f32, radius: f32, color: Color) -> Self {
         // Geometry is built as a circle centered at (0, 0)
         let geometry = circle_geometry(radius, 100);
         let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
         // Drawable is positioned at (x, y), which will be the circle's center
-        ShapeRenderable::new(x, y, mesh)
+        ShapeRenderable::new(x, y, mesh, ShapeKind::Circle {radius})
+    }
+
+    fn svg_color(&self) -> String {
+        self.mesh
+            .color
+            .as_ref()
+            .map(|c| c.to_hex())
+            .unwrap_or_else(|| "#000000".to_string())
+    }
+
+    pub fn to_svg(&self) -> String {
+        match &self.kind {
+            ShapeKind::Line { x2, y2 } => {
+                format!(
+                    r#"<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{color}" stroke-width="1"/>"#,
+                    x1 = self.x,
+                    y1 = self.y,
+                    x2 = x2,
+                    y2 = y2,
+                    color = self.svg_color(),
+                )
+            }
+            ShapeKind::Rectangle { width, height } => {
+                format!(
+                    r#"<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="{color}"/>"#,
+                    x = self.x,
+                    y = self.y,
+                    w = width,
+                    h = height,
+                    color = self.svg_color(),
+                )
+            }
+            ShapeKind::Circle { radius } => {
+                format!(
+                    r#"<circle cx="{cx}" cy="{cy}" r="{r}" fill="{color}"/>"#,
+                    cx = self.x + radius,
+                    cy = self.y + radius,
+                    r = radius,
+                    color = self.svg_color(),
+                )
+            }
+            ShapeKind::Polyline { points } => {
+                let path = points
+                    .iter()
+                    .map(|(px, py)| format!("{},{}", px + self.x, py + self.y))
+                    .collect::<Vec<_>>()
+                    .join(" ");
+                format!(
+                    r#"<polyline points="{path}" fill="none" stroke="{color}" stroke-width="1"/>"#,
+                    path = path,
+                    color = self.svg_color(),
+                )
+            }
+            ShapeKind::MultiPoint { points } => {
+                let mut out = String::new();
+                for (px, py) in points {
+                    let cx = px + self.x;
+                    let cy = py + self.y;
+                    out.push_str(&format!(
+                        r#"<circle cx="{cx}" cy="{cy}" r="2" fill="{color}"/>"#,
+                        cx = cx,
+                        cy = cy,
+                        color = self.svg_color(),
+                    ));
+                }
+                out
+            }
+            ShapeKind::Point => {
+                format!(
+                    r#"<circle cx="{cx}" cy="{cy}" r="2" fill="{color}"/>"#,
+                    cx = self.x,
+                    cy = self.y,
+                    color = self.svg_color(),
+                )
+            }
+        }
     }
 }

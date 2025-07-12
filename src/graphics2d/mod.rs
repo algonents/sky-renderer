@@ -4,9 +4,9 @@ use crate::engine::opengl::{GLfloat, GL_LINES, GL_LINE_STRIP, GL_POINTS, GL_TRIA
 
 pub mod shape;
 pub mod shaperenderable;
+pub mod svgdocument;
 
-
-fn point_geometry()-> Geometry{
+fn point_geometry() -> Geometry{
     let vertex = vec![0.0, 0.0];
     let mut geometry = Geometry::new(GL_POINTS);
     geometry.add_buffer(&vertex, 2 );

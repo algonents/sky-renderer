@@ -1,9 +1,19 @@
 use crate::core::{Geometry, GeometryProvider};
 use crate::graphics2d;
 
+
+#[derive(Debug, Clone)]
+pub enum ShapeKind {
+    Point,
+    MultiPoint { points: Vec<(f32, f32)> },
+    Line { x2: f32, y2: f32 },
+    Polyline { points: Vec<(f32, f32)> },
+    Rectangle { width: f32, height: f32 },
+    Circle { radius: f32 },
+}
 /// A trait representing a 2D shape.
 pub trait Shape{
-   
+   fn kind(&self)->ShapeKind;
 }
 
 pub struct Rectangle{
@@ -18,7 +28,12 @@ impl Rectangle {
 }
 
 impl Shape for Rectangle{
-    
+    fn kind(&self)->ShapeKind {
+        ShapeKind::Rectangle {
+            width: self.width,
+            height: self.height,
+        }
+    }
 }
 
 impl GeometryProvider for Rectangle{
