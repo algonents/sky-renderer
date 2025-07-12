@@ -31,9 +31,10 @@ const SCALE_FACTOR: f32 = 1.0;
 
 
 pub struct ShapeRenderable {
-    mesh: Mesh,
     x: f32,
     y: f32,
+    mesh: Mesh,
+    
 }
 impl Renderable for ShapeRenderable {
     fn render(&mut self, renderer: &Renderer) {
@@ -56,7 +57,7 @@ impl ShapeRenderable {
         S: Shape + GeometryProvider,
     {
         let geometry = shape.to_geometry();
-        let mesh = Mesh::new(default_shader(), geometry, color);
+        let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
         ShapeRenderable::new(x, y, mesh)
     }
 
@@ -67,7 +68,7 @@ impl ShapeRenderable {
 
         // Build geometry with points relative to (0,0)
         let geometry = graphics2d::line_geometry(0.0, 0.0, rel_x2, rel_y2);
-        let mesh = Mesh::new(default_shader(), geometry, color);
+        let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
 
         // Drawable positioned at the original start point (x1, y1)
         ShapeRenderable::new(x1, y1, mesh)
@@ -75,14 +76,14 @@ impl ShapeRenderable {
     pub fn rectangle(x: f32, y: f32, width: f32, height: f32, color: Color) -> Self {
         // Geometry is created at (0, 0) with given width and height
         let geometry = rectangle_geometry(width, height);
-        let mesh = Mesh::new(default_shader(), geometry, color);
+        let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
         // Drawable will be positioned at (x, y) — the top-left corner
         ShapeRenderable::new(x, y, mesh)
     }
     pub fn circle(x: f32, y: f32, radius: f32, color: Color) -> Self {
         // Geometry is built as a circle centered at (0, 0)
         let geometry = circle_geometry(radius, 100);
-        let mesh = Mesh::new(default_shader(), geometry, color);
+        let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
         // Drawable is positioned at (x, y), which will be the circle's center
         ShapeRenderable::new(x, y, mesh)
     }

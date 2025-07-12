@@ -54,7 +54,9 @@ impl Renderer {
         }
         let color_loc = gl_get_uniform_location(mesh.shader.program(), "geometryColor");
         if color_loc != -1 {
-            gl_uniform_3f(color_loc,mesh.color.red(), mesh.color.green(), mesh.color.blue());
+            if let Some(color) = mesh.color.as_ref(){
+                gl_uniform_3f(color_loc, color.red(), color.green(), color.blue());
+            }
         }
         gl_draw_arrays(
             mesh.geometry.drawing_mode(),

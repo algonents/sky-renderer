@@ -2,7 +2,7 @@ extern crate sky_renderer;
 
 use std::cell::RefCell;
 use std::rc::Rc;
-use sky_renderer::core::{App, Attribute, Color, Geometry, Mesh, Renderer, Shader, Window};
+use sky_renderer::core::{App, Attribute, Geometry, Mesh, Renderer, Shader, Window};
 use sky_renderer::engine::opengl::{GL_POINTS};
 
 static SWITZERLAND_BOUNDS: [f32; 4] = [5.956, 45.817, 10.492, 47.808];
@@ -57,7 +57,7 @@ fn main() {
     geometry.add_buffer(&wgs84_coordinates, 2);
     geometry.add_vertex_attribute(Attribute::new(0, 2, 2usize, 0));
 
-    let mesh = Mesh::new(Rc::new(shader), geometry, Color::from_rgb(1.0, 1.0, 1.0));
+    let mesh = Mesh::new(Rc::new(shader), geometry);
 
     let renderer = Renderer::new();
     renderer.set_point_size(5.0);

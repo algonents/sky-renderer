@@ -42,7 +42,7 @@ fn main() {
     let shader = Shader::compile(vertex_shader_source, fragment_shader_source, None)
         .expect("Failed to compile shader");
 
-    let mesh = Mesh::new(Rc::new(shader), geometry, Color::from_rgb(0.0, 1.0, 1.0));
+    let mesh = Mesh::new(Rc::new(shader), geometry);
 
     let renderer = Renderer::new();
 

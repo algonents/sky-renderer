@@ -11,16 +11,25 @@ pub struct Mesh {
     pub geometry: Geometry,
     pub shader: Rc<Shader>,
     transform: Mat4,
-    pub color: Color
+    pub color: Option<Color>
 }
 
 impl Mesh {
-    pub fn new(shader: Rc<Shader>, geometry: Geometry, color: Color) -> Self {
+    pub fn with_color(shader: Rc<Shader>, geometry: Geometry, color: Option<Color>) -> Self {
         Self {
             geometry,
             shader,
             transform: Mat4::IDENTITY,
             color
+        }
+    }
+
+    pub fn new(shader: Rc<Shader>, geometry: Geometry) -> Self {
+        Self {
+            geometry,
+            shader,
+            transform: Mat4::IDENTITY,
+            color: None
         }
     }
 
