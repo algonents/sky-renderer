@@ -1,17 +1,23 @@
-use crate::core::Geometry;
+use crate::core::{Geometry, GeometryProvider};
 use crate::graphics2d;
 
+
+#[derive(Debug, Clone)]
+pub enum ShapeKind {
+    Point,
+    MultiPoint { points: Vec<(f32, f32)> },
+    Line { x2: f32, y2: f32 },
+    Polyline { points: Vec<(f32, f32)> },
+    Rectangle { width: f32, height: f32 },
+    RoundedRectangle { width: f32, height: f32, radius: f32 },
+    Polygon { points: Vec<(f32, f32)> },
+    Circle { radius: f32 },
+    Ellipse { radius_x: f32, radius_y: f32 },
+    Image {width:f32, height: f32}
+}
 /// A trait representing a 2D shape.
 pub trait Shape{
-    /// Converts the shape into a [Geometry] with the specified color.
-    ///
-    /// # Parameters
-    /// - `color`: An RGB color represented as a tuple `(f32, f32, f32)`, 
-    ///   where each component ranges from 0.0 to 1.0.
-    ///
-    /// # Returns
-    /// A [Geometry] object that contains vertex and index data for rendering.
-    fn to_geometry(&self, color: (f32, f32, f32))->Geometry;
+   fn kind(&self)->ShapeKind;
 }
 
 pub struct Rectangle{
@@ -26,8 +32,17 @@ impl Rectangle {
 }
 
 impl Shape for Rectangle{
-    fn to_geometry(&self, color:(f32, f32, f32)) -> Geometry {
-        graphics2d::rectangle_geometry(self.width, self.height, color)
+    fn kind(&self)->ShapeKind {
+        ShapeKind::Rectangle {
+            width: self.width,
+            height: self.height,
+        }
+    }
+}
+
+impl GeometryProvider for Rectangle{
+    fn to_geometry(&self) -> Geometry {
+        graphics2d::rectangle_geometry(self.width, self.height)
     }
 }
 

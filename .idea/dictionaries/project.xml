@@ -3,6 +3,8 @@
     <words>
       <w>glrenderer</w>
       <w>ortho</w>
+      <w>shaperenderable</w>
+      <w>svgdocument</w>
       <w>xoffset</w>
     </words>
   </dictionary>

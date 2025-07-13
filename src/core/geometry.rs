@@ -1,7 +1,7 @@
-use crate::engine::opengl::{
+use crate::core::engine::opengl::{
     GL_ARRAY_BUFFER, GLboolean, GLenum, GLfloat, GLint, GLsizei, GLuint, gl_bind_buffer,
-    gl_bind_vertex_array, gl_buffer_data, gl_enable_vertex_attrib_array, gl_gen_buffer,
-    gl_gen_vertex_array, gl_vertex_attrib_pointer_float,
+    gl_bind_vertex_array, gl_buffer_data, gl_delete_buffer, gl_enable_vertex_attrib_array,
+    gl_gen_buffer, gl_gen_vertex_array, gl_vertex_attrib_pointer_float,
 };
 
 #[derive(Debug, Clone)]
@@ -30,6 +30,26 @@ impl Attribute {
     }
 }
 
+/// A trait for types that can be converted into a [`Geometry`] object.
+///
+/// Types implementing this trait can produce a [`Geometry`] instance, which
+/// encapsulates vertex and index data suitable for rendering with a GPU pipeline.
+///
+///
+/// # See Also
+/// - [`Geometry`]: The output type containing renderable mesh data.
+pub trait GeometryProvider{
+    /// Converts the implementing type into a [`Geometry`] instance.
+    ///
+    /// This function returns a [`Geometry`] object containing the necessary
+    /// vertex and index buffers for rendering the shape.
+    ///
+    /// # Returns
+    /// A [`Geometry`] object that encapsulates all required GPU data.
+    fn to_geometry(&self) ->Geometry;
+}
+
+
 /// A GPU-backed buffer representing a drawable shape or mesh.
 ///
 /// `Geometry` encapsulates the OpenGL resources (such as VAOs and VBOs)  and metadata required to render
@@ -41,6 +61,17 @@ pub struct Geometry {
     vertex_count: i32,
     drawing_mode: GLenum,
     attributes: Vec<Attribute>,
+}
+
+impl Drop for Geometry {
+    fn drop(&mut self) {
+        if self.vbo != 0 {
+            gl_delete_buffer(self.vbo);
+        }
+        if self.vao != 0 {
+            //gl::DeleteVertexArrays(1, &self.vao);
+        }
+    }
 }
 
 impl Geometry {
@@ -145,6 +176,4 @@ impl Geometry {
     pub fn unbind(&self) {
         gl_bind_vertex_array(0)
     }
-
-    
 }

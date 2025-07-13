@@ -69,6 +69,7 @@ unsafe extern "C" {
     fn _glBindBuffer(target: GLenum, buffer: GLuint);
     fn _glBufferData(target: GLenum, size: GLsizeiptr, data: *const GLvoid, usage: GLenum);
     fn _glBufferSubData(target: GLenum, offset: GLsizeiptr, size: GLsizeiptr, data: *const GLvoid);
+    fn _glDeleteBuffer(buffer: GLuint);
     fn _glGenVertexArray() -> GLuint;
     fn _glBindVertexArray(VAO: GLuint);
     fn _glVertexAttribPointer(
@@ -104,6 +105,7 @@ unsafe extern "C" {
     fn _glGetUniformLocation(program: GLuint, name: *const GLchar) -> GLint;
     fn _glUniform1f(location: GLint, v0: GLfloat);
     fn _glUniform2f(location: GLint, v0: GLfloat, v1: GLfloat);
+    fn _glUniform3f(location: GLint, v0: GLfloat, v1: GLfloat, v2: GLfloat);
     fn _glUniform4f(location: GLint, v0: GLfloat, v1: GLfloat, v2: GLfloat, v3: GLfloat);
     fn _glUniformMatrix4fv(
         location: GLint,
@@ -175,6 +177,11 @@ pub fn gl_use_program(program: GLuint) {
 
 pub fn gl_gen_buffer() -> GLuint {
     unsafe { _glGenBuffer() }
+}
+pub fn gl_delete_buffer(buffer: GLuint){
+    unsafe{
+        _glDeleteBuffer(buffer)
+    }
 }
 
 pub fn gl_gen_buffers(buffers: &mut Vec<GLuint>) {
@@ -288,6 +295,12 @@ pub fn gl_uniform_1f(location: GLint, v0: GLfloat) {
 pub fn gl_uniform_2f(location: GLint, v0: GLfloat, v1: GLfloat) {
     unsafe {
         _glUniform2f(location, v0, v1);
+    }
+}
+
+pub fn gl_uniform_3f(location: GLint, v0: GLfloat, v1: GLfloat, v2: GLfloat) {
+    unsafe {
+        _glUniform3f(location, v0, v1, v2);
     }
 }
 

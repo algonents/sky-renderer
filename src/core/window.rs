@@ -1,5 +1,5 @@
-use crate::engine::opengl::{gl_clear_color, gl_viewport};
-use crate::engine::glfw::{glfw_create_window, glfw_get_window_user_pointer, glfw_poll_events, glfw_set_scroll_callback, glfw_set_window_user_pointer, glfw_swap_buffers, glfw_window_should_close, GLFWwindow};
+use crate::core::engine::opengl::{gl_clear_color, gl_viewport};
+use crate::core::engine::glfw::{glfw_create_window, glfw_get_window_user_pointer, glfw_poll_events, glfw_set_scroll_callback, glfw_set_window_user_pointer, glfw_swap_buffers, glfw_window_should_close, GLFWwindow};
 use std::ffi::c_void;
 
 pub struct Window{
