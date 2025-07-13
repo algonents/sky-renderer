@@ -7,6 +7,7 @@ mod app;
 mod color;
 mod texture;
 mod image;
+pub mod engine;
 
 pub use self::geometry::Attribute;
 pub use self::geometry::Geometry;

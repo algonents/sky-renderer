@@ -1,6 +1,6 @@
 use std::f32::consts::PI;
 use crate::core::{Attribute, Geometry};
-use crate::engine::opengl::{GL_LINE_STRIP, GL_LINES, GL_POINTS, GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP, GLfloat, GL_TRIANGLES};
+use crate::core::engine::opengl::{GL_LINE_STRIP, GL_LINES, GL_POINTS, GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP, GLfloat, GL_TRIANGLES};
 
 pub mod shape;
 pub mod shaperenderable;

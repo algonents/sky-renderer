@@ -3,7 +3,7 @@ extern crate sky_renderer;
 use std::cell::RefCell;
 use std::rc::Rc;
 use sky_renderer::core::{App, Attribute, Geometry, Mesh, Renderer, Shader, Window};
-use sky_renderer::engine::opengl::{GL_POINTS};
+use sky_renderer::core::engine::opengl::{GL_POINTS};
 
 static SWITZERLAND_BOUNDS: [f32; 4] = [5.956, 45.817, 10.492, 47.808];
 

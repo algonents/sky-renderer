@@ -1,26 +1,26 @@
 use std::rc::Rc;
+use glam::{Mat4, Vec3};
 
 use crate::core::{generate_texture_from_image, load_image, Color, GeometryProvider, Mesh, Renderable, Renderer, Shader};
-use crate::engine::opengl::GLfloat;
+use crate::core::engine::opengl::GLfloat;
 use crate::graphics2d;
 use crate::graphics2d::shape::{Shape, ShapeKind};
 use crate::graphics2d::{circle_geometry, image_geometry, point_geometry, rectangle_geometry};
-use glam::{Mat4, Vec3};
 
 
-pub fn default_shader() -> Rc<Shader> {
+fn default_shader() -> Rc<Shader> {
     let vert_src = include_str!("shaders/shape.vert");
     let frag_src = include_str!("shaders/shape.frag");
     Rc::new(Shader::compile(vert_src, frag_src, None).expect("Failed to compile shader"))
 }
 
-pub fn point_shader() -> Rc<Shader> {
+fn point_shader() -> Rc<Shader> {
     let vert_src = include_str!("shaders/shape.vert");
     let frag_src = include_str!("shaders/point.frag");
     Rc::new(Shader::compile(vert_src, frag_src, None).expect("Failed to compile shader"))
 }
 
-pub fn image_shader() -> Rc<Shader>{
+fn image_shader() -> Rc<Shader>{
     let vert_src = include_str!("shaders/image.vert");
     let frag_src = include_str!("shaders/image.frag");
     Rc::new(Shader::compile(vert_src, frag_src, None).expect("Failed to compile shader"))

@@ -1,12 +1,10 @@
 use std::rc::Rc;
 use glam::Mat4;
 
-use crate::{
-    core::{geometry::Geometry, shader::Shader},
-    engine::opengl::{gl_get_uniform_location, gl_uniform_4f},
-};
+use crate::core::{geometry::Geometry, shader::Shader};
 use crate::core::color::Color;
-use crate::engine::opengl::GLuint;
+use crate::core::engine::opengl::{gl_get_uniform_location, gl_uniform_4f};
+use crate::core::engine::opengl::GLuint;
 
 pub struct Mesh {
     pub geometry: Geometry,
