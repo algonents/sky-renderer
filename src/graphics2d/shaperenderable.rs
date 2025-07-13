@@ -1,8 +1,8 @@
-use crate::core::{Color, GeometryProvider, Mesh, Renderable, Renderer, Shader};
+use crate::core::{generate_texture_from_image, load_image, Color, GeometryProvider, Mesh, Renderable, Renderer, Shader};
 use crate::engine::opengl::GLfloat;
 use crate::graphics2d;
 use crate::graphics2d::shape::{Shape, ShapeKind};
-use crate::graphics2d::{circle_geometry, point_geometry, rectangle_geometry};
+use crate::graphics2d::{circle_geometry, image_geometry, point_geometry, rectangle_geometry};
 use glam::{Mat4, Vec3};
 use std::rc::Rc;
 
@@ -15,6 +15,12 @@ pub fn default_shader() -> Rc<Shader> {
 pub fn point_shader() -> Rc<Shader> {
     let vert_src = include_str!("shaders/shape.vert");
     let frag_src = include_str!("shaders/point.frag");
+    Rc::new(Shader::compile(vert_src, frag_src, None).expect("Failed to compile shader"))
+}
+
+pub fn image_shader() -> Rc<Shader>{
+    let vert_src = include_str!("shaders/image.vert");
+    let frag_src = include_str!("shaders/image.frag");
     Rc::new(Shader::compile(vert_src, frag_src, None).expect("Failed to compile shader"))
 }
 
@@ -177,6 +183,39 @@ impl ShapeRenderable {
         ShapeRenderable::new(x, y, mesh, ShapeKind::Ellipse { radius_x, radius_y })
     }
 
+    pub fn image_with_size(x: f32, y: f32, path: &str, width:f32, height: f32) -> ShapeRenderable {
+        // Load image data and upload to GPU
+        let image = load_image(path);
+
+        let texture_id = generate_texture_from_image(&image);
+
+        // You likely want to query dimensions in `generate_texture_from_image`
+        // But if not, load dimensions again:
+        //let (width, height, _) = load_image(path); // image module only used for size
+
+        // Create image geometry (2-triangle quad)
+        let geometry = image_geometry(width as f32, height as f32);
+
+        // Use image shader and attach texture
+        let shader = image_shader(); // assumes you have an Rc<Shader> loader
+        let mesh = Mesh::with_texture(shader, geometry, Some(texture_id));
+
+        ShapeRenderable::new(
+            x,
+            y,
+            mesh,
+            ShapeKind::Image {
+                width: width as f32,
+                height: height as f32,
+            },
+        )
+    }
+
+    pub fn image(x: f32, y: f32, path: &str) -> Self {
+        let image = load_image(path);
+        Self::image_with_size(x, y, path, image.width as f32, image.height as f32)
+    }
+    
     fn svg_color(&self) -> String {
         self.mesh
             .color
@@ -288,6 +327,7 @@ impl ShapeRenderable {
                     color = self.svg_color(),
                 )
             }
+            ShapeKind::Image {width, height}=>String::new()
         }
     }
 }

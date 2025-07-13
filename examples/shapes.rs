@@ -57,6 +57,8 @@ fn main() {
             Rectangle::new(100.0, 50.0),
             Color::from_rgb(0.0, 1.0, 0.0),
         ),
+        ShapeRenderable::image_with_size(200.0, 300.0, "images/face.png", 40.0, 40.0),
+        ShapeRenderable::image(400.0, 500.0, "images/bunny.png"),
     ];
 
     let renderer = Renderer::new();

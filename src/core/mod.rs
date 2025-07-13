@@ -5,6 +5,8 @@ mod shader;
 mod window;
 mod app;
 mod color;
+mod texture;
+mod image;
 
 pub use self::geometry::Attribute;
 pub use self::geometry::Geometry;
@@ -16,3 +18,5 @@ pub use self::shader::Shader;
 pub use self::window::Window;
 pub use self::app::App;
 pub use self::color::Color;
+pub use texture::generate_texture_from_image;
+pub use image::load_image;

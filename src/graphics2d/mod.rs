@@ -1,8 +1,6 @@
 use std::f32::consts::PI;
 use crate::core::{Attribute, Geometry};
-use crate::engine::opengl::{
-    GL_LINE_STRIP, GL_LINES, GL_POINTS, GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP, GLfloat,
-};
+use crate::engine::opengl::{GL_LINE_STRIP, GL_LINES, GL_POINTS, GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP, GLfloat, GL_TRIANGLES};
 
 pub mod shape;
 pub mod shaperenderable;
@@ -75,7 +73,7 @@ fn polyline_geometry(points: &[(GLfloat, GLfloat)]) -> Geometry {
     geometry.add_buffer(&vertices, values_per_vertex);
     geometry.add_vertex_attribute(Attribute::new(0, 2, values_per_vertex as usize, 0));
     geometry
-    
+
 }
 
 fn rectangle_geometry(width: GLfloat, height: GLfloat) -> Geometry {
@@ -240,5 +238,41 @@ fn polygon_geometry(points: &[(GLfloat, GLfloat)]) -> Geometry {
     geometry.add_buffer(&vertices, values_per_vertex);
     geometry.add_vertex_attribute(Attribute::new(0, 2, values_per_vertex as usize, 0));
     geometry
-    
+
+}
+
+pub fn image_geometry(width: f32, height: f32) -> Geometry {
+    // Vertex format: [x, y, u, v]
+    let vertices: Vec<f32> = vec![
+        // Triangle 1
+        0.0,      0.0,       0.0, 0.0, // bottom-left
+        width,    0.0,       1.0, 0.0, // bottom-right
+        width,    height,    1.0, 1.0, // top-right
+
+        // Triangle 2
+        0.0,      0.0,       0.0, 0.0, // bottom-left
+        width,    height,    1.0, 1.0, // top-right
+        0.0,      height,    0.0, 1.0, // top-left
+    ];
+
+    let values_per_vertex = 4; // x, y, u, v
+
+    let mut geometry = Geometry::new(GL_TRIANGLES);
+    geometry.add_buffer(&vertices, values_per_vertex);
+
+    geometry.add_vertex_attribute(Attribute::new(
+        0, // location 0 in shader: position
+        2, // x, y
+        values_per_vertex as usize,
+        0,
+    ));
+
+    geometry.add_vertex_attribute(Attribute::new(
+        1, // location 1 in shader: texcoord
+        2, // u, v
+        values_per_vertex as usize,
+        2, // offset by 2 floats (x, y)
+    ));
+
+    geometry
 }

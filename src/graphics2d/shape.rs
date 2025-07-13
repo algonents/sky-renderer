@@ -13,6 +13,7 @@ pub enum ShapeKind {
     Polygon { points: Vec<(f32, f32)> },
     Circle { radius: f32 },
     Ellipse { radius_x: f32, radius_y: f32 },
+    Image {width:f32, height: f32}
 }
 /// A trait representing a 2D shape.
 pub trait Shape{
