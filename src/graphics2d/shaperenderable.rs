@@ -53,7 +53,7 @@ impl Renderable for ShapeRenderable {
 }
 
 impl ShapeRenderable {
-    pub fn new(x: f32, y: f32, mesh: Mesh, kind: ShapeKind) -> Self {
+    fn new(x: f32, y: f32, mesh: Mesh, kind: ShapeKind) -> Self {
         Self { x, y, mesh, kind }
     }
 
