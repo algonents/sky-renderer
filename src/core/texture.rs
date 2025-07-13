@@ -1,5 +1,5 @@
 use std::ffi::c_void;
-use crate::core::image::{load_image, Image};
+use crate::core::image::{Image};
 use crate::engine::opengl::{gl_bind_texture, gl_gen_texture, gl_generate_mipmap, gl_tex_image_2d, gl_tex_parameteri, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_RGBA, GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_UNSIGNED_BYTE};
 
 pub fn generate_texture_from_image(image: &Image) -> u32 {
@@ -15,7 +15,7 @@ pub fn generate_texture_from_image(image: &Image) -> u32 {
         GL_LINEAR_MIPMAP_LINEAR,
     );
     gl_tex_parameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    
+
     gl_tex_image_2d(
         GL_TEXTURE_2D,
         0,

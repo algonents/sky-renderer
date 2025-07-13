@@ -15,7 +15,6 @@ categories = ["graphics", "rendering", "api-bindings"]
 glam = "0.30.4"
 image = "0.25.6"
 
-
 [build-dependencies]
 cmake = "0.1.52"
 

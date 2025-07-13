@@ -27,8 +27,11 @@ impl SvgDocument {
 
     pub fn to_string(&self) -> String {
         let mut output = format!(
-            r#"<svg xmlns="http://www.w3.org/2000/svg" width="{:.0}" height="{:.0}">"#,
-            self.width, self.height
+            r#"<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="{w}" height="{h}">"#,
+            w = self.width,
+            h = self.height
         );
 
         for el in &self.elements {

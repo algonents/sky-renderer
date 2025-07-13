@@ -1,10 +1,12 @@
+use std::rc::Rc;
+
 use crate::core::{generate_texture_from_image, load_image, Color, GeometryProvider, Mesh, Renderable, Renderer, Shader};
 use crate::engine::opengl::GLfloat;
 use crate::graphics2d;
 use crate::graphics2d::shape::{Shape, ShapeKind};
 use crate::graphics2d::{circle_geometry, image_geometry, point_geometry, rectangle_geometry};
 use glam::{Mat4, Vec3};
-use std::rc::Rc;
+
 
 pub fn default_shader() -> Rc<Shader> {
     let vert_src = include_str!("shaders/shape.vert");
@@ -215,7 +217,7 @@ impl ShapeRenderable {
         let image = load_image(path);
         Self::image_with_size(x, y, path, image.width as f32, image.height as f32)
     }
-    
+
     fn svg_color(&self) -> String {
         self.mesh
             .color
@@ -327,7 +329,6 @@ impl ShapeRenderable {
                     color = self.svg_color(),
                 )
             }
-            ShapeKind::Image {width, height}=>String::new()
-        }
+            ShapeKind::Image {width, height}=>String::new()}
     }
 }
