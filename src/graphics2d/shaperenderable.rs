@@ -115,6 +115,45 @@ impl ShapeRenderable {
         // Drawable will be positioned at (x, y) — the top-left corner
         ShapeRenderable::new(x, y, mesh, ShapeKind::Rectangle {width, height})
     }
+
+    pub fn rounded_rectangle(
+        x: f32,
+        y: f32,
+        width: f32,
+        height: f32,
+        radius: f32,
+        color: Color,
+    ) -> Self {
+        let geometry = graphics2d::rounded_rectangle_geometry(width, height, radius, 8);
+        let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
+        ShapeRenderable::new(
+            x,
+            y,
+            mesh,
+            ShapeKind::RoundedRectangle {
+                width,
+                height,
+                radius,
+            },
+        )
+    }
+
+    pub fn polygon(points: &[(GLfloat, GLfloat)], color: Color) -> Self {
+        assert!(points.len() >= 3, "Polygon requires at least 3 points");
+
+        let (x0, y0) = points[0];
+        let geometry = graphics2d::polygon_geometry(points);
+        let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
+
+        ShapeRenderable::new(
+            x0,
+            y0,
+            mesh,
+            ShapeKind::Polygon {
+                points: points.to_vec(),
+            },
+        )
+    }
     pub fn circle(x: f32, y: f32, radius: f32, color: Color) -> Self {
         // Geometry is built as a circle centered at (0, 0)
         let geometry = circle_geometry(radius, 100);
@@ -123,6 +162,20 @@ impl ShapeRenderable {
         ShapeRenderable::new(x, y, mesh, ShapeKind::Circle {radius})
     }
 
+    pub fn ellipse(x: f32, y: f32, radius_x: f32, radius_y: f32, color: Color) -> Self {
+        let geometry = graphics2d::ellipse_geometry(radius_x, radius_y, 64); // 64 segments for smoothness
+        let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
+        ShapeRenderable::new(
+            x,
+            y,
+            mesh,
+            ShapeKind::Ellipse {
+                radius_x,
+                radius_y,
+            },
+        )
+    }
+    
     fn svg_color(&self) -> String {
         self.mesh
             .color
@@ -153,6 +206,8 @@ impl ShapeRenderable {
                     color = self.svg_color(),
                 )
             }
+            ShapeKind::RoundedRectangle {width, height, radius}=>String::new(),
+            ShapeKind::Polygon {points}=>String::new(),
             ShapeKind::Circle { radius } => {
                 format!(
                     r#"<circle cx="{cx}" cy="{cy}" r="{r}" fill="{color}"/>"#,
@@ -162,6 +217,7 @@ impl ShapeRenderable {
                     color = self.svg_color(),
                 )
             }
+            ShapeKind::Ellipse {radius_x, radius_y}=>String::new(),
             ShapeKind::Polyline { points } => {
                 let path = points
                     .iter()
