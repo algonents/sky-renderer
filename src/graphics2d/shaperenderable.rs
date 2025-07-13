@@ -73,14 +73,21 @@ impl ShapeRenderable {
     }
 
     pub fn points(points: &[(GLfloat, GLfloat)], color: Color) -> Self {
-        let geometry = graphics2d::multi_point_geometry(points);
+        let (x0, y0) = points[0];
+
+        // Shift points to be relative to anchor
+        let rel_points: Vec<(GLfloat, GLfloat)> =
+            points.iter().map(|(x, y)| (x - x0, y - y0)).collect();
+
+        let geometry = graphics2d::multi_point_geometry(&rel_points);
         let mesh = Mesh::with_color(point_shader(), geometry, Some(color));
+
         ShapeRenderable::new(
-            0.0,
-            0.0,
+            x0,
+            y0,
             mesh,
             ShapeKind::MultiPoint {
-                points: points.to_vec(),
+                points: rel_points,
             },
         )
     }
@@ -101,11 +108,15 @@ impl ShapeRenderable {
     pub fn polyline(points: &[(GLfloat, GLfloat)], color: Color) -> Self {
         assert!(points.len() >= 2, "Polyline requires at least two points");
 
+        assert!(points.len() >= 2);
+
         let (x0, y0) = points[0];
-        let geometry = graphics2d::polyline_geometry(points);
+        let rel_points: Vec<(f32, f32)> = points.iter().map(|(x, y)| (x - x0, y - y0)).collect();
+
+        let geometry = graphics2d::polyline_geometry(&rel_points);
         let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
 
-        ShapeRenderable::new(x0, y0, mesh, ShapeKind::Polyline {points:points.to_vec()})
+        ShapeRenderable::new(x0, y0, mesh, ShapeKind::Polyline { points: rel_points })
     }
 
     pub fn rectangle(x: f32, y: f32, width: f32, height: f32, color: Color) -> Self {
@@ -113,7 +124,7 @@ impl ShapeRenderable {
         let geometry = rectangle_geometry(width, height);
         let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
         // Drawable will be positioned at (x, y) — the top-left corner
-        ShapeRenderable::new(x, y, mesh, ShapeKind::Rectangle {width, height})
+        ShapeRenderable::new(x, y, mesh, ShapeKind::Rectangle { width, height })
     }
 
     pub fn rounded_rectangle(
@@ -141,41 +152,31 @@ impl ShapeRenderable {
     pub fn polygon(points: &[(GLfloat, GLfloat)], color: Color) -> Self {
         assert!(points.len() >= 3, "Polygon requires at least 3 points");
 
-        let (x0, y0) = points[0];
-        let geometry = graphics2d::polygon_geometry(points);
+        let (x0, y0) = points[0]; // Anchor
+        let rel_points: Vec<(f32, f32)> = points
+            .iter()
+            .map(|(x, y)| (x - x0, y - y0))
+            .collect();
+
+        let geometry = graphics2d::polygon_geometry(&rel_points);
         let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
 
-        ShapeRenderable::new(
-            x0,
-            y0,
-            mesh,
-            ShapeKind::Polygon {
-                points: points.to_vec(),
-            },
-        )
+        ShapeRenderable::new(x0, y0, mesh, ShapeKind::Polygon { points: rel_points })
     }
     pub fn circle(x: f32, y: f32, radius: f32, color: Color) -> Self {
         // Geometry is built as a circle centered at (0, 0)
         let geometry = circle_geometry(radius, 100);
         let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
         // Drawable is positioned at (x, y), which will be the circle's center
-        ShapeRenderable::new(x, y, mesh, ShapeKind::Circle {radius})
+        ShapeRenderable::new(x, y, mesh, ShapeKind::Circle { radius })
     }
 
     pub fn ellipse(x: f32, y: f32, radius_x: f32, radius_y: f32, color: Color) -> Self {
         let geometry = graphics2d::ellipse_geometry(radius_x, radius_y, 64); // 64 segments for smoothness
         let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
-        ShapeRenderable::new(
-            x,
-            y,
-            mesh,
-            ShapeKind::Ellipse {
-                radius_x,
-                radius_y,
-            },
-        )
+        ShapeRenderable::new(x, y, mesh, ShapeKind::Ellipse { radius_x, radius_y })
     }
-    
+
     fn svg_color(&self) -> String {
         self.mesh
             .color
@@ -206,8 +207,34 @@ impl ShapeRenderable {
                     color = self.svg_color(),
                 )
             }
-            ShapeKind::RoundedRectangle {width, height, radius}=>String::new(),
-            ShapeKind::Polygon {points}=>String::new(),
+            ShapeKind::RoundedRectangle {
+                width,
+                height,
+                radius,
+            } => {
+                format!(
+                    r#"<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{r}" ry="{r}" fill="{color}"/>"#,
+                    x = self.x,
+                    y = self.y,
+                    w = width,
+                    h = height,
+                    r = radius,
+                    color = self.svg_color(),
+                )
+            }
+            ShapeKind::Polygon { points } => {
+                let path = points
+                    .iter()
+                    .map(|(px, py)| format!("{},{}", px + self.x, py + self.y))
+                    .collect::<Vec<_>>()
+                    .join(" ");
+
+                format!(
+                    r#"<polygon points="{path}" fill="{color}" stroke="{color}" stroke-width="1"/>"#,
+                    path = path,
+                    color = self.svg_color(),
+                )
+            },
             ShapeKind::Circle { radius } => {
                 format!(
                     r#"<circle cx="{cx}" cy="{cy}" r="{r}" fill="{color}"/>"#,
@@ -217,7 +244,16 @@ impl ShapeRenderable {
                     color = self.svg_color(),
                 )
             }
-            ShapeKind::Ellipse {radius_x, radius_y}=>String::new(),
+            ShapeKind::Ellipse { radius_x, radius_y } => {
+                format!(
+                    r#"<ellipse cx="{cx}" cy="{cy}" rx="{rx}" ry="{ry}" fill="{color}"/>"#,
+                    cx = self.x + radius_x,
+                    cy = self.y + radius_y,
+                    rx = radius_x,
+                    ry = radius_y,
+                    color = self.svg_color(),
+                )
+            },
             ShapeKind::Polyline { points } => {
                 let path = points
                     .iter()

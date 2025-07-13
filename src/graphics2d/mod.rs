@@ -65,30 +65,17 @@ fn line_geometry(x1: GLfloat, y1: GLfloat, x2: GLfloat, y2: GLfloat) -> Geometry
 fn polyline_geometry(points: &[(GLfloat, GLfloat)]) -> Geometry {
     assert!(points.len() >= 2, "Polyline requires at least two points");
 
-    // Use the first point as anchor/origin
-    let (x0, y0) = points[0];
-
-    let mut vertices: Vec<GLfloat> = Vec::with_capacity(points.len() * 2);
-
-    for &(x, y) in points.iter() {
-        let dx = x - x0;
-        let dy = y - y0;
-        vertices.extend_from_slice(&[dx, dy]);
+    let mut vertices = Vec::with_capacity(points.len() * 2);
+    for &(x, y) in points {
+        vertices.extend_from_slice(&[x, y]);
     }
 
-    let position_values_per_vertex = 2;
-
-    let mut geometry = Geometry::new(GL_LINE_STRIP); // use LINE_STRIP to connect segments
-    geometry.add_buffer(&vertices, position_values_per_vertex);
-
-    geometry.add_vertex_attribute(Attribute::new(
-        0,
-        position_values_per_vertex,
-        position_values_per_vertex as usize,
-        0,
-    ));
-
+    let values_per_vertex = 2;
+    let mut geometry = Geometry::new(GL_LINE_STRIP); // correct
+    geometry.add_buffer(&vertices, values_per_vertex);
+    geometry.add_vertex_attribute(Attribute::new(0, 2, values_per_vertex as usize, 0));
     geometry
+    
 }
 
 fn rectangle_geometry(width: GLfloat, height: GLfloat) -> Geometry {
@@ -244,25 +231,14 @@ fn polygon_geometry(points: &[(GLfloat, GLfloat)]) -> Geometry {
     assert!(points.len() >= 3, "Polygon requires at least 3 points");
 
     let mut vertices = Vec::with_capacity(points.len() * 2);
-
-    // Use the first point as the origin anchor
-    let (x0, y0) = points[0];
-
     for &(x, y) in points {
-        vertices.push(x - x0);
-        vertices.push(y - y0);
+        vertices.extend_from_slice(&[x, y]);
     }
 
     let values_per_vertex = 2;
-    let mut geometry = Geometry::new(GL_TRIANGLE_FAN);
+    let mut geometry = Geometry::new(GL_TRIANGLE_FAN); // Or TRIANGLE_FAN if filled
     geometry.add_buffer(&vertices, values_per_vertex);
-
-    geometry.add_vertex_attribute(Attribute::new(
-        0,
-        2,
-        values_per_vertex as usize,
-        0,
-    ));
-
+    geometry.add_vertex_attribute(Attribute::new(0, 2, values_per_vertex as usize, 0));
     geometry
+    
 }

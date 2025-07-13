@@ -22,15 +22,13 @@ fn main() {
         ShapeRenderable::rectangle(50.0, 50.0, 200.0, 80.0, Color::from_rgb(0.2, 0.5, 0.9)),
         ShapeRenderable::rectangle(400.0, 200.0, 100.0, 50.0, Color::from_rgb(1.0, 0.0, 0.0)),
         ShapeRenderable::circle(400.0, 400.0, 50.0, Color::from_rgb(0.0, 0.0, 1.0)),
-        ShapeRenderable::from_shape(
-            600.0,
-            400.0,
-            Rectangle::new(100.0, 50.0),
-            Color::from_rgb(0.0, 1.0, 0.0),
-        ),
         ShapeRenderable::point(600.0, 300.0, Color::from_rgb(1.0, 0.0, 0.0)),
         ShapeRenderable::points(
-            &[(200.0, 500.0), (300.0, 130.0), (450.0, 110.0)],
+            &[
+                (600.0, 100.0), // anchor point
+                (620.0, 120.0),
+                (580.0, 120.0),
+            ],
             Color::from_rgb(0.0, 0.0, 1.0),
         ),
         ShapeRenderable::ellipse(600.0, 200.0, 80.0, 40.0, Color::from_rgb(0.5, 0.2, 0.8)),
@@ -42,14 +40,23 @@ fn main() {
             10.0,
             Color::from_rgb(0.3, 0.6, 0.9),
         ),
-        ShapeRenderable::polygon( &[
-            (600.0, 600.0),
-            (575.0, 643.3),
-            (525.0, 643.3),
-            (500.0, 600.0),
-            (525.0, 556.6),
-            (575.0, 556.6),
-        ], Color::from_rgb(1.0, 0.0, 0.0))
+        ShapeRenderable::polygon(
+            &[
+                (600.0, 600.0),
+                (575.0, 643.3),
+                (525.0, 643.3),
+                (500.0, 600.0),
+                (525.0, 556.6),
+                (575.0, 556.6),
+            ],
+            Color::from_rgb(1.0, 0.0, 0.0),
+        ),
+        ShapeRenderable::from_shape(
+            600.0,
+            400.0,
+            Rectangle::new(100.0, 50.0),
+            Color::from_rgb(0.0, 1.0, 0.0),
+        ),
     ];
 
     let renderer = Renderer::new();
