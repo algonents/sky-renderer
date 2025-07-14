@@ -9,16 +9,16 @@ fn main() {
     let mut app = App::new(window);
 
     let mut shapes = vec![
-        ShapeRenderable::line(100.0, 200.0, 300.0, 250.0, Color::from_rgb(0.0, 1.0, 0.0), 2.0),
+        ShapeRenderable::line(100.0, 200.0, 300.0, 250.0, Color::from_rgb(0.0, 1.0, 0.0), 5.0),
         ShapeRenderable::polyline(
             &[
                 (100.0, 300.0),
                 (150.0, 430.0),
                 (200.0, 410.0),
-                (250.0, 460.0),
+                (200.0, 500.0),
             ],
-            Color::from_rgb(0.0, 1.0, 0.0),
-            2.0
+            Color::from_rgb(1.0, 0.0, 0.0),
+            10.0
         ),
         ShapeRenderable::rectangle(50.0, 50.0, 200.0, 80.0, Color::from_rgb(0.2, 0.5, 0.9)),
         ShapeRenderable::rectangle(400.0, 200.0, 100.0, 50.0, Color::from_rgb(1.0, 0.0, 0.0)),
