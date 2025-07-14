@@ -4,6 +4,7 @@ use std::os::raw::c_char;
 use std::os::raw::c_double;
 use std::os::raw::c_int;
 
+pub const GLFW_SAMPLES: i32 = 0x0002100D;
 pub enum GLFWwindow {}
 
 pub type GLFWframebuffersizefun =
@@ -21,6 +22,8 @@ unsafe extern "C" {
         height: c_int,
         callback: GLFWframebuffersizefun,
     ) -> *const GLFWwindow;
+    
+    fn _glfwWindowHint(hint: c_int, value:c_int);
 
     fn _glfwSetWindowUserPointer(window: *const GLFWwindow, pointer: *const c_void);
     fn _glfwGetWindowUserPointer(window: *const GLFWwindow) -> *const c_void;
@@ -55,6 +58,12 @@ pub fn glfw_create_window(
         window_pointer = _glfwCreateWindow(title_c_string.as_ptr(), width, height, callback);
     }
     window_pointer
+}
+
+pub fn glfw_window_hint(hint: i32, value: i32){
+    unsafe{
+        _glfwWindowHint(hint, value);
+    }
 }
 
 pub fn glfw_set_window_user_pointer(window: *const GLFWwindow, pointer: *const c_void) {

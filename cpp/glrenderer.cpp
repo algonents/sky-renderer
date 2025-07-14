@@ -7,6 +7,9 @@ extern "C"
         // Initialize GLFW
         glfwInit();
 
+        // Set MSAA samples for anti-aliasing
+        glfwWindowHint(GLFW_SAMPLES, 4);
+
         // Tell GLFW what version of OpenGL we are using
         // In this case we are using OpenGL 3.3 to be compatible with Mac
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -37,8 +40,17 @@ extern "C"
             std::cout << "Failed to initialize GLAD" << std::endl;
             return nullptr;
         }
+
+        // Enable MSAA (glEnable must come AFTER context is current and GLAD is loaded)
+        glEnable(GL_MULTISAMPLE);
+        
         glViewport(0, 0, width, height);
         return window;
+    }
+
+    void _glfwWindowHint(int hint, int value)
+    {
+        glfwWindowHint(hint, value);
     }
 
     void _glfwSetWindowUserPointer(GLFWwindow *window, void *pointer)

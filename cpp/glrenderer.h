@@ -21,6 +21,7 @@ extern "C"
     void _glfwSetCursorPosCallback(GLFWwindow *window, GLFWcursorposfun callback);
 
     void _glfwGetWindowSize(GLFWwindow *window, int *width, int *height);
+    void _glfwWindowHint(int hint, int value);
 
     // GL
     void _glClearColor(GLfloat x, GLfloat y, GLfloat z, GLfloat a);
