@@ -1,10 +1,12 @@
 use std::f32::consts::PI;
 use crate::core::{Attribute, Geometry};
-use crate::core::engine::opengl::{GL_LINE_STRIP, GL_LINES, GL_POINTS, GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP, GLfloat, GL_TRIANGLES};
+use crate::core::engine::opengl::{GL_POINTS, GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP, GLfloat, GL_TRIANGLES};
 
 pub mod shape;
 pub mod shaperenderable;
 pub mod svg;
+
+const MIN_STROKE_WIDTH: f32 = 1.5;
 
 fn point_geometry() -> Geometry {
     let vertex = vec![0.0, 0.0];
@@ -16,7 +18,7 @@ fn point_geometry() -> Geometry {
     geometry
 }
 
-fn multi_point_geometry(points: &[(GLfloat, GLfloat)]) -> Geometry {
+fn point_list_geometry(points: &[(GLfloat, GLfloat)]) -> Geometry {
     let mut vertices = Vec::with_capacity(points.len() * 2);
 
     for &(x, y) in points {
@@ -39,17 +41,44 @@ fn multi_point_geometry(points: &[(GLfloat, GLfloat)]) -> Geometry {
     geometry
 }
 
-fn line_geometry(x1: GLfloat, y1: GLfloat, x2: GLfloat, y2: GLfloat) -> Geometry {
+fn line_geometry(x1: GLfloat, y1: GLfloat, x2: GLfloat, y2: GLfloat, stroke_width:f32) -> Geometry {
+    let stroke_width = stroke_width.max(MIN_STROKE_WIDTH);
+    let dx = x2 - x1;
+    let dy = y2 - y1;
+    let length = (dx * dx + dy * dy).sqrt();
+
+    if length == 0.0 {
+        return Geometry::new(GL_TRIANGLES);
+    }
+
+    // Unit perpendicular vector
+    let nx = -dy / length;
+    let ny = dx / length;
+    let half_thickness = stroke_width / 2.0;
+
+    // Offset vector
+    let ox = nx * half_thickness;
+    let oy = ny * half_thickness;
+
+    // Four corners of the quad
+    let v0 = [x1 - ox, y1 - oy];
+    let v1 = [x2 - ox, y2 - oy];
+    let v2 = [x2 + ox, y2 + oy];
+    let v3 = [x1 + ox, y1 + oy];
+
     let vertices: Vec<GLfloat> = vec![
-        x1, y1, // start point
-        x2, y2, // end point
+        v0[0], v0[1],
+        v1[0], v1[1],
+        v2[0], v2[1],
+        v2[0], v2[1],
+        v3[0], v3[1],
+        v0[0], v0[1],
     ];
 
     let position_values_per_vertex = 2;
 
-    let mut geometry = Geometry::new(GL_LINES);
+    let mut geometry = Geometry::new(GL_TRIANGLES);
     geometry.add_buffer(&vertices, position_values_per_vertex);
-
     geometry.add_vertex_attribute(Attribute::new(
         0,
         position_values_per_vertex,
@@ -60,20 +89,54 @@ fn line_geometry(x1: GLfloat, y1: GLfloat, x2: GLfloat, y2: GLfloat) -> Geometry
     geometry
 }
 
-fn polyline_geometry(points: &[(GLfloat, GLfloat)]) -> Geometry {
+fn polyline_geometry(points: &[(GLfloat, GLfloat)], stroke_width:f32) -> Geometry {
     assert!(points.len() >= 2, "Polyline requires at least two points");
 
-    let mut vertices = Vec::with_capacity(points.len() * 2);
-    for &(x, y) in points {
-        vertices.extend_from_slice(&[x, y]);
+    let stroke_width = stroke_width.max(MIN_STROKE_WIDTH);
+    let half_width = stroke_width / 2.0;
+    let mut vertices = Vec::with_capacity(points.len() * 6 * 2); // 6 vertices per segment, 2 floats each
+
+    for segment in points.windows(2) {
+        let (x1, y1) = segment[0];
+        let (x2, y2) = segment[1];
+
+        let dx = x2 - x1;
+        let dy = y2 - y1;
+        let length = (dx * dx + dy * dy).sqrt();
+        if length == 0.0 {
+            continue;
+        }
+
+        // Perpendicular vector
+        let nx = -dy / length;
+        let ny = dx / length;
+
+        let ox = nx * half_width;
+        let oy = ny * half_width;
+
+        // Build quad
+        let v0 = [x1 - ox, y1 - oy];
+        let v1 = [x2 - ox, y2 - oy];
+        let v2 = [x2 + ox, y2 + oy];
+        let v3 = [x1 + ox, y1 + oy];
+
+        // Two triangles: v0 v1 v2 and v2 v3 v0
+        vertices.extend_from_slice(&[
+            v0[0], v0[1],
+            v1[0], v1[1],
+            v2[0], v2[1],
+
+            v2[0], v2[1],
+            v3[0], v3[1],
+            v0[0], v0[1],
+        ]);
     }
 
     let values_per_vertex = 2;
-    let mut geometry = Geometry::new(GL_LINE_STRIP); // correct
+    let mut geometry = Geometry::new(GL_TRIANGLES);
     geometry.add_buffer(&vertices, values_per_vertex);
     geometry.add_vertex_attribute(Attribute::new(0, 2, values_per_vertex as usize, 0));
     geometry
-
 }
 
 fn rectangle_geometry(width: GLfloat, height: GLfloat) -> Geometry {

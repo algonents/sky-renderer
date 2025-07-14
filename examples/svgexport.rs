@@ -15,7 +15,7 @@ fn main() {
     let mut shapes = vec![
         ShapeRenderable::rectangle(100.0, 100.0, 120.0, 60.0, Color::from_rgb(0.2, 0.4, 0.8)),
         ShapeRenderable::circle(300.0, 300.0, 40.0, Color::from_rgb(0.0, 1.0, 0.0)),
-        ShapeRenderable::line(50.0, 50.0, 150.0, 80.0, Color::from_rgb(1.0, 0.0, 0.0)),
+        ShapeRenderable::line(50.0, 50.0, 150.0, 80.0, Color::from_rgb(1.0, 0.0, 0.0), 1.0),
         ShapeRenderable::ellipse(600.0, 200.0, 80.0, 40.0, Color::from_rgb(0.5, 0.2, 0.8)),
         ShapeRenderable::rounded_rectangle(
             100.0,

@@ -8,6 +8,9 @@ use crate::graphics2d::shape::{Shape, ShapeKind};
 use crate::graphics2d::{circle_geometry, image_geometry, point_geometry, rectangle_geometry};
 
 
+const SCALE_FACTOR: f32 = 1.0;
+
+
 fn default_shader() -> Rc<Shader> {
     let vert_src = include_str!("shaders/shape.vert");
     let frag_src = include_str!("shaders/shape.frag");
@@ -41,7 +44,7 @@ fn ortho_2d(width: f32, height: f32) -> Mat4 {
     Mat4::orthographic_rh_gl(0.0, width, height, 0.0, 0.0, 1.0)
 }
 
-const SCALE_FACTOR: f32 = 1.0;
+
 
 pub struct ShapeRenderable {
     x: f32,
@@ -87,7 +90,7 @@ impl ShapeRenderable {
         let rel_points: Vec<(GLfloat, GLfloat)> =
             points.iter().map(|(x, y)| (x - x0, y - y0)).collect();
 
-        let geometry = graphics2d::multi_point_geometry(&rel_points);
+        let geometry = graphics2d::point_list_geometry(&rel_points);
         let mesh = Mesh::with_color(point_shader(), geometry, Some(color));
 
         ShapeRenderable::new(
@@ -100,20 +103,26 @@ impl ShapeRenderable {
         )
     }
 
-    pub fn line(x1: GLfloat, y1: GLfloat, x2: GLfloat, y2: GLfloat, color: Color) -> Self {
+
+    pub fn simple_line(x1: GLfloat, y1: GLfloat, x2: GLfloat, y2: GLfloat, stroke: Color) -> Self {
+        ShapeRenderable::line(x1, y1, x2, y2, stroke, 1.0)
+    }
+
+
+    pub fn line(x1: GLfloat, y1: GLfloat, x2: GLfloat, y2: GLfloat, stroke: Color, stroke_width: f32) -> Self {
         // Shift line coordinates so that the line starts at (0,0)
         let rel_x2 = x2 - x1;
         let rel_y2 = y2 - y1;
 
         // Build geometry with points relative to (0,0)
-        let geometry = graphics2d::line_geometry(0.0, 0.0, rel_x2, rel_y2);
-        let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
+        let geometry = graphics2d::line_geometry(0.0, 0.0, rel_x2, rel_y2, stroke_width);
+        let mesh = Mesh::with_color(default_shader(), geometry, Some(stroke));
 
         // Drawable positioned at the original start point (x1, y1)
         ShapeRenderable::new(x1, y1, mesh, ShapeKind::Line { x2, y2 })
     }
 
-    pub fn polyline(points: &[(GLfloat, GLfloat)], color: Color) -> Self {
+    pub fn polyline(points: &[(GLfloat, GLfloat)], stroke: Color, stroke_width: f32) -> Self {
         assert!(points.len() >= 2, "Polyline requires at least two points");
 
         assert!(points.len() >= 2);
@@ -121,8 +130,8 @@ impl ShapeRenderable {
         let (x0, y0) = points[0];
         let rel_points: Vec<(f32, f32)> = points.iter().map(|(x, y)| (x - x0, y - y0)).collect();
 
-        let geometry = graphics2d::polyline_geometry(&rel_points);
-        let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
+        let geometry = graphics2d::polyline_geometry(&rel_points ,stroke_width);
+        let mesh = Mesh::with_color(default_shader(), geometry, Some(stroke));
 
         ShapeRenderable::new(x0, y0, mesh, ShapeKind::Polyline { points: rel_points })
     }
