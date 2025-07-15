@@ -1,4 +1,4 @@
-use crate::graphics2d::shaperenderable::ShapeRenderable;
+use crate::graphics2d::shapes::ShapeRenderable;
 
 pub struct SvgDocument {
     width: f32,

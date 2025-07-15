@@ -1,7 +1,7 @@
 extern crate sky_renderer;
 
 use sky_renderer::core::{App, Color, Renderable, Renderer, Window};
-use sky_renderer::graphics2d::shaperenderable::ShapeRenderable;
+use sky_renderer::graphics2d::shapes::ShapeRenderable;
 use sky_renderer::graphics2d::svg::SvgDocument;
 
 fn main() {

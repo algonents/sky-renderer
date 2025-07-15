@@ -1,10 +1,9 @@
 use std::f32::consts::PI;
 use crate::core::{Attribute, Geometry};
-use crate::core::engine::opengl::{GL_POINTS, GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP, GLfloat, GL_TRIANGLES};
+use crate::core::engine::opengl::{GLfloat, GL_POINTS, GL_TRIANGLES, GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP};
 
-pub mod shape;
-pub mod shaperenderable;
 pub mod svg;
+pub mod shapes;
 
 const MIN_STROKE_WIDTH: f32 = 1.5;
 
@@ -90,6 +89,14 @@ fn line_geometry(x1: GLfloat, y1: GLfloat, x2: GLfloat, y2: GLfloat, stroke_widt
 }
 
 
+/// Polyline triangulation adapted from JVPolyline by Julien Vernay (2025)
+///
+/// Original C implementation:
+/// https://jvernay.fr/en/blog/polyline-triangulation/
+/// Source: https://git.sr.ht/~jvernay/JV/tree/main/item/src/jv_polyline/jv_polyline.c
+///
+/// This implementation is based on the original algorithm,
+/// restructured and translated to idiomatic Rust for use in sky_renderer.
 fn polyline_geometry(points: &[(GLfloat, GLfloat)], stroke_width:f32) -> Geometry {
     const MITER_LIMIT: f32 = 4.0; // Equivalent to JV default
 

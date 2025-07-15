@@ -1,8 +1,8 @@
 extern crate sky_renderer;
 
 use sky_renderer::core::{App, Color, Renderable, Renderer, Window};
-use sky_renderer::graphics2d::shape::Rectangle;
-use sky_renderer::graphics2d::shaperenderable::ShapeRenderable;
+use sky_renderer::graphics2d::shapes::Rectangle;
+use sky_renderer::graphics2d::shapes::ShapeRenderable;
 
 fn main() {
     let window = Window::new("Shapes", 800, 800);

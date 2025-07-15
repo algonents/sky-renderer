@@ -1,6 +1,9 @@
+mod shaperenderable;
+
 use crate::core::{Geometry, GeometryProvider};
 use crate::graphics2d;
 
+pub use shaperenderable::*;
 
 #[derive(Debug, Clone)]
 pub enum ShapeKind {
@@ -17,7 +20,7 @@ pub enum ShapeKind {
 }
 /// A trait representing a 2D shape.
 pub trait Shape{
-   fn kind(&self)->ShapeKind;
+    fn kind(&self)-> ShapeKind;
 }
 
 pub struct Rectangle{
@@ -31,8 +34,8 @@ impl Rectangle {
     }
 }
 
-impl Shape for Rectangle{
-    fn kind(&self)->ShapeKind {
+impl Shape for Rectangle {
+    fn kind(&self)-> ShapeKind {
         ShapeKind::Rectangle {
             width: self.width,
             height: self.height,
@@ -40,14 +43,8 @@ impl Shape for Rectangle{
     }
 }
 
-impl GeometryProvider for Rectangle{
+impl GeometryProvider for crate::graphics2d::shapes::Rectangle {
     fn to_geometry(&self) -> Geometry {
         graphics2d::rectangle_geometry(self.width, self.height)
     }
 }
-
-
-
-
-
-
