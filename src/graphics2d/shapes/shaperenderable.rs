@@ -206,7 +206,7 @@ impl ShapeRenderable {
         //let (width, height, _) = load_image(path); // image module only used for size
 
         // Create image geometry (2-triangle quad)
-        let geometry = image_geometry(width as f32, height as f32);
+        let geometry = image_geometry(width, height);
 
         // Use image shader and attach texture
         let shader = image_shader(); // assumes you have an Rc<Shader> loader
@@ -217,8 +217,8 @@ impl ShapeRenderable {
             y,
             mesh,
             ShapeKind::Image {
-                width: width as f32,
-                height: height as f32,
+                width,
+                height,
             },
         )
     }
@@ -339,7 +339,7 @@ impl ShapeRenderable {
                     color = self.svg_color(),
                 )
             }
-            ShapeKind::Image {width, height}=>String::new(),
+            ShapeKind::Image {width: _width, height:_height}=>String::new(),
             ShapeKind::Triangle {vertices}=>{
                 let points: String = vertices.iter()
                     .map(|(vx, vy)| format!("{:.2},{:.2}", vx + self.x, vy + self.y))
