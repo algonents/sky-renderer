@@ -5,13 +5,9 @@ use crate::core::{generate_texture_from_image, load_image, Color, GeometryProvid
 use crate::core::engine::opengl::GLfloat;
 use crate::graphics2d;
 use crate::graphics2d::shapes::{Shape, ShapeKind};
-use crate::graphics2d::{circle_geometry, image_geometry, point_geometry, rectangle_geometry};
-
-
-
+use crate::graphics2d::{circle_geometry, image_geometry, point_geometry, rectangle_geometry, triangle_geometry};
 
 const SCALE_FACTOR: f32 = 1.0;
-
 
 fn default_shader() -> Rc<Shader> {
     let vert_src = include_str!("../shaders/shape.vert");
@@ -45,8 +41,6 @@ fn image_shader() -> Rc<Shader>{
 fn ortho_2d(width: f32, height: f32) -> Mat4 {
     Mat4::orthographic_rh_gl(0.0, width, height, 0.0, 0.0, 1.0)
 }
-
-
 
 pub struct ShapeRenderable {
     x: f32,
@@ -110,7 +104,6 @@ impl ShapeRenderable {
         ShapeRenderable::line(x1, y1, x2, y2, stroke, 1.0)
     }
 
-
     pub fn line(x1: GLfloat, y1: GLfloat, x2: GLfloat, y2: GLfloat, stroke: Color, stroke_width: f32) -> Self {
         // Shift line coordinates so that the line starts at (0,0)
         let rel_x2 = x2 - x1;
@@ -136,6 +129,12 @@ impl ShapeRenderable {
         let mesh = Mesh::with_color(default_shader(), geometry, Some(stroke));
 
         ShapeRenderable::new(x0, y0, mesh, ShapeKind::Polyline { points: rel_points })
+    }
+    pub fn triangle(x:f32, y:f32, vertices:&[(f32, f32); 3], color: Color)->Self{
+        let geometry = triangle_geometry(vertices);
+        let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
+
+        ShapeRenderable::new(x, y, mesh, ShapeKind::Triangle {vertices: vertices.clone()})
     }
 
     pub fn rectangle(x: f32, y: f32, width: f32, height: f32, color: Color) -> Self {
@@ -340,6 +339,18 @@ impl ShapeRenderable {
                     color = self.svg_color(),
                 )
             }
-            ShapeKind::Image {width, height}=>String::new()}
+            ShapeKind::Image {width, height}=>String::new(),
+            ShapeKind::Triangle {vertices}=>{
+                let points: String = vertices.iter()
+                    .map(|(vx, vy)| format!("{:.2},{:.2}", vx + self.x, vy + self.y))
+                    .collect::<Vec<_>>()
+                    .join(" ");
+                format!(
+                    r#"<polygon points="{points}" fill="{color}"/>"#,
+                    points = points,
+                    color = self.svg_color(),
+                )
+            }
+        }
     }
 }
