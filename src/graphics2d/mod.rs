@@ -217,10 +217,10 @@ fn triangle_geometry(vertices: &[(f32, f32);3])->Geometry{
     let flattened: Vec<f32> = vertices.iter()
         .flat_map(|(x, y)| [*x, *y])
         .collect();
-    
+
     geometry.add_buffer(&flattened, 2);
     geometry.add_vertex_attribute(Attribute::new(0, 2, 2, 0));
-    
+
     geometry
 }
 

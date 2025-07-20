@@ -59,6 +59,15 @@ fn main() {
             Color::from_rgb(1.0, 0.0, 0.0),
             10.0,
         ),
+        ShapeRenderable::arc(
+            (700.0, 600.0),
+            70.0,
+            0.0,
+            std::f32::consts::PI / 2.0,
+            Color::from_rgb(0.0, 0.0, 1.0),
+            10.0,
+            64,
+        ),
         ShapeRenderable::rectangle(50.0, 50.0, 200.0, 80.0, Color::from_rgb(0.2, 0.5, 0.9)),
         ShapeRenderable::triangle(
             50.0,
@@ -73,7 +82,7 @@ fn main() {
             &generate_sine_wave(
                 500.0, // start_x
                 100.0, // start_y
-                30.0,   // amplitude
+                30.0,  // amplitude
                 20,    // number of points
                 200.0, // wavelength in pixels (horizontal length of 1 sine cycle)
             ),
@@ -111,11 +120,12 @@ fn main() {
 
     let mut svg = SvgDocument::new(800.0, 800.0);
     svg.add_shapes(&shapes);
-    svg.write_to_file("target/shapes.svg").expect("Failed to write SVG");
-    
+    svg.write_to_file("target/shapes.svg")
+        .expect("Failed to write SVG");
+
     let renderer = Renderer::new();
     renderer.set_point_size(6.0);
-    
+
     app.on_render(move || {
         for shape in &mut shapes {
             shape.render(&renderer);
