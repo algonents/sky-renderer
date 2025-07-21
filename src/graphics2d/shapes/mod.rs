@@ -44,7 +44,7 @@ impl Shape for Rectangle {
     }
 }
 
-impl GeometryProvider for crate::graphics2d::shapes::Rectangle {
+impl GeometryProvider for Rectangle {
     fn to_geometry(&self) -> Geometry {
         graphics2d::rectangle_geometry(self.width, self.height)
     }
