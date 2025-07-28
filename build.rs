@@ -24,8 +24,8 @@ fn main() {
         
         println!("cargo:rustc-link-search=native={}", cmake_build_output.display());
         println!("cargo:rustc-link-lib=static=glrenderer");
+        println!("cargo:rustc-link-lib=static=glfw3");
     
-        println!("cargo:rustc-link-lib=dylib=glfw");
         println!("cargo:rustc-link-lib=dylib=GL");
         println!("cargo:rustc-link-lib=dylib=stdc++");
     
