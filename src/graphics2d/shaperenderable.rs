@@ -41,6 +41,18 @@ fn ortho_2d(width: f32, height: f32) -> Mat4 {
     Mat4::orthographic_rh_gl(0.0, width, height, 0.0, 0.0, 1.0)
 }
 
+fn ortho_2d_with_zoom(width: f32, height: f32, zoom: f32) -> Mat4 {
+    let half_w = width * 0.5 / zoom;
+    let half_h = height * 0.5 / zoom;
+
+    let left = width * 0.5 - half_w;
+    let right = width * 0.5 + half_w;
+    let top = height * 0.5 - half_h;
+    let bottom = height * 0.5 + half_h;
+
+    Mat4::orthographic_rh_gl(left, right, bottom, top, 0.0, 1.0)
+}
+
 const SCALE_FACTOR: f32 = 1.0;
 
 pub struct ShapeRenderable {
@@ -52,7 +64,7 @@ pub struct ShapeRenderable {
 impl Renderable for ShapeRenderable {
     fn render(&mut self, renderer: &Renderer) {
         let (viewport_width, viewport_height) = renderer.viewport_size();
-        let transform = ortho_2d(viewport_width as f32, viewport_height as f32)
+        let transform = ortho_2d_with_zoom(viewport_width as f32, viewport_height as f32, renderer.zoom_level)
             * Mat4::from_translation(Vec3::new(self.x, self.y, 0.0))
             * Mat4::from_scale(Vec3::splat(SCALE_FACTOR));
         self.mesh.set_transform(transform);
