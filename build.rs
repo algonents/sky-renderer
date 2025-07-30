@@ -18,42 +18,53 @@ fn main() {
 
     let cmake_build_output = dst.join("build");
 
-    
     // handle platform-specific configuration
     if target.contains("linux") {
-        
-        println!("cargo:rustc-link-search=native={}", cmake_build_output.display());
+        println!(
+            "cargo:rustc-link-search=native={}",
+            cmake_build_output.display()
+        );
         println!("cargo:rustc-link-lib=static=glrenderer");
-    
-        println!("cargo:rustc-link-lib=dylib=glfw");
+        println!("cargo:rustc-link-lib=static=glfw3");
+
         println!("cargo:rustc-link-lib=dylib=GL");
         println!("cargo:rustc-link-lib=dylib=stdc++");
-    
     } else if target.contains("apple") {
-        
-        println!("cargo:rustc-link-search=native={}", cmake_build_output.display());
+        println!(
+            "cargo:rustc-link-search=native={}",
+            cmake_build_output.display()
+        );
         println!("cargo:rustc-link-lib=static=glrenderer");
-    
-        let homebrew_lib_location = "/opt/homebrew/lib";
-        println!("cargo:rustc-link-search=native={}", homebrew_lib_location);
-        println!("cargo:rustc-link-lib=dylib=glfw");
+        println!("cargo:rustc-link-lib=static=glfw3");
+
+        // Add these:
+        println!("cargo:rustc-link-lib=framework=CoreFoundation");
+        println!("cargo:rustc-link-lib=framework=IOKit");
+        println!("cargo:rustc-link-lib=framework=Cocoa");
+        println!("cargo:rustc-link-lib=framework=CoreVideo");
 
         println!("cargo:rustc-link-lib=dylib=c++");
-
     } else if target.contains("windows") {
-        
         let profile = std::env::var("PROFILE").unwrap();
-        let is_debug = profile == "debug";
-        
-        if is_debug {
-            println!("cargo:rustc-link-search=native={}", cmake_build_output.join("Debug").display());
+        let build_dir = if profile == "debug" {
+            cmake_build_output.join("Debug")
         } else {
-            println!("cargo:rustc-link-search=native={}", cmake_build_output.join("Release").display());
+            cmake_build_output.join("Release")
         };
-        println!("cargo:rustc-link-lib=static=glrenderer");
 
-        let vcpkg_lib_location = std::env::var("VCPKG_LIB_PATH").expect("VCPKG_LIB_PATH environment variable must be set");
-        println!("cargo:rustc-link-search=native={}", vcpkg_lib_location);
-        println!("cargo:rustc-link-lib=dylib=glfw3dll");
+        println!("cargo:rustc-link-search=native={}", build_dir.display());
+        println!("cargo:rustc-link-lib=static=glrenderer");
+        println!("cargo:rustc-link-lib=static=glfw3"); // ← link statically, not glfw3dll
+
+        // Link Windows system libraries
+        println!("cargo:rustc-link-lib=dylib=opengl32");
+        println!("cargo:rustc-link-lib=dylib=gdi32");
+        println!("cargo:rustc-link-lib=dylib=user32");
+        println!("cargo:rustc-link-lib=dylib=shell32");
+        println!("cargo:rustc-link-lib=dylib=kernel32");
+
+        // Link the C++ runtime (adjust depending on compiler)
+        // println!("cargo:rustc-link-lib=dylib=stdc++"); // for MinGW/gcc
+        println!("cargo:rustc-link-lib=dylib=msvcrt"); // for MSVC (uncomment if needed)
     }
 }
