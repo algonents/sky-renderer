@@ -80,6 +80,10 @@ impl ShapeRenderable {
         Self { x, y, mesh, kind }
     }
 
+    pub fn set_position(&mut self, x: f32, y: f32) {
+        self.x = x;
+        self.y = y;
+    }
     pub fn from_shape<S: Shape>(x: f32, y: f32, shape: S, color: Color) -> Self
     where
         S: Shape + GeometryProvider,
