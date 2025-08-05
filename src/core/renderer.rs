@@ -7,7 +7,9 @@ use crate::core::engine::opengl::{
     GLfloat,
 };
 
-pub struct Renderer {}
+pub struct Renderer {
+    pub zoom_level: f32,
+}
 pub trait Renderable {
     fn render(&mut self, renderer: &Renderer);
 }
@@ -19,7 +21,7 @@ impl Default for Renderer {
 
 impl Renderer {
     pub fn new() -> Self {
-        Renderer {}
+        Renderer {zoom_level:1.0}
     }
 
     pub fn set_point_size(&self, point_size: GLfloat) {
