@@ -1,10 +1,12 @@
+// examples/bouncing_balls_server/src/main.rs
+
 use tokio::net::TcpListener;
 use tokio_tungstenite::accept_async;
 use futures::{SinkExt, StreamExt};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
-use rand::{Rng, thread_rng};
+use rand::{Rng};
 use rand::distr::Uniform;
 
 use serde::Serialize;
@@ -16,6 +18,18 @@ struct Ball {
     y: f32,
     vx: f32,
     vy: f32,
+    r: f32,
+    g: f32,
+    b: f32,
+}
+
+#[derive(Serialize)]
+struct BallSnapshot {
+    x: f32,
+    y: f32,
+    r: f32,
+    g: f32,
+    b: f32,
 }
 
 const BALL_RADIUS: f32 = 10.0;
@@ -32,7 +46,6 @@ async fn main() {
     let (tx, _) = broadcast::channel::<String>(32);
     let balls = Arc::new(Mutex::new(initialize_balls(NUM_BALLS)));
 
-    // Spawn simulation and broadcast loop
     {
         let balls = Arc::clone(&balls);
         let tx = tx.clone();
@@ -60,26 +73,26 @@ async fn main() {
                         b.y = b.y.clamp(BALL_RADIUS, HEIGHT - BALL_RADIUS);
                     }
 
-                    // 🔍 Log each ball position
                     println!(
                         "Ball #{:<2}  pos: ({:>6.1}, {:>6.1})  vel: ({:>6.1}, {:>6.1})",
                         i, b.x, b.y, b.vx, b.vy
                     );
                 }
 
-                // Serialize x/y for client
-                let positions_only: Vec<_> = balls.iter().map(|b| Position {
+                let snapshots: Vec<_> = balls.iter().map(|b| BallSnapshot {
                     x: b.x,
                     y: b.y,
+                    r: b.r,
+                    g: b.g,
+                    b: b.b,
                 }).collect();
 
-                let msg = serde_json::to_string(&positions_only).unwrap();
+                let msg = serde_json::to_string(&snapshots).unwrap();
                 let _ = tx.send(msg);
             }
         });
     }
 
-    // Accept WebSocket clients
     while let Ok((stream, _)) = listener.accept().await {
         let tx = tx.clone();
         let mut rx = tx.subscribe();
@@ -97,17 +110,12 @@ async fn main() {
     }
 }
 
-#[derive(Serialize)]
-struct Position {
-    x: f32,
-    y: f32,
-}
-
 fn initialize_balls(n: usize) -> Vec<Ball> {
-    let mut rng = thread_rng();
+    let mut rng = rand::rng();
     let pos_x = Uniform::new(BALL_RADIUS, WIDTH - BALL_RADIUS).unwrap();
     let pos_y = Uniform::new(BALL_RADIUS, HEIGHT - BALL_RADIUS).unwrap();
     let vel = Uniform::new(-150.0, 150.0).unwrap();
+    let col = Uniform::new(0.0, 1.0).unwrap();
 
     (0..n)
         .map(|_| Ball {
@@ -115,6 +123,9 @@ fn initialize_balls(n: usize) -> Vec<Ball> {
             y: rng.sample(&pos_y),
             vx: rng.sample(&vel),
             vy: rng.sample(&vel),
+            r: rng.sample(&col),
+            g: rng.sample(&col),
+            b: rng.sample(&col),
         })
         .collect()
 }
