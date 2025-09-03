@@ -1,10 +1,11 @@
 use std::f32::consts::PI;
 use crate::core::{Attribute, Geometry};
-use crate::core::engine::opengl::{GL_LINE_STRIP, GL_LINES, GL_POINTS, GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP, GLfloat, GL_TRIANGLES};
+use crate::core::engine::opengl::{GLfloat, GL_POINTS, GL_TRIANGLES, GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP};
 
-pub mod shape;
-pub mod shaperenderable;
 pub mod svg;
+pub mod shapes;
+
+const MIN_STROKE_WIDTH: f32 = 1.5;
 
 fn point_geometry() -> Geometry {
     let vertex = vec![0.0, 0.0];
@@ -16,7 +17,7 @@ fn point_geometry() -> Geometry {
     geometry
 }
 
-fn multi_point_geometry(points: &[(GLfloat, GLfloat)]) -> Geometry {
+fn point_list_geometry(points: &[(GLfloat, GLfloat)]) -> Geometry {
     let mut vertices = Vec::with_capacity(points.len() * 2);
 
     for &(x, y) in points {
@@ -39,17 +40,44 @@ fn multi_point_geometry(points: &[(GLfloat, GLfloat)]) -> Geometry {
     geometry
 }
 
-fn line_geometry(x1: GLfloat, y1: GLfloat, x2: GLfloat, y2: GLfloat) -> Geometry {
+fn line_geometry(x1: GLfloat, y1: GLfloat, x2: GLfloat, y2: GLfloat, stroke_width:f32) -> Geometry {
+    let stroke_width = stroke_width.max(MIN_STROKE_WIDTH);
+    let dx = x2 - x1;
+    let dy = y2 - y1;
+    let length = (dx * dx + dy * dy).sqrt();
+
+    if length == 0.0 {
+        return Geometry::new(GL_TRIANGLES);
+    }
+
+    // Unit perpendicular vector
+    let nx = -dy / length;
+    let ny = dx / length;
+    let half_thickness = stroke_width / 2.0;
+
+    // Offset vector
+    let ox = nx * half_thickness;
+    let oy = ny * half_thickness;
+
+    // Four corners of the quad
+    let v0 = [x1 - ox, y1 - oy];
+    let v1 = [x2 - ox, y2 - oy];
+    let v2 = [x2 + ox, y2 + oy];
+    let v3 = [x1 + ox, y1 + oy];
+
     let vertices: Vec<GLfloat> = vec![
-        x1, y1, // start point
-        x2, y2, // end point
+        v0[0], v0[1],
+        v1[0], v1[1],
+        v2[0], v2[1],
+        v2[0], v2[1],
+        v3[0], v3[1],
+        v0[0], v0[1],
     ];
 
     let position_values_per_vertex = 2;
 
-    let mut geometry = Geometry::new(GL_LINES);
+    let mut geometry = Geometry::new(GL_TRIANGLES);
     geometry.add_buffer(&vertices, position_values_per_vertex);
-
     geometry.add_vertex_attribute(Attribute::new(
         0,
         position_values_per_vertex,
@@ -60,20 +88,140 @@ fn line_geometry(x1: GLfloat, y1: GLfloat, x2: GLfloat, y2: GLfloat) -> Geometry
     geometry
 }
 
-fn polyline_geometry(points: &[(GLfloat, GLfloat)]) -> Geometry {
-    assert!(points.len() >= 2, "Polyline requires at least two points");
 
-    let mut vertices = Vec::with_capacity(points.len() * 2);
-    for &(x, y) in points {
-        vertices.extend_from_slice(&[x, y]);
+/// Polyline triangulation adapted from JVPolyline by Julien Vernay (2025)
+///
+/// Original C implementation:
+/// https://jvernay.fr/en/blog/polyline-triangulation/
+/// Source: https://git.sr.ht/~jvernay/JV/tree/main/item/src/jv_polyline/jv_polyline.c
+///
+/// This implementation is based on the original algorithm,
+/// restructured and translated to idiomatic Rust for use in sky_renderer.
+fn polyline_geometry(points: &[(GLfloat, GLfloat)], stroke_width:f32) -> Geometry {
+    const MITER_LIMIT: f32 = 4.0; // Equivalent to JV default
+
+    if points.len() < 2 {
+        return Geometry::new(GL_TRIANGLES);
     }
 
-    let values_per_vertex = 2;
-    let mut geometry = Geometry::new(GL_LINE_STRIP); // correct
-    geometry.add_buffer(&vertices, values_per_vertex);
-    geometry.add_vertex_attribute(Attribute::new(0, 2, values_per_vertex as usize, 0));
-    geometry
+    let half_thickness = stroke_width.max(1.0) / 2.0;
+    let miter_limit_squared = (stroke_width * MITER_LIMIT).powi(2) / 4.0;
+    let mut vertices: Vec<GLfloat> = Vec::new();
 
+    let mut a = points[0];
+    let mut b = points[1];
+
+    let mut idx = 1;
+    while idx < points.len() && (b.0 - a.0).hypot(b.1 - a.1) == 0.0 {
+        idx += 1;
+        if idx < points.len() {
+            b = points[idx];
+        }
+    }
+    if (b.0 - a.0).hypot(b.1 - a.1) == 0.0 {
+        return Geometry::new(GL_TRIANGLES);
+    }
+
+    for i in idx + 1..=points.len() {
+        let c = if i < points.len() { points[i] } else { a }; // fake point if last
+
+        let ab = (b.0 - a.0, b.1 - a.1);
+        let len_ab = (ab.0 * ab.0 + ab.1 * ab.1).sqrt();
+        let normal_ab = (-ab.1 / len_ab * half_thickness, ab.0 / len_ab * half_thickness);
+
+        let a1 = (a.0 + normal_ab.0, a.1 + normal_ab.1);
+        let a2 = (a.0 - normal_ab.0, a.1 - normal_ab.1);
+        let b1 = (b.0 + normal_ab.0, b.1 + normal_ab.1);
+        let b2 = (b.0 - normal_ab.0, b.1 - normal_ab.1);
+
+        // segment quad
+        vertices.extend_from_slice(&[
+            a1.0, a1.1,
+            a2.0, a2.1,
+            b1.0, b1.1,
+
+            a2.0, a2.1,
+            b1.0, b1.1,
+            b2.0, b2.1,
+        ]);
+
+        let bc = (c.0 - b.0, c.1 - b.1);
+        let len_bc = (bc.0 * bc.0 + bc.1 * bc.1).sqrt();
+        if len_bc > 0.0 {
+            let normal_bc = (-bc.1 / len_bc * half_thickness, bc.0 / len_bc * half_thickness);
+            let b3 = (b.0 + normal_bc.0, b.1 + normal_bc.1);
+            let b4 = (b.0 - normal_bc.0, b.1 - normal_bc.1);
+
+            // turn direction
+            let z = ab.0 * bc.1 - ab.1 * bc.0;
+
+            // bevel join
+            if z < 0.0 {
+                vertices.extend_from_slice(&[
+                    b.0, b.1,
+                    b1.0, b1.1,
+                    b3.0, b3.1,
+                ]);
+            } else if z > 0.0 {
+                vertices.extend_from_slice(&[
+                    b.0, b.1,
+                    b2.0, b2.1,
+                    b4.0, b4.1,
+                ]);
+            }
+
+            // optional miter
+            if z != 0.0 {
+                let (a_j, b_j, norm_j) = if z < 0.0 {
+                    (a1, b3, ab)
+                } else {
+                    (a2, b4, ab)
+                };
+
+                let denom = z;
+                let alpha = (bc.1 * (b_j.0 - a_j.0) + bc.0 * (a_j.1 - b_j.1)) / denom;
+                let mx = a_j.0 + alpha * norm_j.0;
+                let my = a_j.1 + alpha * norm_j.1;
+
+                let dist2 = (mx - b.0).powi(2) + (my - b.1).powi(2);
+                if dist2 <= miter_limit_squared {
+                    if z < 0.0 {
+                        vertices.extend_from_slice(&[
+                            mx, my,
+                            b1.0, b1.1,
+                            b3.0, b3.1,
+                        ]);
+                    } else {
+                        vertices.extend_from_slice(&[
+                            mx, my,
+                            b2.0, b2.1,
+                            b4.0, b4.1,
+                        ]);
+                    }
+                }
+            }
+        }
+
+        a = b;
+        b = c;
+    }
+
+    let mut geometry = Geometry::new(GL_TRIANGLES);
+    geometry.add_buffer(&vertices, 2);
+    geometry.add_vertex_attribute(Attribute::new(0, 2, 2, 0));
+    geometry
+}
+
+fn triangle_geometry(vertices: &[(f32, f32);3])->Geometry{
+    let mut geometry = Geometry::new(GL_TRIANGLES);
+    let flattened: Vec<f32> = vertices.iter()
+        .flat_map(|(x, y)| [*x, *y])
+        .collect();
+
+    geometry.add_buffer(&flattened, 2);
+    geometry.add_vertex_attribute(Attribute::new(0, 2, 2, 0));
+
+    geometry
 }
 
 fn rectangle_geometry(width: GLfloat, height: GLfloat) -> Geometry {

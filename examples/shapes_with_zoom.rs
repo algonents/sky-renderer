@@ -1,8 +1,7 @@
 extern crate sky_renderer;
 
 use sky_renderer::core::{App, Color, Renderable, Renderer, Window};
-use sky_renderer::graphics2d::shape::Rectangle;
-use sky_renderer::graphics2d::shaperenderable::ShapeRenderable;
+use sky_renderer::graphics2d::shapes::{Rectangle, ShapeRenderable};
 
 use std::cell::Cell;
 
@@ -32,7 +31,7 @@ fn main() {
     let mut app = App::new(window);
 
     let mut shapes = vec![
-        ShapeRenderable::line(100.0, 200.0, 300.0, 250.0, Color::from_rgb(0.0, 1.0, 0.0)),
+        ShapeRenderable::line(100.0, 200.0, 300.0, 250.0, Color::from_rgb(0.0, 1.0, 0.0),1.0),
         ShapeRenderable::polyline(
             &[
                 (100.0, 300.0),
@@ -41,6 +40,7 @@ fn main() {
                 (250.0, 460.0),
             ],
             Color::from_rgb(0.0, 1.0, 0.0),
+            10.0
         ),
         ShapeRenderable::rectangle(50.0, 50.0, 200.0, 80.0, Color::from_rgb(0.2, 0.5, 0.9)),
         ShapeRenderable::rectangle(400.0, 200.0, 100.0, 50.0, Color::from_rgb(1.0, 0.0, 0.0)),

@@ -2,7 +2,7 @@ extern crate sky_renderer;
 
 use std::rc::Rc;
 use glam::{Mat4, Vec3};
-use sky_renderer::core::{App, Attribute, Color, Geometry, Mesh, Renderer, Shader, Window};
+use sky_renderer::core::{App, Attribute, Geometry, Mesh, Renderer, Shader, Window};
 use sky_renderer::core::engine::opengl::{GL_TRIANGLES, GLfloat};
 
 const SCALE_FACTOR: f32 = 2.0;

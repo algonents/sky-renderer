@@ -52,6 +52,8 @@ pub const GL_LINEAR: GLint = 0x2601;
 pub const GL_LINEAR_MIPMAP_LINEAR: GLint = 0x2703;
 pub const GL_RGB: GLint = 0x1907;
 pub const GL_RGBA: GLint = 0x1908;
+pub const GL_MULTISAMPLE: GLuint = 0x809D;
+pub const GL_SAMPLES: GLuint = 0x80A9;
 
 unsafe extern "C" {
     fn _glClearColor(red: GLfloat, green: GLfloat, blue: GLfloat, alpha: GLfloat);
