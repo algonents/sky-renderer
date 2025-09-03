@@ -3,7 +3,6 @@ extern crate sky_renderer;
 use sky_renderer::core::{App, Color, Renderable, Renderer, Window};
 use sky_renderer::graphics2d::shapes::Rectangle;
 use sky_renderer::graphics2d::shapes::ShapeRenderable;
-use sky_renderer::graphics2d::svg::SvgDocument;
 
 fn create_equilateral_triangle() -> [(f32, f32); 3] {
     let side = 20.0;
@@ -118,10 +117,12 @@ fn main() {
         ShapeRenderable::image(400.0, 500.0, "images/bunny.png"),
     ];
 
+    /* Uncomment for svg output
     let mut svg = SvgDocument::new(800.0, 800.0);
     svg.add_shapes(&shapes);
     svg.write_to_file("target/shapes.svg")
         .expect("Failed to write SVG");
+    */
 
     let renderer = Renderer::new();
     renderer.set_point_size(6.0);
