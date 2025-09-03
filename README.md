@@ -34,15 +34,60 @@ Other features:
 
 ### 📦 Examples code
 
-You can find usage examples in the [examples directory](https://github.com/algonents/sky-renderer/tree/master/examples) of the **sky_renderer** repository.
-These will be updated as new futures are introduced.
+You can find usage examples in the [examples directory](https://github.com/algonents/sky-renderer/tree/master/examples) 
+of the **sky_renderer** repository. These will be updated as new futures are introduced.
 
-- [shapes.rs](https://github.com/algonents/sky-renderer/tree/master/examples/shapes.rs) – illustrates basic API usage
+Basic API usage is illustrated below:
 
+```rust
+extern crate sky_renderer;
 
+use sky_renderer::core::{App, Color, Renderable, Renderer, Window};
+use sky_renderer::graphics2d::shapes::Rectangle;
+use sky_renderer::graphics2d::shapes::ShapeRenderable;
+
+fn main() {
+    let window = Window::new("Shapes", 800, 800);
+    let mut app = App::new(window);
+
+    let mut shapes = vec![
+        ShapeRenderable::line(
+            100.0,
+            200.0,
+            300.0,
+            250.0,
+            Color::from_rgb(0.0, 1.0, 0.0),
+            1.0,
+        ),
+        ShapeRenderable::polyline(
+            &[
+                (100.0, 300.0),
+                (150.0, 430.0),
+                (200.0, 410.0),
+                (200.0, 500.0),
+            ],
+            Color::from_rgb(1.0, 0.0, 0.0),
+            10.0,
+        )
+    ];
+
+    let renderer = Renderer::new();
+    renderer.set_point_size(6.0);
+
+    app.on_render(move || {
+        for shape in &mut shapes {
+            shape.render(&renderer);
+        }
+    });
+    app.run();
+}
+```
+For a full example, see: 
+- [shapes.rs](https://github.com/algonents/sky-renderer/tree/master/examples/shapes.rs)
 
 ![Shapes](images/shapes.png)
 
+Additional examples:
 - shapes_with_zoom.rs – illustrates zoom in/out functionality
 - bouncing_balls – illustrates simple animation 
 *(run with `cargo run` inside the `examples/bouncing_balls` folder)*
