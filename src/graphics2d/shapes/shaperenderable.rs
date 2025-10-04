@@ -1,19 +1,18 @@
-use std::rc::Rc;
 use std::cell::OnceCell;
+use std::rc::Rc;
 
 use glam::{Mat4, Vec3};
 
-
-use crate::core::engine::opengl::GLfloat;
 use crate::core::{
     Color, GeometryProvider, Mesh, Renderable, Renderer, Shader, generate_texture_from_image,
     load_image,
 };
+
+use crate::core::engine::opengl::GLfloat;
+
 use crate::graphics2d;
 use crate::graphics2d::shapes::{Rectangle, Shape, ShapeKind};
-use crate::graphics2d::{
-    circle_geometry, image_geometry, point_geometry, triangle_geometry,
-};
+use crate::graphics2d::{circle_geometry, image_geometry, point_geometry, triangle_geometry};
 
 const SCALE_FACTOR: f32 = 1.0;
 
@@ -30,7 +29,8 @@ fn default_shader() -> Rc<Shader> {
                 Shader::compile(vert_src, frag_src, None)
                     .expect("Failed to compile default shader"),
             )
-        }).clone()
+        })
+        .clone()
     })
 }
 
@@ -44,11 +44,10 @@ fn point_shader() -> Rc<Shader> {
             let vert_src = include_str!("../shaders/shape.vert");
             let frag_src = include_str!("../shaders/point.frag");
             Rc::new(
-                Shader::compile(vert_src, frag_src, None)
-                    .expect("Failed to compile point shader"),
+                Shader::compile(vert_src, frag_src, None).expect("Failed to compile point shader"),
             )
         })
-            .clone()
+        .clone()
     })
 }
 
@@ -61,11 +60,10 @@ fn image_shader() -> Rc<Shader> {
             let vert_src = include_str!("../shaders/image.vert");
             let frag_src = include_str!("../shaders/image.frag");
             Rc::new(
-                Shader::compile(vert_src, frag_src, None)
-                    .expect("Failed to compile image shader"),
+                Shader::compile(vert_src, frag_src, None).expect("Failed to compile image shader"),
             )
         })
-            .clone()
+        .clone()
     })
 }
 
@@ -80,7 +78,7 @@ fn image_shader() -> Rc<Shader> {
 ///
 /// # Returns
 /// A [`Mat4`] representing the orthographic projection matrix suitable for OpenGL.
-fn ortho_2d(width: f32, height: f32) -> Mat4 {
+fn _ortho_2d(width: f32, height: f32) -> Mat4 {
     Mat4::orthographic_rh_gl(0.0, width, height, 0.0, 0.0, 1.0)
 }
 
@@ -104,8 +102,11 @@ pub struct ShapeRenderable {
 impl Renderable for ShapeRenderable {
     fn render(&mut self, renderer: &Renderer) {
         let (viewport_width, viewport_height) = renderer.viewport_size();
-        let transform = ortho_2d_with_zoom(viewport_width as f32, viewport_height as f32, renderer.zoom_level)
-            * Mat4::from_translation(Vec3::new(self.x, self.y, 0.0))
+        let transform = ortho_2d_with_zoom(
+            viewport_width as f32,
+            viewport_height as f32,
+            renderer.zoom_level,
+        ) * Mat4::from_translation(Vec3::new(self.x, self.y, 0.0))
             * Mat4::from_scale(Vec3::splat(SCALE_FACTOR));
         self.mesh.set_transform(transform);
         renderer.draw_mesh(&self.mesh);
