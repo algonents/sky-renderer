@@ -1,9 +1,8 @@
 [package]
-name = "bouncing_balls"
+name = "bouncing_balls_mt"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
 
 [dependencies]
 sky_renderer = { path = "../.." }
 rand = "0.9.2"
-
