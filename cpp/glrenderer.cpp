@@ -7,7 +7,7 @@ extern "C"
         // Initialize GLFW
         glfwInit();
 
-        // Set MSAA samples for anti-aliasing
+        // Set MSAA samples for antialiasing
         glfwWindowHint(GLFW_SAMPLES, 4);
 
         // Tell GLFW what version of OpenGL we are using

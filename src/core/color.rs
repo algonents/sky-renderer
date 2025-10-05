@@ -32,6 +32,4 @@ impl Color{
             (self.blue() * 255.0) as u8,
         )
     }
-    
-    
 }

@@ -2,9 +2,15 @@
   <dictionary name="project">
     <words>
       <w>glrenderer</w>
+      <w>integerv</w>
+      <w>lvoid</w>
       <w>ortho</w>
       <w>shaperenderable</w>
       <w>svgdocument</w>
+      <w>wcursorposfun</w>
+      <w>wframebuffersizefun</w>
+      <w>wscrollfun</w>
+      <w>wwindow</w>
       <w>xoffset</w>
     </words>
   </dictionary>
