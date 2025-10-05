@@ -12,6 +12,10 @@ fn main() {
         println!("Mouse scrolled, x_offset:{}, y_offset: {}", x_offset, y_offset);
     });
 
+    window.on_cursor_position(move |x_pos, y_pos| {
+        println!("Cursor position: {} {}", x_pos, y_pos);
+    });
+    
     let app = App::new(window);
     app.run();
 }
