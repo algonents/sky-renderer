@@ -13,6 +13,7 @@ use crate::core::engine::opengl::GLfloat;
 use crate::graphics2d;
 use crate::graphics2d::shapes::{Shape, ShapeKind};
 use crate::graphics2d::{circle_geometry, image_geometry, point_geometry, triangle_geometry};
+use crate::graphics2d::svg::ToSvg;
 
 const SCALE_FACTOR: f32 = 1.0;
 
@@ -307,14 +308,6 @@ impl ShapeRenderable {
         Self::image_with_size(x, y, path, image.width as f32, image.height as f32)
     }
 
-    fn svg_color(&self) -> String {
-        self.mesh
-            .color
-            .as_ref()
-            .map(|c| c.to_hex())
-            .unwrap_or_else(|| "#000000".to_string())
-    }
-
     pub fn from_shape<S: Shape>(x: f32, y: f32, shape: S, color: Color) -> Self
     where
         S: Shape
@@ -326,8 +319,19 @@ impl ShapeRenderable {
             _ => unimplemented!("ShapeRenderable::from_shape not implemented for this shape kind"),
         }
     }
-    
-    pub fn to_svg(&self) -> String {
+}
+
+fn svg_color(shape: &ShapeRenderable) -> String {
+    shape.mesh
+        .color
+        .as_ref()
+        .map(|c| c.to_hex())
+        .unwrap_or_else(|| "#000000".to_string())
+}
+
+impl ToSvg for ShapeRenderable{
+
+    fn to_svg(&self) -> String {
         match &self.kind {
             ShapeKind::Line { x2, y2 } => {
                 format!(
@@ -336,7 +340,7 @@ impl ShapeRenderable {
                     y1 = self.y,
                     x2 = x2,
                     y2 = y2,
-                    color = self.svg_color(),
+                    color = svg_color(self),
                 )
             }
             ShapeKind::Rectangle { width, height } => {
@@ -346,7 +350,7 @@ impl ShapeRenderable {
                     y = self.y,
                     w = width,
                     h = height,
-                    color = self.svg_color(),
+                    color = svg_color(self),
                 )
             }
             ShapeKind::RoundedRectangle {
@@ -361,7 +365,7 @@ impl ShapeRenderable {
                     w = width,
                     h = height,
                     r = radius,
-                    color = self.svg_color(),
+                    color = svg_color(self),
                 )
             }
             ShapeKind::Polygon { points } => {
@@ -374,7 +378,7 @@ impl ShapeRenderable {
                 format!(
                     r#"<polygon points="{path}" fill="{color}" stroke="{color}" stroke-width="1"/>"#,
                     path = path,
-                    color = self.svg_color(),
+                    color = svg_color(self),
                 )
             }
             ShapeKind::Circle { radius } => {
@@ -383,7 +387,7 @@ impl ShapeRenderable {
                     cx = self.x + radius,
                     cy = self.y + radius,
                     r = radius,
-                    color = self.svg_color(),
+                    color = svg_color(self),
                 )
             }
             ShapeKind::Ellipse { radius_x, radius_y } => {
@@ -393,7 +397,7 @@ impl ShapeRenderable {
                     cy = self.y + radius_y,
                     rx = radius_x,
                     ry = radius_y,
-                    color = self.svg_color(),
+                    color = svg_color(self),
                 )
             }
             ShapeKind::Polyline { points } => {
@@ -405,7 +409,7 @@ impl ShapeRenderable {
                 format!(
                     r#"<polyline points="{path}" fill="none" stroke="{color}" stroke-width="1"/>"#,
                     path = path,
-                    color = self.svg_color(),
+                    color = svg_color(self),
                 )
             }
             ShapeKind::MultiPoint { points } => {
@@ -417,7 +421,7 @@ impl ShapeRenderable {
                         r#"<circle cx="{cx}" cy="{cy}" r="2" fill="{color}"/>"#,
                         cx = cx,
                         cy = cy,
-                        color = self.svg_color(),
+                        color = svg_color(self),
                     ));
                 }
                 out
@@ -427,7 +431,7 @@ impl ShapeRenderable {
                     r#"<circle cx="{cx}" cy="{cy}" r="2" fill="{color}"/>"#,
                     cx = self.x,
                     cy = self.y,
-                    color = self.svg_color(),
+                    color = svg_color(self),
                 )
             }
             ShapeKind::Image {
@@ -443,7 +447,7 @@ impl ShapeRenderable {
                 format!(
                     r#"<polygon points="{points}" fill="{color}"/>"#,
                     points = points,
-                    color = self.svg_color(),
+                    color = svg_color(self),
                 )
             }
         }
