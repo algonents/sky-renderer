@@ -212,7 +212,7 @@ fn polyline_geometry(points: &[(GLfloat, GLfloat)], stroke_width:f32) -> Geometr
     geometry
 }
 
-fn triangle_geometry(vertices: &[(f32, f32);3])->Geometry{
+fn triangle_geometry(vertices: &[(f32, f32);3])->Geometry {
     let mut geometry = Geometry::new(GL_TRIANGLES);
     let flattened: Vec<f32> = vertices.iter()
         .flat_map(|(x, y)| [*x, *y])
