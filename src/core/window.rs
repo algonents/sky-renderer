@@ -65,6 +65,16 @@ impl Window {
         glfw_set_window_user_pointer(glfw_window, &mut *window as *mut _ as *mut c_void);
         window
     }
+    
+    pub fn width(&self)->i32{
+        self.width
+    }
+    
+    pub fn height(&self)->i32{
+        self.height
+    }
+    
+    
     pub fn clear_color(&self, red: f32, green: f32, blue: f32, alpha: f32) {
         gl_clear_color(red, green, blue, alpha);
     }

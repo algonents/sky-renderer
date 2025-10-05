@@ -12,6 +12,13 @@ impl<'a> App<'a> {
             render_callback: None,
         }
     }
+    pub fn window_width(&self)->i32{
+        self.window.width()
+    }
+    pub fn window_height(&self)->i32{
+        self.window.height()
+    }
+    
     
     pub fn on_render<F>(&mut self, callback: F)
     where

@@ -1,5 +1,9 @@
 extern crate sky_renderer;
 
+
+use std::rc::Rc;
+use std::cell::Cell;
+
 use sky_renderer::core::{App, Color, Renderable, Renderer, Window};
 use sky_renderer::graphics2d::shapes::ShapeRenderable;
 
@@ -15,21 +19,38 @@ struct Ball {
 }
 
 const BALL_RADIUS: f32 = 10.0;
-const SCREEN_WIDTH: f32 = 800.0;
-const SCREEN_HEIGHT: f32 = 600.0;
 
 fn main() {
-    // 1) Balls live on the main thread now
-    let mut balls = initialize_balls(10);
+    // shared width/height
+    let screen_w = Rc::new(Cell::new(800.0f32));
+    let screen_h = Rc::new(Cell::new(600.0f32));
+    
+    let mut balls = initialize_balls(10, screen_w.get(), screen_h.get());
+    
+
 
     // 2) Create window and renderer
-    let window = Window::new("Bouncing Balls", SCREEN_WIDTH as i32, SCREEN_HEIGHT as i32);
+    let mut window = Window::new("Bouncing Balls", screen_w.get() as i32, screen_h.get() as i32);
+
+    // clone handles into the resize callback
+    {
+        let sw = Rc::clone(&screen_w);
+        let sh = Rc::clone(&screen_h);
+        window.on_resize(move |w, h| {
+            sw.set(w as f32);
+            sh.set(h as f32);
+        });
+    }
+    
+    
     let mut app = App::new(window);
+    
     let renderer = Renderer::new();
     renderer.set_point_size(6.0);
 
     // 3) Create one ShapeRenderable per ball (AFTER OpenGL context exists)
     let mut rng = rand::rng();
+    
     let mut shapes: Vec<ShapeRenderable> = (0..balls.len())
         .map(|_| {
             ShapeRenderable::circle(
@@ -43,13 +64,16 @@ fn main() {
 
     // 4) Timekeeping for per-frame delta
     let mut last_time = renderer.get_time();
-
+    
+    let sw = Rc::clone(&screen_w);
+    let sh = Rc::clone(&screen_h);
+    
     // 5) Render loop: update physics, update shapes, render
     app.on_render(move || {
         let current_time = renderer.get_time();
         let dt = (current_time - last_time) as f32;
         last_time = current_time;
-        
+
         
         // -- update physics
         for ball in balls.iter_mut() {
@@ -58,15 +82,15 @@ fn main() {
             ball.y += ball.vy * dt;
 
             // bounce X
-            if ball.x - BALL_RADIUS < 0.0 || ball.x + BALL_RADIUS > SCREEN_WIDTH {
+            if ball.x - BALL_RADIUS < 0.0 || ball.x + BALL_RADIUS > sw.get() {
                 ball.vx = -ball.vx;
-                ball.x = ball.x.clamp(BALL_RADIUS, SCREEN_WIDTH - BALL_RADIUS);
+                ball.x = ball.x.clamp(BALL_RADIUS, sw.get() - BALL_RADIUS);
             }
 
             // bounce Y
-            if ball.y - BALL_RADIUS < 0.0 || ball.y + BALL_RADIUS > SCREEN_HEIGHT {
+            if ball.y - BALL_RADIUS < 0.0 || ball.y + BALL_RADIUS > sh.get() {
                 ball.vy = -ball.vy;
-                ball.y = ball.y.clamp(BALL_RADIUS, SCREEN_HEIGHT - BALL_RADIUS);
+                ball.y = ball.y.clamp(BALL_RADIUS, sh.get() - BALL_RADIUS);
             }
         }
 
@@ -80,10 +104,10 @@ fn main() {
     app.run();
 }
 
-fn initialize_balls(n: usize) -> Vec<Ball> {
+fn initialize_balls(n: usize, screen_width: f32, screen_height: f32) -> Vec<Ball> {
     let mut rng = rand::rng();
-    let pos_x = Uniform::new(BALL_RADIUS, SCREEN_WIDTH - BALL_RADIUS).unwrap();
-    let pos_y = Uniform::new(BALL_RADIUS, SCREEN_HEIGHT - BALL_RADIUS).unwrap();
+    let pos_x = Uniform::new(BALL_RADIUS, screen_width - BALL_RADIUS).unwrap();
+    let pos_y = Uniform::new(BALL_RADIUS, screen_height - BALL_RADIUS).unwrap();
     let vel = Uniform::new(-150.0, 150.0).unwrap();
 
     (0..n)
