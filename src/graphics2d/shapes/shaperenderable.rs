@@ -4,14 +4,14 @@ use std::rc::Rc;
 use glam::{Mat4, Vec3};
 
 use crate::core::{
-    Color, GeometryProvider, Mesh, Renderable, Renderer, Shader, generate_texture_from_image,
+    Color, Mesh, Renderable, Renderer, Shader, generate_texture_from_image,
     load_image,
 };
 
 use crate::core::engine::opengl::GLfloat;
 
 use crate::graphics2d;
-use crate::graphics2d::shapes::{Rectangle, Shape, ShapeKind};
+use crate::graphics2d::shapes::{Shape, ShapeKind};
 use crate::graphics2d::{circle_geometry, image_geometry, point_geometry, triangle_geometry};
 
 const SCALE_FACTOR: f32 = 1.0;
@@ -122,14 +122,6 @@ impl ShapeRenderable {
         self.x = x;
         self.y = y;
     }
-    pub fn from_shape<S: Shape>(x: f32, y: f32, shape: S, color: Color) -> Self
-    where
-        S: Shape + GeometryProvider,
-    {
-        let geometry = shape.to_geometry();
-        let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
-        ShapeRenderable::new(x, y, mesh, shape.kind())
-    }
 
     pub fn point(x: GLfloat, y: GLfloat, color: Color) -> Self {
         let geometry = point_geometry();
@@ -236,9 +228,9 @@ impl ShapeRenderable {
 
     pub fn rectangle(x: f32, y: f32, width: f32, height: f32, color: Color) -> Self {
         // Geometry is created at (0, 0) with given width and height
-        let rectangle = Rectangle::new(width, height);
-        let geometry = rectangle.to_geometry();
+        let geometry = graphics2d::rectangle_geometry(width, height);
         let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
+
         // Drawable will be positioned at (x, y) — the top-left corner
         ShapeRenderable::new(x, y, mesh, ShapeKind::Rectangle { width, height })
     }
@@ -323,6 +315,18 @@ impl ShapeRenderable {
             .unwrap_or_else(|| "#000000".to_string())
     }
 
+    pub fn from_shape<S: Shape>(x: f32, y: f32, shape: S, color: Color) -> Self
+    where
+        S: Shape
+    {
+        match &shape.kind() {
+            ShapeKind::Rectangle { width, height } => {
+                ShapeRenderable::rectangle(x, y, *width, *height, color)
+            },
+            _ => unimplemented!("ShapeRenderable::from_shape not implemented for this shape kind"),
+        }
+    }
+    
     pub fn to_svg(&self) -> String {
         match &self.kind {
             ShapeKind::Line { x2, y2 } => {

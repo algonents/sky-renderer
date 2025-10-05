@@ -1,8 +1,5 @@
 mod shaperenderable;
 
-use crate::core::{Geometry, GeometryProvider};
-use crate::graphics2d::rectangle_geometry;
-
 pub use shaperenderable::*;
 
 #[derive(Debug, Clone)]
@@ -41,11 +38,5 @@ impl Shape for Rectangle {
             width: self.width,
             height: self.height,
         }
-    }
-}
-
-impl GeometryProvider for Rectangle {
-    fn to_geometry(&self) -> Geometry {
-        rectangle_geometry(self.width, self.height)
     }
 }
