@@ -1,9 +1,5 @@
 extern crate sky_renderer;
 
-
-use std::rc::Rc;
-use std::cell::Cell;
-
 use sky_renderer::core::{App, Color, Renderable, Renderer, Window};
 use sky_renderer::graphics2d::shapes::ShapeRenderable;
 
@@ -21,27 +17,13 @@ struct Ball {
 const BALL_RADIUS: f32 = 10.0;
 
 fn main() {
-    // shared width/height
-    let screen_w = Rc::new(Cell::new(800.0f32));
-    let screen_h = Rc::new(Cell::new(600.0f32));
     
-    let mut balls = initialize_balls(10, screen_w.get(), screen_h.get());
+    let mut balls = initialize_balls(50, 800.0, 600.0);
     
-
-
-    // 2) Create window and renderer
-    let mut window = Window::new("Bouncing Balls", screen_w.get() as i32, screen_h.get() as i32);
-
-    // clone handles into the resize callback
-    {
-        let sw = Rc::clone(&screen_w);
-        let sh = Rc::clone(&screen_h);
-        window.on_resize(move |w, h| {
-            sw.set(w as f32);
-            sh.set(h as f32);
-        });
-    }
+    let window = Window::new("Bouncing Balls", 800, 600);
     
+    // so we can access window properties after the window has been moved to app
+    let h_wnd = window.handle();
     
     let mut app = App::new(window);
     
@@ -65,8 +47,7 @@ fn main() {
     // 4) Timekeeping for per-frame delta
     let mut last_time = renderer.get_time();
     
-    let sw = Rc::clone(&screen_w);
-    let sh = Rc::clone(&screen_h);
+    
     
     // 5) Render loop: update physics, update shapes, render
     app.on_render(move || {
@@ -82,15 +63,15 @@ fn main() {
             ball.y += ball.vy * dt;
 
             // bounce X
-            if ball.x - BALL_RADIUS < 0.0 || ball.x + BALL_RADIUS > sw.get() {
+            if ball.x - BALL_RADIUS < 0.0 || ball.x + BALL_RADIUS > h_wnd.width() as f32 {
                 ball.vx = -ball.vx;
-                ball.x = ball.x.clamp(BALL_RADIUS, sw.get() - BALL_RADIUS);
+                ball.x = ball.x.clamp(BALL_RADIUS, h_wnd.width() as f32 - BALL_RADIUS);
             }
 
             // bounce Y
-            if ball.y - BALL_RADIUS < 0.0 || ball.y + BALL_RADIUS > sh.get() {
+            if ball.y - BALL_RADIUS < 0.0 || ball.y + BALL_RADIUS > h_wnd.height() as f32 {
                 ball.vy = -ball.vy;
-                ball.y = ball.y.clamp(BALL_RADIUS, sh.get() - BALL_RADIUS);
+                ball.y = ball.y.clamp(BALL_RADIUS, h_wnd.height() as f32 - BALL_RADIUS);
             }
         }
 
@@ -100,7 +81,7 @@ fn main() {
             shape.render(&renderer);
         }
     });
-
+    
     app.run();
 }
 
