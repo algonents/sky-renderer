@@ -7,9 +7,9 @@ use crate::core::engine::opengl::{gl_get_uniform_location, gl_uniform_4f};
 use crate::core::engine::opengl::GLuint;
 
 pub struct Mesh {
+    transform: Mat4,
     pub geometry: Geometry,
     pub shader: Rc<Shader>,
-    transform: Mat4,
     pub color: Option<Color>,
     pub texture: Option<GLuint>,
 }

@@ -1,5 +1,5 @@
 #include "glrenderer.h"
-
+#include <iostream>
 extern "C"
 {
     GLFWwindow *_glfwCreateWindow(char *title, int width, int height, GLFWframebuffersizefun callback)
@@ -330,5 +330,86 @@ extern "C"
     void _glBlendFunc(GLenum sfactor, GLenum dfactor)
     {
         glBlendFunc(sfactor, dfactor);
+    }
+
+    // Keep FT_Library internal here (simple singleton for the app)
+    namespace {
+        FT_Library g_ft_lib = nullptr;
+    }
+
+
+    FT_Error _ftInitFreeType() {
+        if (g_ft_lib) return 0; // already inited
+        return FT_Init_FreeType(&g_ft_lib);
+    }
+
+    FT_Error _ftDoneFreeType() {
+        if (!g_ft_lib) return 0;
+        FT_Error err = FT_Done_FreeType(g_ft_lib);
+        g_ft_lib = nullptr;
+        return err;
+    }
+
+    FT_Error _ftNewFace(const char *filePath, FT_Long faceIndex, FT_Face *aface_) {
+        if (!g_ft_lib) return 1; // not inited; choose a non-zero error code
+        return FT_New_Face(g_ft_lib, filePath, faceIndex, aface_);
+    }
+
+    FT_Error _ftDoneFace(FT_Face aface) {
+        if (!aface) return 0;
+        return FT_Done_Face(aface);
+    }
+
+    FT_Error _ftLoadChar(FT_Face face, FT_ULong char_code, FT_Int32 load_flags)
+    {
+        // Ensure we render immediately (LearnOpenGL expects a rasterized A8 bitmap)
+        FT_Error err = FT_Load_Char(face, char_code, load_flags | FT_LOAD_RENDER);
+        if (err != 0) {
+            std::cerr << "FT_Load_Char failed (" << err << ") for codepoint " << char_code << "\n";
+            return err;
+        }
+
+        FT_GlyphSlot slot = face->glyph;
+        const FT_Bitmap& bmp = slot->bitmap;
+
+        // Logs (guard family_name)
+        const char* fam = face->family_name ? face->family_name : "(unknown)";
+        std::cout << "face family: " << fam << "\n";
+        std::cout << "glyph bitmap: " << bmp.width << "x" << bmp.rows
+                  << " pitch=" << bmp.pitch
+                  << " left=" << slot->bitmap_left
+                  << " top=" << slot->bitmap_top
+                  << " adv=" << (slot->advance.x / 64.0f)
+                  << " mode=" << (int)bmp.pixel_mode
+                  << "\n";
+
+        return 0;
+    }
+
+    FT_Error _ftSetPixelSizes(FT_Face face, FT_UInt pixel_width, FT_UInt pixel_height)
+    {
+        return FT_Set_Pixel_Sizes(face, pixel_width, pixel_height);
+    };
+
+    FT_Error _getGlyphDimensions(FT_Face face, GlyphDimensions *dimensions) {
+        if (!face || !dimensions) return 1;
+        FT_GlyphSlot slot = face->glyph;
+        if (!slot) return 1;
+
+        const FT_Bitmap &bmp = slot->bitmap;
+        dimensions->width     = static_cast<int>(bmp.width);
+        dimensions->height    = static_cast<int>(bmp.rows);
+        dimensions->left      = static_cast<int>(slot->bitmap_left);
+        dimensions->top       = static_cast<int>(slot->bitmap_top);
+        dimensions->advance_x = static_cast<int>(slot->advance.x); // 26.6 fixed
+        return 0;
+    }
+
+    FT_Error _getBitmap(FT_Face face, FT_Bitmap **bitmap) {
+        if (!face || !bitmap) return 1;
+        FT_GlyphSlot slot = face->glyph;
+        if (!slot) return 1;
+        *bitmap = &slot->bitmap; // Borrowed; invalid after next _ftLoadChar
+        return 0;
     }
 }

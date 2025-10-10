@@ -1,6 +1,9 @@
-#include <iostream>
+#pragma once
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 extern "C"
 {
@@ -68,4 +71,23 @@ extern "C"
     void _glPointSize(GLfloat size);
     void _glEnable(GLenum cap);
     void _glBlendFunc(GLenum sfactor, GLenum dfactor);
+
+    // FreeType
+    struct GlyphDimensions {
+        int width;      // bitmap.width
+        int height;     // bitmap.rows
+        int left;       // bitmap_left (bearing x)
+        int top;        // bitmap_top  (bearing y)
+        int advance_x;  // 26.6 fixed-point (same as slot->advance.x)
+    };
+
+    FT_Error _ftInitFreeType();
+    FT_Error _ftDoneFreeType();
+    FT_Error _ftNewFace(const char *filePath, FT_Long faceIndex, FT_Face *aface_);
+    FT_Error _ftDoneFace(FT_Face aface);
+    FT_Error _ftSetPixelSizes(FT_Face face, FT_UInt pixel_width, FT_UInt pixel_height);
+    FT_Error _ftLoadChar(FT_Face face, FT_ULong char_code, FT_Int32 load_flags);
+    FT_Error _getGlyphDimensions(FT_Face face, GlyphDimensions *dimensions);
+    FT_Error _getBitmap(FT_Face face, FT_Bitmap **bitmap);
+
 };

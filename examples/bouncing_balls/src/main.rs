@@ -30,7 +30,6 @@ fn main() {
     let renderer = Renderer::new();
     renderer.set_point_size(6.0);
 
-    // 3) Create one ShapeRenderable per ball (AFTER OpenGL context exists)
     let mut rng = rand::rng();
     
     let mut shapes: Vec<ShapeRenderable> = (0..balls.len())
@@ -44,17 +43,12 @@ fn main() {
         })
         .collect();
 
-    // 4) Timekeeping for per-frame delta
     let mut last_time = renderer.get_time();
     
-    
-    
-    // 5) Render loop: update physics, update shapes, render
     app.on_render(move || {
         let current_time = renderer.get_time();
         let dt = (current_time - last_time) as f32;
         last_time = current_time;
-
         
         // -- update physics
         for ball in balls.iter_mut() {

@@ -4,6 +4,10 @@ project(glrenderer)
 set(CMAKE_CXX_STANDARD 17)
 
 find_package(OpenGL REQUIRED)
+find_package(Freetype REQUIRED)
+message(FREETYPE_INCLUDE_DIRS=${FREETYPE_INCLUDE_DIRS})
+
+include_directories(${FREETYPE_INCLUDE_DIRS})
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -23,6 +27,7 @@ add_library(glrenderer STATIC glrenderer.cpp glad/src/glad.c)
 
 target_link_libraries(glrenderer glfw)
 target_link_libraries(glrenderer OpenGL::GL)
+target_link_libraries(glrenderer freetype)
 
 # Export both static libraries
 set_target_properties(glfw PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
