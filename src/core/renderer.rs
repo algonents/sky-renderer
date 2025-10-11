@@ -57,7 +57,7 @@ impl Renderer {
         
         let offset_loc = gl_get_uniform_location(mesh.shader.program(), "u_offset");
         if offset_loc != -1 {
-            let (ox, oy) = mesh.offset_or_zero();
+            let (ox, oy) = mesh.screen_offset();
             crate::core::engine::opengl::gl_uniform_2f(offset_loc, ox, oy);
         }
         

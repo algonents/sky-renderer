@@ -70,7 +70,7 @@ impl Renderable for ShapeRenderable {
         let transform = ortho_2d_with_zoom(viewport_width as f32, viewport_height as f32, renderer.zoom_level)
             * Mat4::from_scale(Vec3::splat(SCALE_FACTOR));
         self.mesh.set_transform(transform);
-        self.mesh.set_offset(self.x, self.y);
+        self.mesh.set_screen_offset(self.x, self.y);
         renderer.draw_mesh(&self.mesh);
     }
 }
