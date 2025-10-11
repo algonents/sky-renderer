@@ -1,8 +1,4 @@
-use crate::core::engine::opengl::{
-    GL_ARRAY_BUFFER, GLboolean, GLenum, GLfloat, GLint, GLsizei, GLuint, gl_bind_buffer,
-    gl_bind_vertex_array, gl_buffer_data, gl_delete_buffer, gl_enable_vertex_attrib_array,
-    gl_gen_buffer, gl_gen_vertex_array, gl_vertex_attrib_pointer_float,
-};
+use crate::core::engine::opengl::{GL_ARRAY_BUFFER, GLboolean, GLenum, GLfloat, GLint, GLsizei, GLuint, gl_bind_buffer, gl_bind_vertex_array, gl_buffer_data, gl_delete_buffer, gl_enable_vertex_attrib_array, gl_gen_buffer, gl_gen_vertex_array, gl_vertex_attrib_pointer_float, gl_buffer_data_empty, gl_buffer_sub_data_vec2, GLsizeiptr, gl_vertex_attrib_divisor};
 
 #[derive(Debug, Clone)]
 pub struct Attribute {
@@ -11,6 +7,7 @@ pub struct Attribute {
     pub normalize: GLboolean,
     pub stride: GLsizei,
     offset: GLsizei,
+    pub divisor: GLuint, // 0 = per-vertex, 1 = per-instance
 }
 
 impl Attribute {
@@ -26,6 +23,19 @@ impl Attribute {
             normalize: GLboolean::FALSE,
             stride: (stride_components * std::mem::size_of::<GLfloat>()) as GLsizei,
             offset: (offset_components * std::mem::size_of::<GLfloat>()) as GLsizei,
+            divisor: 0,
+        }
+    }
+
+    pub fn instanced_vec2(location: u32) -> Self {
+        // tightly packed vec2, divisor=1
+        Self {
+            location,
+            size: 2,
+            normalize: GLboolean::FALSE,
+            stride: (2 * std::mem::size_of::<GLfloat>()) as GLsizei,
+            offset: 0,
+            divisor: 1,
         }
     }
 }
@@ -61,6 +71,9 @@ pub struct Geometry {
     vertex_count: i32,
     drawing_mode: GLenum,
     attributes: Vec<Attribute>,
+    // NEW
+    instance_vbo: GLuint,
+    instance_count: i32,
 }
 
 impl Drop for Geometry {
@@ -96,6 +109,8 @@ impl Geometry {
             vertex_count: 0,
             attributes: Vec::new(),
             drawing_mode,
+            instance_vbo: 0,
+            instance_count: 0,
         }
     }
 
@@ -157,9 +172,65 @@ impl Geometry {
             attribute.stride,
             attribute.offset,
         );
+
+        gl_vertex_attrib_divisor(attribute.location, attribute.divisor);
+        
         gl_bind_vertex_array(0);
         self.attributes.push(attribute);
     }
+
+    pub fn enable_instancing_xy(&mut self, max_instances: usize) {
+        if self.instance_vbo == 0 {
+            self.instance_vbo = gl_gen_buffer();
+        }
+        gl_bind_vertex_array(self.vao);
+        gl_bind_buffer(GL_ARRAY_BUFFER, self.instance_vbo);
+
+        // Allocate empty buffer of required capacity (you can also upload a zero slice)
+        let bytes = (max_instances * 2 * std::mem::size_of::<GLfloat>()) as GLsizei;
+        crate::core::engine::opengl::gl_buffer_data_empty(GL_ARRAY_BUFFER, bytes as GLsizeiptr); // add this tiny helper in FFI OR upload a zero slice
+
+        // Attribute at location=1, vec2, divisor=1
+        let inst_attr = Attribute::instanced_vec2(1);
+        gl_enable_vertex_attrib_array(inst_attr.location);
+        gl_vertex_attrib_pointer_float(
+            inst_attr.location,
+            inst_attr.size,
+            inst_attr.normalize,
+            inst_attr.stride,
+            inst_attr.offset,
+        );
+        gl_vertex_attrib_divisor(inst_attr.location, 1);
+
+        gl_bind_vertex_array(0);
+        gl_bind_buffer(GL_ARRAY_BUFFER, 0);
+    }
+
+    pub fn update_instance_xy(&mut self, xy: &[(f32, f32)]) {
+        if self.instance_vbo == 0 { return; }
+        gl_bind_vertex_array(self.vao);
+        gl_bind_buffer(GL_ARRAY_BUFFER, self.instance_vbo);
+
+        // orphan + upload (if you don’t have “empty” helper, just gl_buffer_data with slice len)
+        let bytes = (xy.len() * 2 * std::mem::size_of::<GLfloat>()) as GLsizei;
+        gl_buffer_data_empty(GL_ARRAY_BUFFER, bytes as GLsizeiptr);
+        gl_buffer_sub_data_vec2(GL_ARRAY_BUFFER, xy); // add a helper that takes &[(f32,f32)]
+
+        gl_bind_vertex_array(0);
+        gl_bind_buffer(GL_ARRAY_BUFFER, 0);
+
+        self.instance_count = xy.len() as i32;
+    }
+
+    pub fn clear_instancing(&mut self) {
+        self.instance_count = 0;
+        // keep instance_vbo for reuse
+    }
+
+    pub fn instance_count(&self) -> i32 { self.instance_count }
+
+
+
 
     pub fn drawing_mode(&self) -> GLenum {
         self.drawing_mode
