@@ -10,6 +10,7 @@ pub struct Mesh {
     pub geometry: Geometry,
     pub shader: Rc<Shader>,
     transform: Mat4,
+    screen_offset: Option<(f32, f32)>,
     pub color: Option<Color>,
     pub texture: Option<GLuint>,
 }
@@ -21,6 +22,7 @@ impl Mesh {
             geometry,
             shader,
             transform: Mat4::IDENTITY,
+            screen_offset: None,
             color: None,
             texture: None
         }
@@ -31,6 +33,7 @@ impl Mesh {
             geometry,
             shader,
             transform: Mat4::IDENTITY,
+            screen_offset: None,
             color,
             texture: None
         }
@@ -41,6 +44,7 @@ impl Mesh {
             geometry,
             shader,
             transform: Mat4::IDENTITY,
+            screen_offset: None,
             color: None,
             texture
         }
@@ -58,5 +62,12 @@ impl Mesh {
 
     pub fn transform(&self) -> Mat4 {
         self.transform
+    }
+
+    pub fn set_screen_offset(&mut self, x: f32, y: f32) {
+        self.screen_offset = Some((x, y));
+    }
+    pub fn screen_offset(&self) -> (f32, f32) {
+        self.screen_offset.unwrap_or((0.0, 0.0))
     }
 }

@@ -45,15 +45,22 @@ impl Renderer {
         gl_enable(GL_BLEND);
         gl_blend_func(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        let transform_loc = gl_get_uniform_location(mesh.shader.program(), "transform");
-        if transform_loc != -1 {
+        let zoom_transform_loc = gl_get_uniform_location(mesh.shader.program(), "u_zoomTransform");
+        if zoom_transform_loc != -1 {
             gl_uniform_matrix_4fv(
-                transform_loc,
+                zoom_transform_loc,
                 1,
                 GLboolean::FALSE,
                 mesh.transform().to_cols_array().as_ptr(),
             );
         }
+        
+        let offset_loc = gl_get_uniform_location(mesh.shader.program(), "u_offset");
+        if offset_loc != -1 {
+            let (ox, oy) = mesh.screen_offset();
+            crate::core::engine::opengl::gl_uniform_2f(offset_loc, ox, oy);
+        }
+        
         let color_loc = gl_get_uniform_location(mesh.shader.program(), "geometryColor");
         if color_loc != -1 {
             if let Some(color) = mesh.color.as_ref() {
