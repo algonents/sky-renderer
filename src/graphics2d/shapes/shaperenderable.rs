@@ -71,20 +71,6 @@ fn image_shader() -> Rc<Shader> {
     })
 }
 
-/// Creates a right-handed orthographic projection matrix for 2D rendering.
-///
-/// The coordinate system origin is at the **top-left corner** of the viewport,
-/// with the x-axis pointing right and the y-axis pointing down.
-///
-/// # Parameters
-/// - `width`: The width of the viewport in pixels.
-/// - `height`: The height of the viewport in pixels.
-///
-/// # Returns
-/// A [`Mat4`] representing the orthographic projection matrix suitable for OpenGL.
-fn ortho_2d(width: f32, height: f32) -> Mat4 {
-    Mat4::orthographic_rh_gl(0.0, width, height, 0.0, 0.0, 1.0)
-}
 
 fn ortho_2d_with_zoom(width: f32, height: f32, zoom: f32) -> Mat4 {
     let half_w = width * 0.5 / zoom;
@@ -105,12 +91,19 @@ pub struct ShapeRenderable {
 }
 impl Renderable for ShapeRenderable {
     fn render(&mut self, renderer: &Renderer) {
-        let (viewport_width, viewport_height) = renderer.viewport_size();
-        let transform = ortho_2d_with_zoom(viewport_width as f32, viewport_height as f32, renderer.zoom_level)
+        let (vw, vh) = renderer.viewport_size();
+        let transform = ortho_2d_with_zoom(vw as f32, vh as f32, renderer.zoom_level)
             * Mat4::from_scale(Vec3::splat(SCALE_FACTOR));
         self.mesh.set_transform(transform);
-        self.mesh.set_screen_offset(self.x, self.y);
-        renderer.draw_mesh(&self.mesh);
+
+        if self.mesh.geometry.instance_count() > 0 {
+            // instanced: u_offset = (0,0), positions come from attrib 1
+            renderer.draw_mesh_instanced(&self.mesh);
+        } else {
+            // single: use u_offset
+            self.mesh.set_screen_offset(self.x, self.y);
+            renderer.draw_mesh(&self.mesh);
+        }
     }
 }
 
@@ -130,6 +123,18 @@ impl ShapeRenderable {
         let geometry = shape.to_geometry();
         let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
         ShapeRenderable::new(x, y, mesh, shape.kind())
+    }
+
+    pub fn enable_instancing(&mut self, capacity: usize) {
+        self.mesh.geometry.enable_instancing_xy(capacity);
+    }
+
+    pub fn set_instances(&mut self, positions: &[(f32, f32)]) {
+        self.mesh.geometry.update_instance_xy(positions);
+    }
+
+    pub fn clear_instances(&mut self) {
+        self.mesh.geometry.clear_instancing();
     }
 
     pub fn point(x: GLfloat, y: GLfloat, color: Color) -> Self {

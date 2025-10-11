@@ -227,6 +227,26 @@ pub fn gl_buffer_data<T>(target: GLenum, data: &[T]) {
     }
 }
 
+// 1) Exact orphan/allocate helper — NULL data pointer
+pub fn gl_buffer_data_empty_with_usage(target: GLenum, size_bytes: GLsizeiptr, usage: GLenum) {
+    unsafe {
+        _glBufferData(target, size_bytes, std::ptr::null::<GLvoid>(), usage);
+    }
+}
+
+// 2) Convenience: dynamic by default (perfect for instance positions updated each frame)
+pub fn gl_buffer_data_empty(target: GLenum, size_bytes: GLsizeiptr) {
+    gl_buffer_data_empty_with_usage(target, size_bytes, GL_DYNAMIC_DRAW);
+}
+
+// 3) (Optional) If you often allocate for vec2<f32> instance arrays:
+pub fn gl_buffer_data_empty_vec2(target: GLenum, count_instances: usize) {
+    let size_bytes = (count_instances * 2 * std::mem::size_of::<f32>()) as GLsizeiptr;
+    gl_buffer_data_empty(target, size_bytes);
+}
+
+
+
 pub fn gl_buffer_sub_data<T>(target: GLenum, offset: GLsizeiptr, data: &[T]) {
     unsafe {
         _glBufferSubData(
@@ -235,6 +255,15 @@ pub fn gl_buffer_sub_data<T>(target: GLenum, offset: GLsizeiptr, data: &[T]) {
             std::mem::size_of_val(data) as GLsizeiptr,
             data.as_ptr() as *const GLvoid,
         );
+    }
+}
+
+pub fn gl_buffer_sub_data_vec2(target: GLenum, xy: &[(f32, f32)]) {
+    // SAFETY: (f32,f32) is plain-old-data, tightly packed
+    let ptr = xy.as_ptr() as *const GLvoid;
+    let size_bytes = (xy.len() * 2 * std::mem::size_of::<f32>()) as GLsizeiptr;
+    unsafe {
+        _glBufferSubData(target, 0 as GLsizeiptr, size_bytes, ptr);
     }
 }
 
