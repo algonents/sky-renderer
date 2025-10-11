@@ -55,7 +55,7 @@ impl Renderer {
             );
         }
         
-        let offset_loc = gl_get_uniform_location(mesh.shader.program(), "u_offset");
+        let offset_loc = gl_get_uniform_location(mesh.shader.program(), "u_screen_offset");
         if offset_loc != -1 {
             let (ox, oy) = mesh.screen_offset();
             crate::core::engine::opengl::gl_uniform_2f(offset_loc, ox, oy);
@@ -99,7 +99,7 @@ impl Renderer {
         }
 
         // instanced path uses attribute aInstanceXY → force u_offset = (0,0)
-        let off_loc = gl_get_uniform_location(mesh.shader.program(), "u_offset");
+        let off_loc = gl_get_uniform_location(mesh.shader.program(), "u_screen_offset");
         if off_loc != -1 {
             crate::core::engine::opengl::gl_uniform_2f(off_loc, 0.0, 0.0);
         }

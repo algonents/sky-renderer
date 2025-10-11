@@ -21,7 +21,6 @@ thread_local! {
     static DEFAULT_SHADER: OnceCell<Rc<Shader>> = OnceCell::new();
 }
 
-
 fn default_shader() -> Rc<Shader> {
     DEFAULT_SHADER.with(|cell| {
         cell.get_or_init(|| {
@@ -125,11 +124,11 @@ impl ShapeRenderable {
         ShapeRenderable::new(x, y, mesh, shape.kind())
     }
 
-    pub fn enable_instancing(&mut self, capacity: usize) {
+    pub fn create_multiple_instances(&mut self, capacity: usize) {
         self.mesh.geometry.enable_instancing_xy(capacity);
     }
 
-    pub fn set_instances(&mut self, positions: &[(f32, f32)]) {
+    pub fn set_instance_positions(&mut self, positions: &[(f32, f32)]) {
         self.mesh.geometry.update_instance_xy(positions);
     }
 

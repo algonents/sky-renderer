@@ -16,7 +16,7 @@ fn main() {
 
     // 🟢 Prepare instanced renderable (10,000 small circles)
     let mut dots = ShapeRenderable::circle(0.0, 0.0, 3.0, Color::from_rgb(255.0, 0.0, 0.0));
-    dots.enable_instancing(6_000);
+    dots.create_multiple_instances(6_000);
 
     // Build initial positions in a grid
     let cols = 100;
@@ -51,7 +51,7 @@ fn main() {
 
         // Upload and draw all instances
         let mut dots = dots.borrow_mut();
-        dots.set_instances(&positions);
+        dots.set_instance_positions(&positions);
         dots.render(&renderer);
     });
 

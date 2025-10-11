@@ -200,7 +200,7 @@ impl Geometry {
             inst_attr.stride,
             inst_attr.offset,
         );
-        crate::core::engine::opengl::gl_vertex_attrib_divisor(inst_attr.location, 1);
+        gl_vertex_attrib_divisor(inst_attr.location, 1);
 
         gl_bind_vertex_array(0);
         gl_bind_buffer(GL_ARRAY_BUFFER, 0);
