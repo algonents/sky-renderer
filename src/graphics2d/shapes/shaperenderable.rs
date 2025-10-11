@@ -1,5 +1,8 @@
 use glam::{Mat4, Vec3};
 use std::rc::Rc;
+use std::cell::OnceCell;
+
+
 
 use crate::core::engine::opengl::GLfloat;
 use crate::core::{
@@ -14,22 +17,58 @@ use crate::graphics2d::{
 
 const SCALE_FACTOR: f32 = 1.0;
 
+thread_local! {
+    static DEFAULT_SHADER: OnceCell<Rc<Shader>> = OnceCell::new();
+}
+
+
 fn default_shader() -> Rc<Shader> {
-    let vert_src = include_str!("../shaders/shape.vert");
-    let frag_src = include_str!("../shaders/shape.frag");
-    Rc::new(Shader::compile(vert_src, frag_src, None).expect("Failed to compile shader"))
+    DEFAULT_SHADER.with(|cell| {
+        cell.get_or_init(|| {
+            let vert_src = include_str!("../shaders/shape.vert");
+            let frag_src = include_str!("../shaders/shape.frag");
+            Rc::new(
+                Shader::compile(vert_src, frag_src, None)
+                    .expect("Failed to compile default shader"),
+            )
+        }).clone()
+    })
+}
+
+thread_local! {
+    static POINT_SHADER: OnceCell<Rc<Shader>> = OnceCell::new();
 }
 
 fn point_shader() -> Rc<Shader> {
-    let vert_src = include_str!("../shaders/shape.vert");
-    let frag_src = include_str!("../shaders/point.frag");
-    Rc::new(Shader::compile(vert_src, frag_src, None).expect("Failed to compile shader"))
+    POINT_SHADER.with(|cell| {
+        cell.get_or_init(|| {
+            let vert_src = include_str!("../shaders/shape.vert");
+            let frag_src = include_str!("../shaders/point.frag");
+            Rc::new(
+                Shader::compile(vert_src, frag_src, None)
+                    .expect("Failed to compile point shader"),
+            )
+        })
+            .clone()
+    })
 }
 
+
+thread_local! {
+    static IMAGE_SHADER: OnceCell<Rc<Shader>> = OnceCell::new();
+}
 fn image_shader() -> Rc<Shader> {
-    let vert_src = include_str!("../shaders/image.vert");
-    let frag_src = include_str!("../shaders/image.frag");
-    Rc::new(Shader::compile(vert_src, frag_src, None).expect("Failed to compile shader"))
+    IMAGE_SHADER.with(|cell| {
+        cell.get_or_init(|| {
+            let vert_src = include_str!("../shaders/image.vert");
+            let frag_src = include_str!("../shaders/image.frag");
+            Rc::new(
+                Shader::compile(vert_src, frag_src, None)
+                    .expect("Failed to compile image shader"),
+            )
+        })
+            .clone()
+    })
 }
 
 /// Creates a right-handed orthographic projection matrix for 2D rendering.
