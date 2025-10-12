@@ -1,9 +1,6 @@
 mod shaperenderable;
 
-use crate::core::{Geometry, GeometryProvider};
-use crate::graphics2d;
-
-pub use shaperenderable::*;
+pub use shaperenderable::ShapeRenderable;
 
 #[derive(Debug, Clone)]
 pub enum ShapeKind {
@@ -41,11 +38,5 @@ impl Shape for Rectangle {
             width: self.width,
             height: self.height,
         }
-    }
-}
-
-impl GeometryProvider for Rectangle {
-    fn to_geometry(&self) -> Geometry {
-        graphics2d::rectangle_geometry(self.width, self.height)
     }
 }

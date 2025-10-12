@@ -1,5 +1,5 @@
 use crate::graphics2d::shapes::ShapeRenderable;
-
+pub trait ToSvg { fn to_svg(&self) -> String; }
 pub struct SvgDocument {
     width: f32,
     height: f32,
