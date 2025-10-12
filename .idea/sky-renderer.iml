@@ -7,10 +7,12 @@
       <sourceFolder url="file://$MODULE_DIR$/examples/bouncing_balls/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/examples/bouncing_balls_ws_client/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/examples/bouncing_balls_ws_server/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/examples/bouncing_balls_instanced/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/examples/bouncing_balls/target" />
       <excludeFolder url="file://$MODULE_DIR$/examples/bouncing_balls_ws_client/target" />
       <excludeFolder url="file://$MODULE_DIR$/examples/bouncing_balls_ws_server/target" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
+      <excludeFolder url="file://$MODULE_DIR$/examples/bouncing_balls_instanced/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
