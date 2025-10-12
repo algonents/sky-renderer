@@ -8,7 +8,6 @@ use crate::graphics2d::shapes::{Shape, ShapeKind};
 use crate::graphics2d::svg::ToSvg;
 
 const MIN_STROKE_WIDTH: f32 = 1.5;
-
 const SCALE_FACTOR: f32 = 1.0;
 
 thread_local! {
