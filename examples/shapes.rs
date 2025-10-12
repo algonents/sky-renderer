@@ -1,8 +1,8 @@
 extern crate sky_renderer;
 
 use sky_renderer::core::{App, Color, Renderable, Renderer, Window};
-use sky_renderer::graphics2d::shapes::Rectangle;
 use sky_renderer::graphics2d::shapes::ShapeRenderable;
+use sky_renderer::graphics2d::shapes::Rectangle;
 
 fn create_equilateral_triangle() -> [(f32, f32); 3] {
     let side = 20.0;
