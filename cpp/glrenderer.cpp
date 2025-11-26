@@ -7,7 +7,7 @@ extern "C"
         // Initialize GLFW
         glfwInit();
 
-        // Set MSAA samples for anti-aliasing
+        // Set MSAA samples for antialiasing
         glfwWindowHint(GLFW_SAMPLES, 4);
 
         // Tell GLFW what version of OpenGL we are using
@@ -19,11 +19,13 @@ extern "C"
         // So that means we only have the modern functions
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+        //glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);        
+
 #ifdef __APPLE__
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-        GLFWwindow *window = glfwCreateWindow(width, height, title, NULL, NULL);
+        GLFWwindow *window = glfwCreateWindow(100, 100, "Title", glfwGetPrimaryMonitor(), NULL); //glfwCreateWindow(width, height, title, NULL, NULL);
         if (window == nullptr)
         {
             std::cout << "Failed to create GLFW window" << std::endl;
@@ -44,7 +46,9 @@ extern "C"
         // Enable MSAA (glEnable must come AFTER context is current and GLAD is loaded)
         glEnable(GL_MULTISAMPLE);
         
-        glViewport(0, 0, width, height);
+        int fb_width, fb_height;
+        glfwGetFramebufferSize(window, &fb_width, &fb_height);
+        glViewport(0, 0, fb_width, fb_height);
         return window;
     }
 
