@@ -45,10 +45,10 @@ impl Renderer {
         gl_enable(GL_BLEND);
         gl_blend_func(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        let zoom_transform_loc = gl_get_uniform_location(mesh.shader.program(), "u_zoomTransform");
-        if zoom_transform_loc != -1 {
+        let transform_loc = gl_get_uniform_location(mesh.shader.program(), "u_Transform");
+        if transform_loc != -1 {
             gl_uniform_matrix_4fv(
-                zoom_transform_loc,
+                transform_loc,
                 1,
                 GLboolean::FALSE,
                 mesh.transform().to_cols_array().as_ptr(),
@@ -91,10 +91,10 @@ impl Renderer {
         gl_enable(GL_BLEND);
         gl_blend_func(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        let zoom_loc = gl_get_uniform_location(mesh.shader.program(), "u_zoomTransform");
-        if zoom_loc != -1 {
+        let transform_loc = gl_get_uniform_location(mesh.shader.program(), "u_Transform");
+        if transform_loc != -1 {
             gl_uniform_matrix_4fv(
-                zoom_loc, 1, GLboolean::FALSE, mesh.transform().to_cols_array().as_ptr(),
+                transform_loc, 1, GLboolean::FALSE, mesh.transform().to_cols_array().as_ptr(),
             );
         }
 

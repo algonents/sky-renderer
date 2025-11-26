@@ -5,7 +5,7 @@ layout(location = 0) in vec2 aPos;
 // Per-draw translation in screen/pixel coords
 uniform vec2 u_screen_offset;
 // Zoom/projection only (no per-object translate here)
-uniform mat4 u_zoomTransform;
+uniform mat4 u_Transform;
 
 
 // Texture Coordinate: u, v
@@ -16,6 +16,6 @@ out vec2 TexCoord;
 
 void main() {
     vec2 p = aPos + u_screen_offset;
-    gl_Position = u_zoomTransform * vec4(p, 0.0, 1.0);
+    gl_Position = u_Transform * vec4(p, 0.0, 1.0);
     TexCoord = aTexCoord;
 }
