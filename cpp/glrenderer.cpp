@@ -25,7 +25,8 @@ extern "C"
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-        GLFWwindow *window = glfwCreateWindow(100, 100, "Title", glfwGetPrimaryMonitor(), NULL); //glfwCreateWindow(width, height, title, NULL, NULL);
+        GLFWwindow *window = glfwCreateWindow(width, height, title, NULL, NULL);
+        //glfwCreateWindow(100, 100, "Title", glfwGetPrimaryMonitor(), NULL);
         if (window == nullptr)
         {
             std::cout << "Failed to create GLFW window" << std::endl;

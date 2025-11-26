@@ -19,7 +19,7 @@ const BALL_RADIUS: f32 = 5.0;
 fn main() {
     let mut balls = initialize_balls(1000, 1600.0, 1200.0);
 
-    let window = Window::new("Bouncing Balls — Instanced", 800, 600);
+    let window = Window::new("Bouncing Balls — Instanced", 1600, 1200);
     let h_wnd = window.handle(); // read-only window info after move
     let mut app = App::new(window);
 
