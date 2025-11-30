@@ -3,11 +3,7 @@ use std::ffi::c_void;
 use std::rc::Rc;
 
 use crate::core::engine::opengl::{gl_clear_color, gl_viewport};
-use crate::core::engine::glfw::{
-    GLFWwindow, glfw_create_window, glfw_get_window_user_pointer, glfw_poll_events,
-    glfw_set_cursor_pos_callback, glfw_set_scroll_callback, glfw_set_window_user_pointer,
-    glfw_swap_buffers, glfw_window_should_close,
-};
+use crate::core::engine::glfw::{GLFWwindow, glfw_create_window, glfw_get_window_user_pointer, glfw_poll_events, glfw_set_cursor_pos_callback, glfw_set_scroll_callback, glfw_set_window_user_pointer, glfw_swap_buffers, glfw_window_should_close, glfw_set_window_size_callback};
 
 
 /// Shared inner state that both Window and WindowHandle can access.
@@ -32,6 +28,9 @@ pub struct WindowHandle {
 
 extern "C" fn _on_viewport_resized(_window: *const GLFWwindow, width: i32, height: i32) {
     gl_viewport(0, 0, width, height);
+}
+
+extern "C" fn _on_window_resized_callback(_window: *const GLFWwindow, width: i32, height: i32){
     let user_ptr = glfw_get_window_user_pointer(_window);
     if !user_ptr.is_null() {
         unsafe {
@@ -67,6 +66,7 @@ impl Window {
     pub fn new(title: &str, width: i32, height: i32) -> Box<Self> {
         let glfw_window = glfw_create_window(title, width, height, Some(_on_viewport_resized));
         // hook callbacks
+        glfw_set_window_size_callback(glfw_window, Some(_on_window_resized_callback));
         glfw_set_scroll_callback(glfw_window, Some(_on_scroll_callback));
         glfw_set_cursor_pos_callback(glfw_window, Some(_on_cursor_position_callback));
 

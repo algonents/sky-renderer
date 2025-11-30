@@ -2,10 +2,12 @@
 
 extern "C"
 {
-    GLFWwindow *_glfwCreateWindow(char *title, int width, int height, GLFWframebuffersizefun callback)
+    GLFWwindow *_glfwCreateWindow(const char *title, int width, int height, GLFWframebuffersizefun callback)
     {
-        // Initialize GLFW
-        glfwInit();
+        if(!glfwInit()){
+            std::cerr << "Failed to initialize GLFW" << std::endl;
+            return nullptr;
+        }
 
         // Set MSAA samples for antialiasing
         glfwWindowHint(GLFW_SAMPLES, 4);
@@ -25,22 +27,24 @@ extern "C"
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-        GLFWwindow *window = glfwCreateWindow(width, height, title, NULL, NULL);
+        GLFWwindow *window = glfwCreateWindow(width, height, title, nullptr, nullptr);
         //glfwCreateWindow(100, 100, "Title", glfwGetPrimaryMonitor(), NULL);
         if (window == nullptr)
         {
-            std::cout << "Failed to create GLFW window" << std::endl;
+            std::cerr << "Failed to create GLFW window" << std::endl;
             glfwTerminate();
+            return nullptr;
         }
         glfwMakeContextCurrent(window);
         glfwSetFramebufferSizeCallback(window, callback);
 
         // glad: load all OpenGL function pointers
         // ---------------------------------------
-        gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
-            std::cout << "Failed to initialize GLAD" << std::endl;
+            std::cerr << "Failed to initialize GLAD" << std::endl;
+            glfwDestroyWindow(window);
+            glfwTerminate();
             return nullptr;
         }
 
@@ -66,6 +70,10 @@ extern "C"
     void *_glfwGetWindowUserPointer(GLFWwindow *window)
     {
         return glfwGetWindowUserPointer(window);
+    }
+
+    void _glfwSetWindowSizeCallback(GLFWwindow *window, GLFWwindowsizefun callback){
+        glfwSetWindowSizeCallback(window, callback);
     }
 
     bool _glfwWindowShouldClose(GLFWwindow *window)

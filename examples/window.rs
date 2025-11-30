@@ -8,6 +8,10 @@ fn main() {
         println!("window resized, width:{}, height: {}", w, h);
     });
 
+    (&mut *window).on_cursor_position(move |x_pos:f64, y_pos: f64|{
+        println!("Mouse moved, x_pos:{}, y_pos: {}", x_pos, y_pos);
+    });
+
     window.on_scroll(move |x_offset, y_offset| {
         println!("Mouse scrolled, x_offset:{}, y_offset: {}", x_offset, y_offset);
     });

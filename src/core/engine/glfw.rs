@@ -10,6 +10,9 @@ pub enum GLFWwindow {}
 pub type GLFWframebuffersizefun =
     Option<extern "C" fn(window: *const GLFWwindow, width: i32, height: i32)>;
 
+pub type GLFWwindowsizefun =
+Option<extern "C" fn(window: *const GLFWwindow, width: i32, height: i32)>;
+
 pub type GLFWscrollfun =
     Option<extern "C" fn(window: *const GLFWwindow, xoffset: f64, yoffset: f64)>;
 
@@ -36,6 +39,7 @@ unsafe extern "C" {
 
     fn _glfwGetTime() -> c_double;
     fn _glfwSetFramebufferSizeCallback(window: *const GLFWwindow, callback: GLFWframebuffersizefun);
+    fn _glfwSetWindowSizeCallback(window: *const GLFWwindow, callback: GLFWwindowsizefun);
     fn _glfwSetScrollCallback(window: *const GLFWwindow, callback: GLFWscrollfun);
     fn _glfwSetCursorPosCallback(window: *const GLFWwindow, callback: GLFWcursorposfun);
     fn _glfwGetWindowSize(window: *const GLFWwindow, width: *mut c_int, height: *mut c_int);
@@ -93,6 +97,12 @@ pub fn glfw_set_scroll_callback(window: *const GLFWwindow, callback: GLFWscrollf
 pub fn glfw_set_cursor_pos_callback(window: *const GLFWwindow, callback: GLFWcursorposfun) {
     unsafe {
         _glfwSetCursorPosCallback(window, callback);
+    }
+}
+
+pub fn glfw_set_window_size_callback(window: *const GLFWwindow, callback: GLFWwindowsizefun){
+    unsafe{
+        _glfwSetWindowSizeCallback(window, callback);
     }
 }
 

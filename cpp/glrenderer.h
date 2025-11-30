@@ -5,7 +5,7 @@
 extern "C"
 {
     // GFLW
-    GLFWwindow *_glfwCreateWindow(char *title, int width, int height, GLFWframebuffersizefun callback);
+    GLFWwindow *_glfwCreateWindow(const char *title, int width, int height, GLFWframebuffersizefun callback);
     void _glfwSetWindowUserPointer(GLFWwindow *window, void *pointer);
     void *_glfwGetWindowUserPointer(GLFWwindow *window);
 
@@ -17,6 +17,7 @@ extern "C"
 
     double _glfwGetTime();
 
+    void _glfwSetWindowSizeCallback(GLFWwindow *window, GLFWwindowsizefun callback);
     void _glfwSetScrollCallback(GLFWwindow *window, GLFWscrollfun callback);
     void _glfwSetCursorPosCallback(GLFWwindow *window, GLFWcursorposfun callback);
 
