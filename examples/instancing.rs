@@ -16,7 +16,7 @@ const RADIUS: f32 = 3.0;
 const STEEL_BLUE: (f32, f32, f32) = (0.274510, 0.509804, 0.705882);
 
 fn main() {
-    let mut window = Window::new("Instancing Demo — Clean & Fast", WIDTH, HEIGHT);
+    let mut window = Window::new("Instancing Demo", WIDTH, HEIGHT);
     window.on_resize(|w, h| println!("Window resized: {}x{}", w, h));
     let renderer = Renderer::new(window.handle());
     
