@@ -6,22 +6,19 @@ use crate::core::engine::opengl::{
     gl_draw_arrays, gl_get_uniform_location, gl_point_size, gl_uniform_matrix_4fv, GLboolean,
     GLfloat,
 };
+use crate::core::window::WindowHandle;
 
 pub struct Renderer {
     pub zoom_level: f32,
+    pub window_handle: WindowHandle
 }
 pub trait Renderable {
     fn render(&mut self, renderer: &Renderer);
 }
-impl Default for Renderer {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
 impl Renderer {
-    pub fn new() -> Self {
-        Renderer {zoom_level:1.0}
+    pub fn new(window_handle: WindowHandle) -> Self {
+        Renderer {zoom_level:1.0, window_handle}
     }
 
     pub fn set_point_size(&self, point_size: GLfloat) {

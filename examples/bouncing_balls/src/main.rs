@@ -23,11 +23,10 @@ fn main() {
     let window = Window::new("Bouncing Balls", 800, 600);
 
     // so we can access window properties after the window has been moved to app
-    let h_wnd = window.handle();
+    //
 
-    let mut app = App::new(window);
 
-    let renderer = Renderer::new();
+    let renderer = Renderer::new(window.handle());
     renderer.set_point_size(6.0);
 
     // 3) Create one ShapeRenderable per ball (AFTER OpenGL context exists)
@@ -47,6 +46,8 @@ fn main() {
     // 4) Timekeeping for per-frame delta
     let mut last_time = renderer.get_time();
 
+    let h_wnd = window.handle();
+    let mut app = App::new(window);
 
 
     // 5) Render loop: update physics, update shapes, render

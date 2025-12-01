@@ -18,8 +18,8 @@ const STEEL_BLUE: (f32, f32, f32) = (0.274510, 0.509804, 0.705882);
 fn main() {
     let mut window = Window::new("Instancing Demo — Clean & Fast", WIDTH, HEIGHT);
     window.on_resize(|w, h| println!("Window resized: {}x{}", w, h));
-
-    let mut app = App::new(window);
+    let renderer = Renderer::new(window.handle());
+    
 
     // One shape, many instances
     let mut dots = ShapeRenderable::circle(
@@ -45,7 +45,7 @@ fn main() {
     let mut positions = base_positions.clone();
     dots.set_instance_positions(&positions);
 
-    let renderer = Renderer::new();
+    let mut app = App::new(window);
     
     // render loop
     app.on_render(move || {

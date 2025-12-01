@@ -38,9 +38,6 @@ fn main() {
         });
     });
 
-    let mut app = App::new(window);
-
-
     let vertex_shader_source = include_str!("shaders/waypoints.vert");
     let fragment_shader_source = include_str!("shaders/waypoints.frag");
     let geometry_shader_source = include_str!("shaders/waypoints.geom");
@@ -59,8 +56,11 @@ fn main() {
 
     let mesh = Mesh::new(Rc::new(shader), geometry);
 
-    let renderer = Renderer::new();
+    let renderer = Renderer::new(window.handle());
     renderer.set_point_size(5.0);
+
+    let mut app = App::new(window);
+
 
     app.on_render(move || {
         MAP_BOUNDS.with(|bounds| {

@@ -20,10 +20,9 @@ fn main() {
     let mut balls = initialize_balls(1000, 1600.0, 1200.0);
 
     let window = Window::new("Bouncing Balls — Instanced", 1600, 1200);
-    let h_wnd = window.handle(); // read-only window info after move
-    let mut app = App::new(window);
 
-    let renderer = Renderer::new();
+
+    let renderer = Renderer::new(window.handle());
     renderer.set_point_size(6.0);
 
     let mut dots = ShapeRenderable::circle(
@@ -41,6 +40,8 @@ fn main() {
 
     // Timekeeping
     let mut last_time = renderer.get_time();
+    let h_wnd = window.handle(); // read-only window info after move
+    let mut app = App::new(window);
 
     app.on_render(move || {
         let current_time = renderer.get_time();

@@ -2,10 +2,17 @@
 
 extern "C"
 {
+
+    void glfwErrorCallback(int error, const char* description) {
+        std::cerr << "[GLFW ERROR] (" << error << "): " << description << std::endl;
+    }
+
+
     GLFWwindow *_glfwCreateWindow(const char *title, int width, int height, GLFWframebuffersizefun callback)
     {
+        glfwSetErrorCallback(glfwErrorCallback);
+        
         if(!glfwInit()){
-            std::cerr << "Failed to initialize GLFW" << std::endl;
             return nullptr;
         }
 
@@ -31,7 +38,6 @@ extern "C"
         //glfwCreateWindow(100, 100, "Title", glfwGetPrimaryMonitor(), NULL);
         if (window == nullptr)
         {
-            std::cerr << "Failed to create GLFW window" << std::endl;
             glfwTerminate();
             return nullptr;
         }
