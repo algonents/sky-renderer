@@ -63,6 +63,11 @@ extern "C"
         return window;
     }
 
+    void _glfwGetWindowContentScale(GLFWwindow *window, float* xscale, float* yscale)
+    {
+        glfwGetWindowContentScale(window, xscale, yscale);
+    }
+
     void _glfwWindowHint(int hint, int value)
     {
         glfwWindowHint(hint, value);

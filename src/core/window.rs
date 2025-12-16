@@ -3,7 +3,7 @@ use std::ffi::c_void;
 use std::rc::Rc;
 
 use crate::core::engine::opengl::{gl_clear_color, gl_viewport};
-use crate::core::engine::glfw::{GLFWwindow, glfw_create_window, glfw_get_window_user_pointer, glfw_poll_events, glfw_set_cursor_pos_callback, glfw_set_scroll_callback, glfw_set_window_user_pointer, glfw_swap_buffers, glfw_window_should_close, glfw_set_window_size_callback};
+use crate::core::engine::glfw::{GLFWwindow, glfw_create_window, glfw_get_window_user_pointer, glfw_poll_events, glfw_set_cursor_pos_callback, glfw_set_scroll_callback, glfw_set_window_user_pointer, glfw_swap_buffers, glfw_window_should_close, glfw_set_window_size_callback, glfw_get_window_content_scale};
 
 
 /// Shared inner state that both Window and WindowHandle can access.
@@ -102,7 +102,10 @@ impl Window {
         self.inner.height.get()
     }
 
-
+    pub fn content_scale(&self)->(f32, f32){
+        glfw_get_window_content_scale(self.glfw_window)
+    }
+    
     pub fn clear_color(&self, red: f32, green: f32, blue: f32, alpha: f32) {
         gl_clear_color(red, green, blue, alpha);
     }

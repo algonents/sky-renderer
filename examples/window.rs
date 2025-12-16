@@ -4,6 +4,7 @@ use sky_renderer::core::{App, Window};
 
 fn main() {
     let mut  window = Window::new("Hello Window", 800, 600);
+
     window.on_resize(move |w, h| {
         println!("window resized, width:{}, height: {}", w, h);
     });

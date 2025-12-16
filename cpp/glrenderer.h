@@ -9,6 +9,9 @@ extern "C"
     void _glfwSetWindowUserPointer(GLFWwindow *window, void *pointer);
     void *_glfwGetWindowUserPointer(GLFWwindow *window);
 
+    void _glfwGetWindowContentScale(GLFWwindow *window, float* xscale, float* yscale);
+
+
     bool _glfwWindowShouldClose(GLFWwindow *window);
     void _glfwTerminate();
 
