@@ -1,52 +1,36 @@
-# Roadmap: Air Traffic Management Radar Visualization MVP
+# Roadmap: sky-renderer Library Enhancements
 
-Target: 6-month MVP for real-time radar map visualization for air traffic management.
+Features to add to the sky-renderer library to support interactive 2D visualization applications (including **SkyTracker**, the ATM radar visualization application).
 
-## Phase 1: Core Infrastructure (Month 1-2)
+> **Note**: Domain-specific ATM features (aircraft symbols, track management, airspace boundaries, etc.) belong in the separate closed-source **SkyTracker** repository.
 
-### Text Rendering (Critical Path)
+---
+
+## Phase 1: Text Rendering (Critical Path)
+
 - [ ] Integrate font rasterization (`fontdue` or `ab_glyph` crate)
 - [ ] Generate font atlas texture at startup
 - [ ] Store glyph metrics and UV coordinates
 - [ ] Create text shader (instanced quads with texture sampling)
-- [ ] Implement `Text` struct with API: `Text::new(x, y, "AWY123", font_size, color)`
+- [ ] Implement `Text` struct with API: `Text::new(x, y, "label", font_size, color)`
 - [ ] Support text anchoring (left, center, right)
 - [ ] Batch multiple text draws into single draw call
 
-### Coordinate System
+## Phase 2: Coordinate System & Projection
+
 - [ ] Define `Projection` trait for coordinate transforms
-- [ ] Implement stereographic projection (common for radar)
-- [ ] Create `Viewport` struct with center (lat/lon) and range (nautical miles)
+- [ ] Implement identity projection (screen coordinates)
 - [ ] World-to-screen and screen-to-world conversion functions
 - [ ] Unit tests for projection accuracy
 
-## Phase 2: Radar Primitives (Month 2-3)
+> **SkyTracker**: Stereographic projection, lat/lon viewport, nautical mile units
 
-### Aircraft Symbol
-- [ ] Rotatable aircraft icon (triangle/chevron) with heading
-- [ ] Velocity vector line (speed/heading indicator)
-- [ ] Label block positioned relative to symbol (callsign, altitude, speed)
-- [ ] Selection state with visual highlight
-- [ ] Coasting indicator (stale track)
-
-### Map Elements
-- [ ] Range rings at configurable intervals (use existing `arc`)
-- [ ] Waypoints as named points with labels
-- [ ] Airways/routes as polylines with optional labels
-- [ ] Sector/airspace boundaries as polygons with fill and stroke
-- [ ] Compass rose or north indicator
-
-### Trail History
-- [ ] Circular buffer storing N past positions per track
-- [ ] Configurable trail length and decay (fade older positions)
-- [ ] Efficient rendering via instancing or line strips
-
-## Phase 3: Interaction (Month 3-4)
+## Phase 3: Interaction
 
 ### Picking/Selection
 - [ ] Screen-to-world coordinate conversion using projection
 - [ ] Spatial index for efficient hit testing (grid or quadtree)
-- [ ] Click to select/deselect track
+- [ ] Click to select/deselect entities
 - [ ] Multi-select support (shift+click or box select)
 - [ ] Selection callback/event system
 
@@ -54,45 +38,41 @@ Target: 6-month MVP for real-time radar map visualization for air traffic manage
 - [ ] Mouse drag to pan (update viewport center)
 - [ ] Scroll wheel to zoom (update viewport range)
 - [ ] Keyboard shortcuts (arrow keys for pan, +/- for zoom)
-- [ ] Zoom-to-fit selected tracks
+- [ ] Zoom-to-fit selected entities
 - [ ] Min/max zoom limits
 
-## Phase 4: Data Integration (Month 4-5)
+## Phase 4: Layer System
 
-### Track Management
-- [ ] `TrackManager` struct for create/update/delete operations
-- [ ] Track ID to internal handle mapping
-- [ ] Batch position updates via instancing
-- [ ] Configurable update rate handling (1-4 Hz typical radar)
-- [ ] Track timeout/deletion for lost targets
-
-### Layer System
 - [ ] `Layer` struct with z-order, visibility, opacity
-- [ ] Predefined layers: background, map, routes, aircraft, labels, selection
 - [ ] Layer visibility toggles
 - [ ] Per-layer rendering with proper depth ordering
+- [ ] Layer-based draw call batching
 
-## Phase 5: Polish & Performance (Month 5-6)
+> **SkyTracker**: Predefined layers (background, map, routes, aircraft, labels, selection)
+
+## Phase 5: Trail Rendering
+
+- [ ] Circular buffer storing N past positions per entity
+- [ ] Configurable trail length and decay (fade older positions)
+- [ ] Efficient rendering via instancing or line strips
+
+## Phase 6: Performance & Stability
 
 ### Performance Optimization
 - [ ] Cache uniform locations (from TODO.md)
 - [ ] Set GL state once at init, not per draw (from TODO.md)
 - [ ] Batch draw calls by shader/layer
-- [ ] Profile with 500+ tracks at 4 Hz update rate
-- [ ] Memory usage optimization for long-running sessions
-
-### Additional Features
-- [ ] Conflict visualization (connecting lines between aircraft pairs)
-- [ ] Altitude filter (show only FL200-FL400, etc.)
-- [ ] Speed/heading filter
-- [ ] Distance measuring tool (click two points)
-- [ ] Screenshot/export capability
+- [ ] Profile and optimize for high entity counts
 
 ### Stability
 - [ ] Error handling improvements (from TODO.md)
 - [ ] Resource cleanup on shutdown (from TODO.md)
-- [ ] Integration tests with simulated track data
 - [ ] Memory leak detection
+
+### Utilities
+- [ ] Distance measuring tool (generic, pixel/world units)
+- [ ] Screenshot/export capability
+- [ ] Compass rose rendering
 
 ---
 
@@ -104,19 +84,52 @@ External crates to evaluate:
 
 ## Milestones
 
-| Milestone | Target | Deliverable |
-|-----------|--------|-------------|
-| M1 | End of Month 2 | Text rendering working, basic projection |
-| M2 | End of Month 3 | Aircraft symbols with labels, map elements |
-| M3 | End of Month 4 | Interactive pan/zoom/select |
-| M4 | End of Month 5 | Live track updates, layer system |
-| M5 | End of Month 6 | Performance validated, MVP complete |
+| Milestone | Deliverable |
+|-----------|-------------|
+| M1 | Text rendering working |
+| M2 | Projection trait, picking/selection |
+| M3 | Pan/zoom controls |
+| M4 | Layer system |
+| M5 | Trail rendering, performance validated |
 
-## Success Criteria for MVP
+---
 
-- [ ] Render 500+ aircraft tracks at 4 Hz update rate without frame drops
-- [ ] Text labels readable at all zoom levels
-- [ ] Pan/zoom responsive (<16ms frame time)
-- [ ] Select track by clicking
-- [ ] Show/hide layers independently
-- [ ] Range rings and sector boundaries visible
+## Out of Scope (SkyTracker Repository)
+
+The following features belong in the closed-source SkyTracker application:
+
+### Radar-Specific Projections
+- Stereographic projection implementation
+- Viewport with lat/lon center and nautical mile range
+
+### Aircraft Visualization
+- Aircraft symbol (rotatable icon with heading)
+- Velocity vector line
+- Label block (callsign, altitude, speed)
+- Selection state highlighting
+- Coasting indicator (stale track)
+
+### Aviation Map Elements
+- Range rings with NM labels
+- Waypoints with labels
+- Airways/routes as labeled polylines
+- Sector/airspace boundaries
+
+### Track Management
+- `TrackManager` for create/update/delete operations
+- Track ID mapping
+- Batch position updates
+- Update rate handling (1-4 Hz)
+- Track timeout/deletion
+
+### ATM-Specific Features
+- Conflict visualization (aircraft pair connecting lines)
+- Altitude/speed/heading filters
+- Aviation-specific distance measuring (NM)
+
+### SkyTracker Success Criteria
+- Render 500+ aircraft tracks at 4 Hz update rate
+- Text labels readable at all zoom levels
+- Pan/zoom responsive (<16ms frame time)
+- Select track by clicking
+- Show/hide layers independently
