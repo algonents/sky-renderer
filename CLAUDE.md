@@ -82,3 +82,8 @@ Point, MultiPoint, Line, Polyline, Arc, Triangle, Rectangle, RoundedRectangle, C
 - Uses X11 only on Linux (Wayland disabled in CMakeLists.txt to avoid scaling issues)
 - OpenGL 3.3 Core Profile for macOS compatibility
 - MSAA 4x multisampling enabled by default
+
+## Project Planning
+
+- **ROADMAP.md**: 6-month plan to build ATM (Air Traffic Management) radar visualization MVP. Covers text rendering, coordinate projection, aircraft symbols, interaction, and performance targets.
+- **TODO.md**: Technical debt and improvement areas including resource leaks, FFI issues, performance optimizations, and code style cleanup.
