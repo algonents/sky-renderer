@@ -49,6 +49,46 @@ Technical debt and improvement areas identified in code review.
 
 - [ ] `geometry.rs:196-197` - Use single `gl_buffer_data` with data instead of `gl_buffer_data_empty` + `gl_buffer_sub_data`
 
+## FFI Layer (C++)
+
+### Bugs
+
+- [ ] `glrenderer.cpp:30-35` - Window creation continues after failure (missing `return nullptr`), will crash on `glfwMakeContextCurrent(nullptr)`
+- [ ] `glrenderer.cpp:40-41` - GLAD initialized twice, first call result ignored
+
+### Design Issues
+
+- [ ] `glrenderer.cpp:113-118` - `_glClearColor` also calls `glClear()` - surprising hidden side effect, should be separate functions
+- [ ] `glrenderer.cpp:216` - Debug print on every texture upload, should be `#ifndef NDEBUG` guarded
+
+### Missing Wrappers
+
+- [ ] Add `_glDeleteVertexArrays` wrapper (needed for VAO cleanup)
+- [ ] Add `_glDeleteShader` wrapper (needed for shader cleanup)
+- [ ] Add `_glDeleteProgram` wrapper (needed for program cleanup)
+- [ ] Add `_glGetShaderiv` / `_glGetShaderInfoLog` wrappers (for error reporting to Rust side)
+- [ ] Add `_glGetProgramiv` / `_glGetProgramInfoLog` wrappers (for link error reporting)
+
+## FFI Layer (Rust)
+
+### Bugs
+
+- [ ] `opengl.rs:261-268` - `gl_buffer_sub_data_vec2` assumes `(f32, f32)` is tightly packed (potential UB), use `#[repr(C)]` struct instead
+- [ ] `opengl.rs:298` - Typo: `instance_cout` should be `instance_count`
+- [ ] `glfw.rs:69` - `glfw_set_window_user_pointer` takes `*const c_void` but should be `*mut c_void`
+
+### Performance
+
+- [ ] `opengl.rs:315-317` - `gl_get_uniform_location` allocates CString on every call, contributes to per-frame heap allocations
+
+### Dead Code
+
+- [ ] `glfw.rs:38` - `_glfwSetFramebufferSizeCallback` declared but never used
+
+### API Consistency
+
+- [ ] `opengl.rs:189` - `gl_gen_buffers` takes `&mut Vec<GLuint>` instead of `&mut [GLuint]` (unusual API)
+
 ## Code Style
 
 - [ ] Run `rustfmt` to fix inconsistent spacing (`zoom_level:1.0` vs `zoom_level: 1.0`, return arrows, etc.)
