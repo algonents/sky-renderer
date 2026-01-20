@@ -1,6 +1,6 @@
 extern crate sky_renderer;
 
-use sky_renderer::core::{App, Color, Renderable, Renderer, Window};
+use sky_renderer::core::{App, Color, Renderable, Renderer, Window, Vec2};
 use sky_renderer::graphics2d::shapes::ShapeRenderable;
 
 use rand::{rngs::ThreadRng, Rng};
@@ -35,7 +35,7 @@ fn main() {
     dots.create_multiple_instances(balls.len());
     // upload initial positions
     {
-        let positions: Vec<(f32, f32)> = balls.iter().map(|b| (b.x, b.y)).collect();
+        let positions: Vec<Vec2> = balls.iter().map(|b| Vec2::new(b.x, b.y)).collect();
         dots.set_instance_positions(&positions);
     }
 
@@ -65,7 +65,7 @@ fn main() {
         }
 
         // 🔁 Update instance positions (single VBO upload)
-        let positions: Vec<(f32, f32)> = balls.iter().map(|b| (b.x, b.y)).collect();
+        let positions: Vec<Vec2> = balls.iter().map(|b| Vec2::new(b.x, b.y)).collect();
         dots.set_instance_positions(&positions);
 
         // 🖼️ Single instanced draw call
