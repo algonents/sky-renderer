@@ -334,8 +334,20 @@ pub fn gl_draw_elements(mode: GLenum, count: GLsizei, element_type: GLenum, offs
 }
 
 pub fn gl_get_uniform_location(program: GLuint, name: &str) -> GLint {
-    let c_string = CString::new(name).expect("CString::new failed");
-    unsafe { _glGetUniformLocation(program, c_string.as_ptr()) }
+    const MAX_STACK_LEN: usize = 63;
+
+    debug_assert!(!name.contains('\0'), "Uniform name contains null byte");
+
+    if name.len() <= MAX_STACK_LEN {
+        // Stack-allocate for typical uniform names (avoids heap allocation)
+        let mut buf = [0u8; MAX_STACK_LEN + 1];
+        buf[..name.len()].copy_from_slice(name.as_bytes());
+        unsafe { _glGetUniformLocation(program, buf.as_ptr() as *const c_char) }
+    } else {
+        // Fallback to heap for unusually long names
+        let c_string = CString::new(name).expect("CString::new failed");
+        unsafe { _glGetUniformLocation(program, c_string.as_ptr()) }
+    }
 }
 
 pub fn gl_uniform_1f(location: GLint, v0: GLfloat) {
