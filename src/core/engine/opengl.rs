@@ -9,6 +9,27 @@ pub type GLuint = c_uint;
 pub type GLfloat = c_float;
 pub type GLvoid = c_void;
 
+/// A 2D vector with guaranteed C-compatible memory layout.
+/// Used for uploading vertex data to OpenGL.
+#[derive(Debug, Clone, Copy, PartialEq, Default)]
+#[repr(C)]
+pub struct Vec2 {
+    pub x: f32,
+    pub y: f32,
+}
+
+impl Vec2 {
+    pub fn new(x: f32, y: f32) -> Self {
+        Self { x, y }
+    }
+}
+
+impl From<(f32, f32)> for Vec2 {
+    fn from((x, y): (f32, f32)) -> Self {
+        Self { x, y }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(C)]
 pub enum GLboolean {
@@ -258,10 +279,10 @@ pub fn gl_buffer_sub_data<T>(target: GLenum, offset: GLsizeiptr, data: &[T]) {
     }
 }
 
-pub fn gl_buffer_sub_data_vec2(target: GLenum, xy: &[(f32, f32)]) {
-    // SAFETY: (f32,f32) is plain-old-data, tightly packed
+pub fn gl_buffer_sub_data_vec2(target: GLenum, xy: &[Vec2]) {
+    // SAFETY: Vec2 is #[repr(C)] with two f32 fields, guaranteeing tightly packed layout
     let ptr = xy.as_ptr() as *const GLvoid;
-    let size_bytes = (xy.len() * 2 * std::mem::size_of::<f32>()) as GLsizeiptr;
+    let size_bytes = (xy.len() * std::mem::size_of::<Vec2>()) as GLsizeiptr;
     unsafe {
         _glBufferSubData(target, 0 as GLsizeiptr, size_bytes, ptr);
     }

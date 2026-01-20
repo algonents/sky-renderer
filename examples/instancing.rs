@@ -1,6 +1,6 @@
 extern crate sky_renderer;
 
-use sky_renderer::core::{App, Color, Renderable, Renderer, Window};
+use sky_renderer::core::{App, Color, Renderable, Renderer, Window, Vec2};
 use sky_renderer::graphics2d::shapes::ShapeRenderable;
 
 const WIDTH: i32 = 1600;
@@ -32,10 +32,10 @@ fn main() {
     dots.create_multiple_instances(instance_count);
 
     // Static base grid
-    let mut base_positions = Vec::with_capacity(instance_count);
+    let mut base_positions: Vec<Vec2> = Vec::with_capacity(instance_count);
     for j in 0..ROWS {
         for i in 0..COLS {
-            base_positions.push((
+            base_positions.push(Vec2::new(
                 ORIGIN_X + i as f32 * SPACING,
                 ORIGIN_Y + j as f32 * SPACING,
             ));
@@ -56,8 +56,8 @@ fn main() {
         let t = now as f32;
         let wiggle = (t * 2.0).sin() * 3.0;
 
-        for (dst, &(x, y)) in positions.iter_mut().zip(base_positions.iter()) {
-            *dst = (x + wiggle, y+wiggle);
+        for (dst, base) in positions.iter_mut().zip(base_positions.iter()) {
+            *dst = Vec2::new(base.x + wiggle, base.y + wiggle);
         }
 
         dots.set_instance_positions(&positions);

@@ -100,7 +100,7 @@ Mouse coordinates are in **window/logical** space, but rendering is in **framebu
 
 ### Bugs
 
-- [ ] `opengl.rs:261-268` - `gl_buffer_sub_data_vec2` assumes `(f32, f32)` is tightly packed (potential UB), use `#[repr(C)]` struct instead
+- [x] `opengl.rs:261-268` - `gl_buffer_sub_data_vec2` assumes `(f32, f32)` is tightly packed (potential UB), use `#[repr(C)]` struct instead
 - [x] `opengl.rs:298` - Typo: `instance_cout` should be `instance_count`
 - [x] `glfw.rs:69` - `glfw_set_window_user_pointer` takes `*const c_void` but should be `*mut c_void`
 

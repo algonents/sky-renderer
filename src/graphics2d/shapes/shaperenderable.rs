@@ -2,7 +2,7 @@ use glam::{Mat4, Vec3};
 use std::rc::Rc;
 use std::cell::OnceCell;
 use std::f32::consts::PI;
-use crate::core::engine::opengl::{GLfloat, GL_POINTS, GL_TRIANGLES, GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP};
+use crate::core::engine::opengl::{GLfloat, GL_POINTS, GL_TRIANGLES, GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP, Vec2};
 use crate::core::{Color, Mesh, Renderable, Renderer, Shader, generate_texture_from_image, load_image, Geometry, Attribute};
 use crate::graphics2d::shapes::{Shape, ShapeKind};
 use crate::graphics2d::svg::ToSvg;
@@ -126,7 +126,7 @@ impl ShapeRenderable {
         self.mesh.geometry.enable_instancing_xy(capacity);
     }
 
-    pub fn set_instance_positions(&mut self, positions: &[(f32, f32)]) {
+    pub fn set_instance_positions(&mut self, positions: &[Vec2]) {
         self.mesh.geometry.update_instance_xy(positions);
     }
 
