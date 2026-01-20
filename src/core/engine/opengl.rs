@@ -295,10 +295,10 @@ pub fn gl_draw_arrays_instanced(
     mode: GLenum,
     first: GLint,
     count: GLsizei,
-    instance_cout: GLsizei,
+    instance_count: GLsizei,
 ) {
     unsafe {
-        _glDrawArraysInstanced(mode, first, count, instance_cout);
+        _glDrawArraysInstanced(mode, first, count, instance_count);
     }
 }
 
