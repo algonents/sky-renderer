@@ -25,7 +25,7 @@ cd examples/bouncing_balls && cargo run
 ### Build Requirements
 
 - C/C++ compiler and CMake (cmake crate invokes CMake during build)
-- Linux: `libgl1-mesa-dev`, `libwayland-dev`, `libxkbcommon-dev`, `xorg-dev`
+- Linux: `libgl1-mesa-dev`, `libwayland-dev`, `libxkbcommon-dev`
 - GLFW 3.4 is bundled, no external dependency needed
 
 ## Architecture
@@ -79,11 +79,11 @@ Point, MultiPoint, Line, Polyline, Arc, Triangle, Rectangle, RoundedRectangle, C
 
 ## Platform Notes
 
-- Uses X11 only on Linux (Wayland disabled in CMakeLists.txt to avoid scaling issues)
+- Uses Wayland on Linux (GLFW dynamically loads Wayland libraries at runtime)
 - OpenGL 3.3 Core Profile for macOS compatibility
 - MSAA 4x multisampling enabled by default
 
 ## Project Planning
 
-- **ROADMAP.md**: 6-month plan to build ATM (Air Traffic Management) radar visualization MVP. Covers text rendering, coordinate projection, aircraft symbols, interaction, and performance targets.
+- **ROADMAP.md**: Planned library enhancements (text rendering, projections, interaction, layers, trails) to support SkyTracker and other visualization applications.
 - **TODO.md**: Technical debt and improvement areas including resource leaks, FFI issues, performance optimizations, and code style cleanup.

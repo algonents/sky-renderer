@@ -69,6 +69,33 @@ Technical debt and improvement areas identified in code review.
 - [ ] Add `_glGetShaderiv` / `_glGetShaderInfoLog` wrappers (for error reporting to Rust side)
 - [ ] Add `_glGetProgramiv` / `_glGetProgramInfoLog` wrappers (for link error reporting)
 
+## Wayland / HiDPI Scaling
+
+### The Problem
+
+On HiDPI displays (common on Wayland), window coordinates and framebuffer coordinates differ:
+
+| Concept | X11 (no scaling) | Wayland @ 2x scale |
+|---------|------------------|-------------------|
+| Window size | 800×600 | 800×600 (logical) |
+| Framebuffer size | 800×600 | 1600×1200 (physical) |
+| Mouse coordinates | 0-800, 0-600 | 0-800, 0-600 (logical) |
+| OpenGL viewport | 800×600 | 1600×1200 |
+
+Mouse coordinates are in **window/logical** space, but rendering is in **framebuffer/physical** space. Mouse-to-world mapping will be off by the scale factor without correction.
+
+### Current State
+
+- Rendering correctly uses framebuffer size (via `glfwSetFramebufferSizeCallback` and `glfwGetFramebufferSize`)
+- Mouse coordinates come in window/logical space (uncorrected)
+
+### Missing Wrappers
+
+- [ ] Add `_glfwGetWindowContentScale` wrapper to query current scale factor
+- [ ] Add `_glfwSetWindowContentScaleCallback` wrapper to detect scale changes (window moved between monitors)
+- [ ] Expose content scale to Rust `Window` / `WindowHandle`
+- [ ] Document or provide helper for mouse-to-world coordinate conversion
+
 ## FFI Layer (Rust)
 
 ### Bugs
