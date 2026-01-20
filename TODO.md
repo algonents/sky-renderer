@@ -53,8 +53,8 @@ Technical debt and improvement areas identified in code review.
 
 ### Bugs
 
-- [ ] `glrenderer.cpp:30-35` - Window creation continues after failure (missing `return nullptr`), will crash on `glfwMakeContextCurrent(nullptr)`
-- [ ] `glrenderer.cpp:40-41` - GLAD initialized twice, first call result ignored
+- [x] `glrenderer.cpp:30-35` - Window creation continues after failure (missing `return nullptr`), will crash on `glfwMakeContextCurrent(nullptr)`
+- [x] `glrenderer.cpp:40-41` - GLAD initialized twice, first call result ignored
 
 ### Design Issues
 
@@ -100,9 +100,9 @@ Mouse coordinates are in **window/logical** space, but rendering is in **framebu
 
 ### Bugs
 
-- [ ] `opengl.rs:261-268` - `gl_buffer_sub_data_vec2` assumes `(f32, f32)` is tightly packed (potential UB), use `#[repr(C)]` struct instead
-- [ ] `opengl.rs:298` - Typo: `instance_cout` should be `instance_count`
-- [ ] `glfw.rs:69` - `glfw_set_window_user_pointer` takes `*const c_void` but should be `*mut c_void`
+- [x] `opengl.rs:261-268` - `gl_buffer_sub_data_vec2` assumes `(f32, f32)` is tightly packed (potential UB), use `#[repr(C)]` struct instead
+- [x] `opengl.rs:298` - Typo: `instance_cout` should be `instance_count`
+- [x] `glfw.rs:69` - `glfw_set_window_user_pointer` takes `*const c_void` but should be `*mut c_void`
 
 ### Performance
 
