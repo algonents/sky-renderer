@@ -53,8 +53,8 @@ Technical debt and improvement areas identified in code review.
 
 ### Bugs
 
-- [ ] `glrenderer.cpp:30-35` - Window creation continues after failure (missing `return nullptr`), will crash on `glfwMakeContextCurrent(nullptr)`
-- [ ] `glrenderer.cpp:40-41` - GLAD initialized twice, first call result ignored
+- [x] `glrenderer.cpp:30-35` - Window creation continues after failure (missing `return nullptr`), will crash on `glfwMakeContextCurrent(nullptr)`
+- [x] `glrenderer.cpp:40-41` - GLAD initialized twice, first call result ignored
 
 ### Design Issues
 

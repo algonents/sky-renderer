@@ -29,18 +29,17 @@ extern "C"
         //glfwCreateWindow(100, 100, "Title", glfwGetPrimaryMonitor(), NULL);
         if (window == nullptr)
         {
-            std::cout << "Failed to create GLFW window" << std::endl;
+            std::cerr << "Failed to create GLFW window" << std::endl;
             glfwTerminate();
+            return window;
         }
         glfwMakeContextCurrent(window);
         glfwSetFramebufferSizeCallback(window, callback);
 
         // glad: load all OpenGL function pointers
-        // ---------------------------------------
-        gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
-            std::cout << "Failed to initialize GLAD" << std::endl;
+            std::cerr << "Failed to initialize GLAD" << std::endl;
             return nullptr;
         }
 
