@@ -113,7 +113,7 @@ Mouse coordinates are in **window/logical** space, but rendering is in **framebu
 
 ### Performance
 
-- [ ] `opengl.rs:315-317` - `gl_get_uniform_location` allocates CString on every call, contributes to per-frame heap allocations
+- [x] `opengl.rs:315-317` - `gl_get_uniform_location` allocates CString on every call, contributes to per-frame heap allocations
 
 ### Dead Code
 
