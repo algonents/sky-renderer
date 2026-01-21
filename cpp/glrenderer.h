@@ -13,6 +13,7 @@ extern "C"
 
 
     bool _glfwWindowShouldClose(GLFWwindow *window);
+    void _glfwDestroyWindow(GLFWwindow *window);
     void _glfwTerminate();
 
     void _glfwSwapBuffers(GLFWwindow *window);

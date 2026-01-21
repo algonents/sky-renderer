@@ -3,7 +3,7 @@ use std::ffi::c_void;
 use std::rc::Rc;
 
 use crate::core::engine::opengl::{gl_clear_color, gl_viewport};
-use crate::core::engine::glfw::{GLFWwindow, glfw_create_window, glfw_get_window_user_pointer, glfw_poll_events, glfw_set_cursor_pos_callback, glfw_set_scroll_callback, glfw_set_window_user_pointer, glfw_swap_buffers, glfw_window_should_close, glfw_set_window_size_callback, glfw_get_window_content_scale};
+use crate::core::engine::glfw::{GLFWwindow, glfw_create_window, glfw_destroy_window, glfw_get_window_content_scale, glfw_get_window_user_pointer, glfw_poll_events, glfw_set_cursor_pos_callback, glfw_set_scroll_callback, glfw_set_window_size_callback, glfw_set_window_user_pointer, glfw_swap_buffers, glfw_window_should_close};
 
 
 /// Shared inner state that both Window and WindowHandle can access.
@@ -154,6 +154,14 @@ impl Window {
     fn _on_cursor_position(&mut self, x_pos: f64, y_pos: f64) {
         if let Some(callback) = &mut self.on_cursor_position {
             callback(x_pos, y_pos);
+        }
+    }
+}
+
+impl Drop for Window {
+    fn drop(&mut self) {
+        if !self.glfw_window.is_null() {
+            glfw_destroy_window(self.glfw_window);
         }
     }
 }
