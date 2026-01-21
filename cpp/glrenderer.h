@@ -32,6 +32,7 @@ extern "C"
     void _glShaderSource(GLuint shader, GLchar *source);
     void _glCompileShader(GLuint shader);
     void _glDeleteShader(GLuint shader);
+    void _glGetShaderiv(GLuint shader, GLenum pname, GLint *params);
     GLuint _glCreateProgram();
     void _glAttachShader(GLuint program, GLuint shader);
     void _glLinkProgram(GLuint program);

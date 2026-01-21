@@ -261,6 +261,11 @@ extern "C"
         glDeleteShader(shader);
     }
 
+    void _glGetShaderiv(GLuint shader, GLenum pname, GLint *params)
+    {
+        glGetShaderiv(shader, pname, params);
+    }
+
     GLuint _glCreateProgram()
     {
         return glCreateProgram();
