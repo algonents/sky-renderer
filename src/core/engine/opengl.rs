@@ -43,6 +43,7 @@ pub const GL_ELEMENT_ARRAY_BUFFER: u32 = 0x8893;
 pub const GL_FRAGMENT_SHADER: u32 = 0x8B30;
 pub const GL_VERTEX_SHADER: u32 = 0x8B31;
 pub const GL_GEOMETRY_SHADER: u32 = 0x8DD9;
+pub const GL_COMPILE_STATUS: u32 = 0x8B81;
 
 pub const GL_STATIC_DRAW: u32 = 0x88E4;
 pub const GL_DYNAMIC_DRAW: u32 = 0x88E8;
