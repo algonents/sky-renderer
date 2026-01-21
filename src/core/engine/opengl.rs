@@ -84,6 +84,7 @@ unsafe extern "C" {
     fn _glShaderSource(shader: GLuint, source: *const c_char);
     fn _glCompileShader(shader: GLuint);
     fn _glDeleteShader(shader: GLuint);
+    fn _glGetShaderiv(shader: GLuint, pname: GLenum, params: *mut GLint);
     fn _glCreateProgram() -> GLuint;
     fn _glAttachShader(program: GLuint, shader: GLuint);
     fn _glLinkProgram(program: GLuint);
@@ -183,6 +184,10 @@ pub fn gl_compile_shader(shader: GLuint) {
 
 pub fn gl_delete_shader(shader: GLuint) {
     unsafe { _glDeleteShader(shader) }
+}
+
+pub fn gl_get_shaderiv(shader: GLuint, pname: GLenum, params: &mut GLint) {
+    unsafe { _glGetShaderiv(shader, pname, params as *mut GLint) }
 }
 
 pub fn gl_create_program() -> GLuint {
