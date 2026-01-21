@@ -11,6 +11,7 @@ pub mod engine;
 
 pub use self::geometry::Attribute;
 pub use self::geometry::Geometry;
+pub use self::engine::opengl::Vec2;
 pub use self::mesh::Mesh;
 pub use self::renderer::Renderer;
 pub use self::renderer::Renderable;

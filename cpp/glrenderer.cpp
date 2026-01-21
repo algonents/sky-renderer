@@ -38,6 +38,7 @@ extern "C"
         //glfwCreateWindow(100, 100, "Title", glfwGetPrimaryMonitor(), NULL);
         if (window == nullptr)
         {
+            std::cerr << "Failed to create GLFW window" << std::endl;
             glfwTerminate();
             return nullptr;
         }
@@ -45,7 +46,6 @@ extern "C"
         glfwSetFramebufferSizeCallback(window, callback);
 
         // glad: load all OpenGL function pointers
-        // ---------------------------------------
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
             std::cerr << "Failed to initialize GLAD" << std::endl;
@@ -185,6 +185,11 @@ extern "C"
         return VAO;
     }
 
+    void _glDeleteVertexArray(GLuint vao)
+    {
+        glDeleteVertexArrays(1, &vao);
+    }
+
     void _glBindVertexArray(GLuint array)
     {
         glBindVertexArray(array);
@@ -271,6 +276,16 @@ extern "C"
 #endif
     }
 
+    void _glDeleteShader(GLuint shader)
+    {
+        glDeleteShader(shader);
+    }
+
+    void _glGetShaderiv(GLuint shader, GLenum pname, GLint *params)
+    {
+        glGetShaderiv(shader, pname, params);
+    }
+
     GLuint _glCreateProgram()
     {
         return glCreateProgram();
@@ -284,6 +299,11 @@ extern "C"
     void _glLinkProgram(GLuint program)
     {
         glLinkProgram(program);
+    }
+
+    void _glDeleteProgram(GLuint program)
+    {
+        glDeleteProgram(program);
     }
 
     void _glUseProgram(GLuint program)

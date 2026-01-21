@@ -35,9 +35,12 @@ extern "C"
     GLuint _glCreateShader(GLenum shaderType);
     void _glShaderSource(GLuint shader, GLchar *source);
     void _glCompileShader(GLuint shader);
+    void _glDeleteShader(GLuint shader);
+    void _glGetShaderiv(GLuint shader, GLenum pname, GLint *params);
     GLuint _glCreateProgram();
     void _glAttachShader(GLuint program, GLuint shader);
     void _glLinkProgram(GLuint program);
+    void _glDeleteProgram(GLuint program);
     void _glUseProgram(GLuint program);
     GLuint _glGenBuffer();
     void _glGenBuffers(GLsizei n, GLuint *buffers);
@@ -54,6 +57,7 @@ extern "C"
     void _glGenerateMipmap(GLenum target);
 
     GLuint _glGenVertexArray();
+    void _glDeleteVertexArray(GLuint vao);
     void _glBindVertexArray(GLuint VAO);
     void _glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLsizei offset);
     void _glEnableVertexAttribArray(GLuint index);

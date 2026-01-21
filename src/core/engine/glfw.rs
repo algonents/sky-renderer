@@ -81,7 +81,7 @@ pub fn glfw_window_hint(hint: i32, value: i32){
     }
 }
 
-pub fn glfw_set_window_user_pointer(window: *const GLFWwindow, pointer: *const c_void) {
+pub fn glfw_set_window_user_pointer(window: *const GLFWwindow, pointer: *mut c_void) {
     unsafe {
         _glfwSetWindowUserPointer(window, pointer);
     }

@@ -9,6 +9,27 @@ pub type GLuint = c_uint;
 pub type GLfloat = c_float;
 pub type GLvoid = c_void;
 
+/// A 2D vector with guaranteed C-compatible memory layout.
+/// Used for uploading vertex data to OpenGL.
+#[derive(Debug, Clone, Copy, PartialEq, Default)]
+#[repr(C)]
+pub struct Vec2 {
+    pub x: f32,
+    pub y: f32,
+}
+
+impl Vec2 {
+    pub fn new(x: f32, y: f32) -> Self {
+        Self { x, y }
+    }
+}
+
+impl From<(f32, f32)> for Vec2 {
+    fn from((x, y): (f32, f32)) -> Self {
+        Self { x, y }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(C)]
 pub enum GLboolean {
@@ -22,6 +43,7 @@ pub const GL_ELEMENT_ARRAY_BUFFER: u32 = 0x8893;
 pub const GL_FRAGMENT_SHADER: u32 = 0x8B30;
 pub const GL_VERTEX_SHADER: u32 = 0x8B31;
 pub const GL_GEOMETRY_SHADER: u32 = 0x8DD9;
+pub const GL_COMPILE_STATUS: u32 = 0x8B81;
 
 pub const GL_STATIC_DRAW: u32 = 0x88E4;
 pub const GL_DYNAMIC_DRAW: u32 = 0x88E8;
@@ -62,9 +84,12 @@ unsafe extern "C" {
     fn _glCreateShader(shaderType: GLenum) -> GLuint;
     fn _glShaderSource(shader: GLuint, source: *const c_char);
     fn _glCompileShader(shader: GLuint);
+    fn _glDeleteShader(shader: GLuint);
+    fn _glGetShaderiv(shader: GLuint, pname: GLenum, params: *mut GLint);
     fn _glCreateProgram() -> GLuint;
     fn _glAttachShader(program: GLuint, shader: GLuint);
     fn _glLinkProgram(program: GLuint);
+    fn _glDeleteProgram(program: GLuint);
     fn _glUseProgram(program: GLuint);
     fn _glGenBuffer() -> GLuint;
     fn _glGenBuffers(n: GLsizei, buffers: *mut GLuint);
@@ -73,6 +98,7 @@ unsafe extern "C" {
     fn _glBufferSubData(target: GLenum, offset: GLsizeiptr, size: GLsizeiptr, data: *const GLvoid);
     fn _glDeleteBuffer(buffer: GLuint);
     fn _glGenVertexArray() -> GLuint;
+    fn _glDeleteVertexArray(vao: GLuint);
     fn _glBindVertexArray(VAO: GLuint);
     fn _glVertexAttribPointer(
         index: GLuint,
@@ -157,6 +183,14 @@ pub fn gl_compile_shader(shader: GLuint) {
     unsafe { _glCompileShader(shader) }
 }
 
+pub fn gl_delete_shader(shader: GLuint) {
+    unsafe { _glDeleteShader(shader) }
+}
+
+pub fn gl_get_shaderiv(shader: GLuint, pname: GLenum, params: &mut GLint) {
+    unsafe { _glGetShaderiv(shader, pname, params as *mut GLint) }
+}
+
 pub fn gl_create_program() -> GLuint {
     unsafe { _glCreateProgram() }
 }
@@ -169,6 +203,10 @@ pub fn gl_link_program(program: GLuint) {
     unsafe {
         _glLinkProgram(program);
     }
+}
+
+pub fn gl_delete_program(program: GLuint) {
+    unsafe { _glDeleteProgram(program) }
 }
 
 pub fn gl_use_program(program: GLuint) {
@@ -208,6 +246,10 @@ pub fn gl_bind_texture(target: GLenum, texture: GLuint) {
 
 pub fn gl_gen_vertex_array() -> GLuint {
     unsafe { _glGenVertexArray() }
+}
+
+pub fn gl_delete_vertex_array(vao: GLuint) {
+    unsafe { _glDeleteVertexArray(vao) }
 }
 
 pub fn gl_bind_vertex_array(array: GLuint) {
@@ -258,10 +300,10 @@ pub fn gl_buffer_sub_data<T>(target: GLenum, offset: GLsizeiptr, data: &[T]) {
     }
 }
 
-pub fn gl_buffer_sub_data_vec2(target: GLenum, xy: &[(f32, f32)]) {
-    // SAFETY: (f32,f32) is plain-old-data, tightly packed
+pub fn gl_buffer_sub_data_vec2(target: GLenum, xy: &[Vec2]) {
+    // SAFETY: Vec2 is #[repr(C)] with two f32 fields, guaranteeing tightly packed layout
     let ptr = xy.as_ptr() as *const GLvoid;
-    let size_bytes = (xy.len() * 2 * std::mem::size_of::<f32>()) as GLsizeiptr;
+    let size_bytes = (xy.len() * std::mem::size_of::<Vec2>()) as GLsizeiptr;
     unsafe {
         _glBufferSubData(target, 0 as GLsizeiptr, size_bytes, ptr);
     }
@@ -295,10 +337,10 @@ pub fn gl_draw_arrays_instanced(
     mode: GLenum,
     first: GLint,
     count: GLsizei,
-    instance_cout: GLsizei,
+    instance_count: GLsizei,
 ) {
     unsafe {
-        _glDrawArraysInstanced(mode, first, count, instance_cout);
+        _glDrawArraysInstanced(mode, first, count, instance_count);
     }
 }
 
@@ -313,8 +355,20 @@ pub fn gl_draw_elements(mode: GLenum, count: GLsizei, element_type: GLenum, offs
 }
 
 pub fn gl_get_uniform_location(program: GLuint, name: &str) -> GLint {
-    let c_string = CString::new(name).expect("CString::new failed");
-    unsafe { _glGetUniformLocation(program, c_string.as_ptr()) }
+    const MAX_STACK_LEN: usize = 63;
+
+    debug_assert!(!name.contains('\0'), "Uniform name contains null byte");
+
+    if name.len() <= MAX_STACK_LEN {
+        // Stack-allocate for typical uniform names (avoids heap allocation)
+        let mut buf = [0u8; MAX_STACK_LEN + 1];
+        buf[..name.len()].copy_from_slice(name.as_bytes());
+        unsafe { _glGetUniformLocation(program, buf.as_ptr() as *const c_char) }
+    } else {
+        // Fallback to heap for unusually long names
+        let c_string = CString::new(name).expect("CString::new failed");
+        unsafe { _glGetUniformLocation(program, c_string.as_ptr()) }
+    }
 }
 
 pub fn gl_uniform_1f(location: GLint, v0: GLfloat) {

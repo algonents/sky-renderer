@@ -10,8 +10,7 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
-# Force only X11 support for GLFW
-# Ensures resolution independence in presence of display scaling thanks to XWayland
+# Enable Wayland support (GLFW dynamically loads Wayland libraries at runtime)
 set(GLFW_BUILD_WAYLAND ON CACHE BOOL "" FORCE)
 set(GLFW_BUILD_X11 OFF CACHE BOOL "" FORCE)
 

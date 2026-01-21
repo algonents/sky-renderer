@@ -1,4 +1,4 @@
-use crate::core::engine::opengl::{GL_ARRAY_BUFFER, GLboolean, GLenum, GLfloat, GLint, GLsizei, GLuint, gl_bind_buffer, gl_bind_vertex_array, gl_buffer_data, gl_delete_buffer, gl_enable_vertex_attrib_array, gl_gen_buffer, gl_gen_vertex_array, gl_vertex_attrib_pointer_float, gl_buffer_data_empty, gl_buffer_sub_data_vec2, GLsizeiptr, gl_vertex_attrib_divisor};
+use crate::core::engine::opengl::{GL_ARRAY_BUFFER, GLboolean, GLenum, GLfloat, GLint, GLsizei, GLuint, gl_bind_buffer, gl_bind_vertex_array, gl_buffer_data, gl_delete_buffer, gl_enable_vertex_attrib_array, gl_gen_buffer, gl_gen_vertex_array, gl_vertex_attrib_pointer_float, gl_buffer_data_empty, gl_buffer_sub_data_vec2, GLsizeiptr, gl_vertex_attrib_divisor, Vec2};
 
 #[derive(Debug, Clone)]
 pub struct Attribute {
@@ -186,15 +186,15 @@ impl Geometry {
         gl_bind_buffer(GL_ARRAY_BUFFER, 0);
     }
 
-    pub fn update_instance_xy(&mut self, xy: &[(f32, f32)]) {
+    pub fn update_instance_xy(&mut self, xy: &[Vec2]) {
         if self.instance_vbo == 0 { return; }
         gl_bind_vertex_array(self.vao);
         gl_bind_buffer(GL_ARRAY_BUFFER, self.instance_vbo);
 
-        // orphan + upload (if you don’t have “empty” helper, just gl_buffer_data with slice len)
-        let bytes = (xy.len() * 2 * std::mem::size_of::<GLfloat>()) as GLsizei;
+        // orphan + upload
+        let bytes = (xy.len() * std::mem::size_of::<Vec2>()) as GLsizei;
         gl_buffer_data_empty(GL_ARRAY_BUFFER, bytes as GLsizeiptr);
-        gl_buffer_sub_data_vec2(GL_ARRAY_BUFFER, xy); // add a helper that takes &[(f32,f32)]
+        gl_buffer_sub_data_vec2(GL_ARRAY_BUFFER, xy);
 
         gl_bind_vertex_array(0);
         gl_bind_buffer(GL_ARRAY_BUFFER, 0);
