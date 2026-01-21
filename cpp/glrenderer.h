@@ -35,6 +35,7 @@ extern "C"
     GLuint _glCreateProgram();
     void _glAttachShader(GLuint program, GLuint shader);
     void _glLinkProgram(GLuint program);
+    void _glDeleteProgram(GLuint program);
     void _glUseProgram(GLuint program);
     GLuint _glGenBuffer();
     void _glGenBuffers(GLsizei n, GLuint *buffers);

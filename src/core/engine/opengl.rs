@@ -87,6 +87,7 @@ unsafe extern "C" {
     fn _glCreateProgram() -> GLuint;
     fn _glAttachShader(program: GLuint, shader: GLuint);
     fn _glLinkProgram(program: GLuint);
+    fn _glDeleteProgram(program: GLuint);
     fn _glUseProgram(program: GLuint);
     fn _glGenBuffer() -> GLuint;
     fn _glGenBuffers(n: GLsizei, buffers: *mut GLuint);
@@ -196,6 +197,10 @@ pub fn gl_link_program(program: GLuint) {
     unsafe {
         _glLinkProgram(program);
     }
+}
+
+pub fn gl_delete_program(program: GLuint) {
+    unsafe { _glDeleteProgram(program) }
 }
 
 pub fn gl_use_program(program: GLuint) {

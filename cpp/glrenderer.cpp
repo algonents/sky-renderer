@@ -276,6 +276,11 @@ extern "C"
         glLinkProgram(program);
     }
 
+    void _glDeleteProgram(GLuint program)
+    {
+        glDeleteProgram(program);
+    }
+
     void _glUseProgram(GLuint program)
     {
         glUseProgram(program);
