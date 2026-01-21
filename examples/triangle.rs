@@ -6,7 +6,6 @@ use sky_renderer::core::engine::opengl::{GLfloat, GL_TRIANGLES};
 
 fn main() {
     let window = Window::new("Hello Window", 800, 600);
-    let mut app = App::new(window);
 
 
     let vertex_shader_source = include_str!("shaders/geometry.vert");
@@ -44,7 +43,8 @@ fn main() {
 
     let mesh = Mesh::new(Rc::new(shader), geometry);
 
-    let renderer = Renderer::new();
+    let renderer = Renderer::new(window.handle());
+    let mut app = App::new(window);
 
     app.on_render(move || {
         renderer.draw_mesh(&mesh)

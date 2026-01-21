@@ -37,6 +37,8 @@ fn generate_sine_wave(
 
 fn main() {
     let window = Window::new("Shapes", 800, 800);
+    let renderer = Renderer::new(window.handle());
+    renderer.set_point_size(6.0);
     let mut app = App::new(window);
 
     let mut shapes = vec![
@@ -124,8 +126,7 @@ fn main() {
         .expect("Failed to write SVG");
     */
 
-    let renderer = Renderer::new();
-    renderer.set_point_size(6.0);
+
 
     app.on_render(move || {
         for shape in &mut shapes {

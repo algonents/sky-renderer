@@ -12,6 +12,9 @@ thread_local! {
 
 fn main() {
     let mut window = Window::new("Shapes", 800, 800);
+    let mut renderer = Renderer::new(window.handle());
+    renderer.set_point_size(6.0);
+
 
     window.on_scroll(move |_, y_offset| {
         let zoom_step = 1.1;
@@ -84,8 +87,6 @@ fn main() {
         ShapeRenderable::image(400.0, 500.0, "images/bunny.png"),
     ];
 
-    let mut renderer = Renderer::new();
-    renderer.set_point_size(6.0);
 
     app.on_render(move || {
         for shape in &mut shapes {

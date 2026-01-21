@@ -83,8 +83,8 @@ pub struct ShapeRenderable {
 }
 impl Renderable for ShapeRenderable {
     fn render(&mut self, renderer: &Renderer) {
-        let (vw, vh) = renderer.viewport_size();
-        let transform = ortho_2d_with_zoom(vw as f32, vh as f32, renderer.zoom_level)
+        let (window_width, window_height) = renderer.window_handle.size();
+        let transform = ortho_2d_with_zoom(window_width as f32, window_height as f32, renderer.zoom_level)
         // use the line below if you want to keep objects of constant size during zoom    
         //* Mat4::from_scale(Vec3::splat(SCALE_FACTOR/renderer.zoom_level));
             * Mat4::from_scale(Vec3::splat(SCALE_FACTOR));

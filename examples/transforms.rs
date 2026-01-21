@@ -42,7 +42,7 @@ fn main() {
         .expect("Failed to compile shader");
 
     let mut mesh = Mesh::new(Rc::new(shader), geometry);
-    let renderer = Renderer::new();
+    let renderer = Renderer::new(window.handle());
     let mut app = App::new(window);
 
     app.on_render(move || {

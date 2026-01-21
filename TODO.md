@@ -90,14 +90,12 @@ Mouse coordinates are in **window/logical** space, but rendering is in **framebu
 - Rendering correctly uses framebuffer size (via `glfwSetFramebufferSizeCallback` and `glfwGetFramebufferSize`)
 - Mouse coordinates come in window/logical space (uncorrected)
 
+### Fixed
 
--[ ] Bug: `shaperenderable.rs:86-87` uses framebuffer size for orthographic projection, but shapes are positioned in logical coordinates. On scaled displays, shapes appear at wrong positions/sizes.
-
-### Required Fix
-
-- [ ] Add `_glfwGetWindowContentScale` wrapper to query current scale factor
-- [ ] Expose content scale to Rust `Window` / `WindowHandle`
-- [ ] Fix `shaperenderable.rs`: divide framebuffer size by content scale for orthographic projection, so shape coordinates match logical window units
+- [x] Bug: `shaperenderable.rs:86-87` uses framebuffer size for orthographic projection, but shapes are positioned in logical coordinates. On scaled displays, shapes appear at wrong positions/sizes.
+  - **Fix**: Use logical window size directly from `WindowHandle` instead of framebuffer size. `Renderer` now takes `WindowHandle` and uses `window_handle.size()` for orthographic projection.
+- [x] Add `_glfwGetWindowContentScale` wrapper to query current scale factor
+- [x] Expose content scale to Rust `Window` via `Window::content_scale()`
 
 ### Additional Wrappers (Lower Priority)
 

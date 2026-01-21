@@ -33,9 +33,11 @@ fn main() {
     }
 
     let window = Window::new("WS Client Viewer", SCREEN_WIDTH, SCREEN_HEIGHT);
-    let mut app = App::new(window);
-    let renderer = Renderer::new();
+
+    let renderer = Renderer::new(window.handle());
     renderer.set_point_size(6.0);
+
+    let mut app = App::new(window);
 
     let mut shapes: Vec<ShapeRenderable> = Vec::new();
 

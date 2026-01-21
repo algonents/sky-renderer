@@ -2,10 +2,19 @@
 
 extern "C"
 {
-    GLFWwindow *_glfwCreateWindow(char *title, int width, int height, GLFWframebuffersizefun callback)
+
+    void glfwErrorCallback(int error, const char* description) {
+        std::cerr << "[GLFW ERROR] (" << error << "): " << description << std::endl;
+    }
+
+
+    GLFWwindow *_glfwCreateWindow(const char *title, int width, int height, GLFWframebuffersizefun callback)
     {
-        // Initialize GLFW
-        glfwInit();
+        glfwSetErrorCallback(glfwErrorCallback);
+        
+        if(!glfwInit()){
+            return nullptr;
+        }
 
         // Set MSAA samples for antialiasing
         glfwWindowHint(GLFW_SAMPLES, 4);
@@ -25,13 +34,13 @@ extern "C"
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-        GLFWwindow *window = glfwCreateWindow(width, height, title, NULL, NULL);
+        GLFWwindow *window = glfwCreateWindow(width, height, title, nullptr, nullptr);
         //glfwCreateWindow(100, 100, "Title", glfwGetPrimaryMonitor(), NULL);
         if (window == nullptr)
         {
             std::cerr << "Failed to create GLFW window" << std::endl;
             glfwTerminate();
-            return window;
+            return nullptr;
         }
         glfwMakeContextCurrent(window);
         glfwSetFramebufferSizeCallback(window, callback);
@@ -40,6 +49,8 @@ extern "C"
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
             std::cerr << "Failed to initialize GLAD" << std::endl;
+            glfwDestroyWindow(window);
+            glfwTerminate();
             return nullptr;
         }
 
@@ -50,6 +61,11 @@ extern "C"
         glfwGetFramebufferSize(window, &fb_width, &fb_height);
         glViewport(0, 0, fb_width, fb_height);
         return window;
+    }
+
+    void _glfwGetWindowContentScale(GLFWwindow *window, float* xscale, float* yscale)
+    {
+        glfwGetWindowContentScale(window, xscale, yscale);
     }
 
     void _glfwWindowHint(int hint, int value)
@@ -65,6 +81,10 @@ extern "C"
     void *_glfwGetWindowUserPointer(GLFWwindow *window)
     {
         return glfwGetWindowUserPointer(window);
+    }
+
+    void _glfwSetWindowSizeCallback(GLFWwindow *window, GLFWwindowsizefun callback){
+        glfwSetWindowSizeCallback(window, callback);
     }
 
     bool _glfwWindowShouldClose(GLFWwindow *window)

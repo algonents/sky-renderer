@@ -1,4 +1,4 @@
-use std::ffi::CString;
+use std::ffi::{c_float, CString};
 use std::ffi::c_void;
 use std::os::raw::c_char;
 use std::os::raw::c_double;
@@ -9,6 +9,9 @@ pub enum GLFWwindow {}
 
 pub type GLFWframebuffersizefun =
     Option<extern "C" fn(window: *const GLFWwindow, width: i32, height: i32)>;
+
+pub type GLFWwindowsizefun =
+Option<extern "C" fn(window: *const GLFWwindow, width: i32, height: i32)>;
 
 pub type GLFWscrollfun =
     Option<extern "C" fn(window: *const GLFWwindow, xoffset: f64, yoffset: f64)>;
@@ -22,7 +25,9 @@ unsafe extern "C" {
         height: c_int,
         callback: GLFWframebuffersizefun,
     ) -> *const GLFWwindow;
-    
+
+    fn _glfwGetWindowContentScale(window: *const GLFWwindow, xscale: *mut c_float, yscale: *mut c_float);
+
     fn _glfwWindowHint(hint: c_int, value:c_int);
 
     fn _glfwSetWindowUserPointer(window: *const GLFWwindow, pointer: *const c_void);
@@ -36,6 +41,7 @@ unsafe extern "C" {
 
     fn _glfwGetTime() -> c_double;
     fn _glfwSetFramebufferSizeCallback(window: *const GLFWwindow, callback: GLFWframebuffersizefun);
+    fn _glfwSetWindowSizeCallback(window: *const GLFWwindow, callback: GLFWwindowsizefun);
     fn _glfwSetScrollCallback(window: *const GLFWwindow, callback: GLFWscrollfun);
     fn _glfwSetCursorPosCallback(window: *const GLFWwindow, callback: GLFWcursorposfun);
     fn _glfwGetWindowSize(window: *const GLFWwindow, width: *mut c_int, height: *mut c_int);
@@ -58,6 +64,15 @@ pub fn glfw_create_window(
         window_pointer = _glfwCreateWindow(title_c_string.as_ptr(), width, height, callback);
     }
     window_pointer
+}
+
+pub fn glfw_get_window_content_scale(window: *const GLFWwindow)->(f32, f32){
+    unsafe {
+        let mut xs: f32 = 0.0;
+        let mut ys: f32 = 0.0;
+        _glfwGetWindowContentScale(window, &mut xs, &mut ys);
+        (xs, ys)
+    }
 }
 
 pub fn glfw_window_hint(hint: i32, value: i32){
@@ -93,6 +108,12 @@ pub fn glfw_set_scroll_callback(window: *const GLFWwindow, callback: GLFWscrollf
 pub fn glfw_set_cursor_pos_callback(window: *const GLFWwindow, callback: GLFWcursorposfun) {
     unsafe {
         _glfwSetCursorPosCallback(window, callback);
+    }
+}
+
+pub fn glfw_set_window_size_callback(window: *const GLFWwindow, callback: GLFWwindowsizefun){
+    unsafe{
+        _glfwSetWindowSizeCallback(window, callback);
     }
 }
 
