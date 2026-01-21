@@ -94,6 +94,7 @@ unsafe extern "C" {
     fn _glBufferSubData(target: GLenum, offset: GLsizeiptr, size: GLsizeiptr, data: *const GLvoid);
     fn _glDeleteBuffer(buffer: GLuint);
     fn _glGenVertexArray() -> GLuint;
+    fn _glDeleteVertexArray(vao: GLuint);
     fn _glBindVertexArray(VAO: GLuint);
     fn _glVertexAttribPointer(
         index: GLuint,
@@ -229,6 +230,10 @@ pub fn gl_bind_texture(target: GLenum, texture: GLuint) {
 
 pub fn gl_gen_vertex_array() -> GLuint {
     unsafe { _glGenVertexArray() }
+}
+
+pub fn gl_delete_vertex_array(vao: GLuint) {
+    unsafe { _glDeleteVertexArray(vao) }
 }
 
 pub fn gl_bind_vertex_array(array: GLuint) {

@@ -165,6 +165,11 @@ extern "C"
         return VAO;
     }
 
+    void _glDeleteVertexArray(GLuint vao)
+    {
+        glDeleteVertexArrays(1, &vao);
+    }
+
     void _glBindVertexArray(GLuint array)
     {
         glBindVertexArray(array);

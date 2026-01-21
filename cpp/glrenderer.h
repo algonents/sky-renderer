@@ -50,6 +50,7 @@ extern "C"
     void _glGenerateMipmap(GLenum target);
 
     GLuint _glGenVertexArray();
+    void _glDeleteVertexArray(GLuint vao);
     void _glBindVertexArray(GLuint VAO);
     void _glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLsizei offset);
     void _glEnableVertexAttribArray(GLuint index);
