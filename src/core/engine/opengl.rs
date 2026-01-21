@@ -83,9 +83,11 @@ unsafe extern "C" {
     fn _glCreateShader(shaderType: GLenum) -> GLuint;
     fn _glShaderSource(shader: GLuint, source: *const c_char);
     fn _glCompileShader(shader: GLuint);
+    fn _glDeleteShader(shader: GLuint);
     fn _glCreateProgram() -> GLuint;
     fn _glAttachShader(program: GLuint, shader: GLuint);
     fn _glLinkProgram(program: GLuint);
+    fn _glDeleteProgram(program: GLuint);
     fn _glUseProgram(program: GLuint);
     fn _glGenBuffer() -> GLuint;
     fn _glGenBuffers(n: GLsizei, buffers: *mut GLuint);
@@ -94,6 +96,7 @@ unsafe extern "C" {
     fn _glBufferSubData(target: GLenum, offset: GLsizeiptr, size: GLsizeiptr, data: *const GLvoid);
     fn _glDeleteBuffer(buffer: GLuint);
     fn _glGenVertexArray() -> GLuint;
+    fn _glDeleteVertexArray(vao: GLuint);
     fn _glBindVertexArray(VAO: GLuint);
     fn _glVertexAttribPointer(
         index: GLuint,
@@ -178,6 +181,10 @@ pub fn gl_compile_shader(shader: GLuint) {
     unsafe { _glCompileShader(shader) }
 }
 
+pub fn gl_delete_shader(shader: GLuint) {
+    unsafe { _glDeleteShader(shader) }
+}
+
 pub fn gl_create_program() -> GLuint {
     unsafe { _glCreateProgram() }
 }
@@ -190,6 +197,10 @@ pub fn gl_link_program(program: GLuint) {
     unsafe {
         _glLinkProgram(program);
     }
+}
+
+pub fn gl_delete_program(program: GLuint) {
+    unsafe { _glDeleteProgram(program) }
 }
 
 pub fn gl_use_program(program: GLuint) {
@@ -229,6 +240,10 @@ pub fn gl_bind_texture(target: GLenum, texture: GLuint) {
 
 pub fn gl_gen_vertex_array() -> GLuint {
     unsafe { _glGenVertexArray() }
+}
+
+pub fn gl_delete_vertex_array(vao: GLuint) {
+    unsafe { _glDeleteVertexArray(vao) }
 }
 
 pub fn gl_bind_vertex_array(array: GLuint) {

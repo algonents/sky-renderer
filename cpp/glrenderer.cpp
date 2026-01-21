@@ -165,6 +165,11 @@ extern "C"
         return VAO;
     }
 
+    void _glDeleteVertexArray(GLuint vao)
+    {
+        glDeleteVertexArrays(1, &vao);
+    }
+
     void _glBindVertexArray(GLuint array)
     {
         glBindVertexArray(array);
@@ -251,6 +256,11 @@ extern "C"
 #endif
     }
 
+    void _glDeleteShader(GLuint shader)
+    {
+        glDeleteShader(shader);
+    }
+
     GLuint _glCreateProgram()
     {
         return glCreateProgram();
@@ -264,6 +274,11 @@ extern "C"
     void _glLinkProgram(GLuint program)
     {
         glLinkProgram(program);
+    }
+
+    void _glDeleteProgram(GLuint program)
+    {
+        glDeleteProgram(program);
     }
 
     void _glUseProgram(GLuint program)

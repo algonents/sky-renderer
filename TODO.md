@@ -63,9 +63,9 @@ Technical debt and improvement areas identified in code review.
 
 ### Missing Wrappers
 
-- [ ] Add `_glDeleteVertexArrays` wrapper (needed for VAO cleanup)
-- [ ] Add `_glDeleteShader` wrapper (needed for shader cleanup)
-- [ ] Add `_glDeleteProgram` wrapper (needed for program cleanup)
+- [x] Add `_glDeleteVertexArray` wrapper (needed for VAO cleanup)
+- [x] Add `_glDeleteShader` wrapper (needed for shader cleanup)
+- [x] Add `_glDeleteProgram` wrapper (needed for program cleanup)
 - [ ] Add `_glGetShaderiv` / `_glGetShaderInfoLog` wrappers (for error reporting to Rust side)
 - [ ] Add `_glGetProgramiv` / `_glGetProgramInfoLog` wrappers (for link error reporting)
 
