@@ -256,6 +256,11 @@ extern "C"
 #endif
     }
 
+    void _glDeleteShader(GLuint shader)
+    {
+        glDeleteShader(shader);
+    }
+
     GLuint _glCreateProgram()
     {
         return glCreateProgram();

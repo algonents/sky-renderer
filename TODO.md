@@ -90,7 +90,7 @@ Mouse coordinates are in **window/logical** space, but rendering is in **framebu
 - Mouse coordinates come in window/logical space (uncorrected)
 
 
-- [ ] Bug: `shaperenderable.rs:86-87` uses framebuffer size for orthographic projection, but shapes are positioned in logical coordinates. On scaled displays, shapes appear at wrong positions/sizes.
+-[ ] Bug: `shaperenderable.rs:86-87` uses framebuffer size for orthographic projection, but shapes are positioned in logical coordinates. On scaled displays, shapes appear at wrong positions/sizes.
 
 ### Required Fix
 
