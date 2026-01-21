@@ -92,6 +92,11 @@ extern "C"
         return glfwWindowShouldClose(window);
     }
 
+    void _glfwDestroyWindow(GLFWwindow *window)
+    {
+        glfwDestroyWindow(window);
+    }
+
     void _glfwTerminate()
     {
         glfwTerminate();

@@ -4,10 +4,10 @@ Technical debt and improvement areas identified in code review.
 
 ## Resource Leaks
 
-- [ ] `shader.rs:53-57` - Delete shader objects after linking (currently commented out)
-- [ ] `geometry.rs:65` - Implement VAO deletion in `Drop` (currently commented out)
-- [ ] Add `Drop` impl for `Shader` to delete the GL program
-- [ ] Add `Drop` impl for `Window` to clean up GLFW resources
+- [x] `shader.rs:53-57` - Delete shader objects after linking (currently commented out)
+- [x] `geometry.rs:65` - Implement VAO deletion in `Drop` (currently commented out)
+- [x] Add `Drop` impl for `Shader` to delete the GL program
+- [x] Add `Drop` impl for `Window` to clean up GLFW resources
 
 ## Error Handling
 

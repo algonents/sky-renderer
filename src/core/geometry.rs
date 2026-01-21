@@ -1,4 +1,4 @@
-use crate::core::engine::opengl::{GL_ARRAY_BUFFER, GLboolean, GLenum, GLfloat, GLint, GLsizei, GLuint, gl_bind_buffer, gl_bind_vertex_array, gl_buffer_data, gl_delete_buffer, gl_enable_vertex_attrib_array, gl_gen_buffer, gl_gen_vertex_array, gl_vertex_attrib_pointer_float, gl_buffer_data_empty, gl_buffer_sub_data_vec2, GLsizeiptr, gl_vertex_attrib_divisor, Vec2};
+use crate::core::engine::opengl::{GL_ARRAY_BUFFER, GLboolean, GLenum, GLfloat, GLint, GLsizei, GLsizeiptr, GLuint, Vec2, gl_bind_buffer, gl_bind_vertex_array, gl_buffer_data, gl_buffer_data_empty, gl_buffer_sub_data_vec2, gl_delete_buffer, gl_delete_vertex_array, gl_enable_vertex_attrib_array, gl_gen_buffer, gl_gen_vertex_array, gl_vertex_attrib_divisor, gl_vertex_attrib_pointer_float};
 
 #[derive(Debug, Clone)]
 pub struct Attribute {
@@ -58,11 +58,14 @@ pub struct Geometry {
 
 impl Drop for Geometry {
     fn drop(&mut self) {
+        if self.instance_vbo != 0 {
+            gl_delete_buffer(self.instance_vbo);
+        }
         if self.vbo != 0 {
             gl_delete_buffer(self.vbo);
         }
         if self.vao != 0 {
-            //gl::DeleteVertexArrays(1, &self.vao);
+            gl_delete_vertex_array(self.vao);
         }
     }
 }

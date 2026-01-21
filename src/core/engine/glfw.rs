@@ -34,6 +34,7 @@ unsafe extern "C" {
     fn _glfwGetWindowUserPointer(window: *const GLFWwindow) -> *const c_void;
 
     fn _glfwWindowShouldClose(window: *const GLFWwindow) -> c_int;
+    fn _glfwDestroyWindow(window: *const GLFWwindow);
     fn _glfwSwapBuffers(window: *const GLFWwindow);
 
     fn _glfwPollEvents();
@@ -129,6 +130,10 @@ pub fn glfw_poll_events() {
 
 pub fn glfw_swap_buffers(window: *const GLFWwindow) {
     unsafe { _glfwSwapBuffers(window) }
+}
+
+pub fn glfw_destroy_window(window: *const GLFWwindow) {
+    unsafe { _glfwDestroyWindow(window) }
 }
 
 pub fn glfw_terminate() {
