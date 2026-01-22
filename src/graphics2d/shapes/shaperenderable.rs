@@ -4,7 +4,10 @@ use std::cell::OnceCell;
 use std::f32::consts::PI;
 use crate::core::engine::opengl::{GLfloat, GL_POINTS, GL_TRIANGLES, GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP, Vec2};
 use crate::core::{Color, Mesh, Renderable, Renderer, Shader, generate_texture_from_image, load_image, Geometry, Attribute};
-use crate::graphics2d::shapes::{Shape, ShapeKind};
+use crate::graphics2d::shapes::{
+    Circle, Ellipse, Image, Line, MultiPoint, Point, Polygon, Polyline, Rectangle,
+    RoundedRectangle, Shape, ShapeKind, Triangle,
+};
 use crate::graphics2d::svg::ToSvg;
 
 const MIN_STROKE_WIDTH: f32 = 1.5;
@@ -79,7 +82,7 @@ pub struct ShapeRenderable {
     x: f32,
     y: f32,
     mesh: Mesh,
-    kind: ShapeKind,
+    shape: Box<dyn Shape>,
 }
 impl Renderable for ShapeRenderable {
     fn render(&mut self, renderer: &Renderer) {
@@ -102,18 +105,15 @@ impl Renderable for ShapeRenderable {
 }
 
 impl ShapeRenderable {
-    fn new(x: f32, y: f32, mesh: Mesh, kind: ShapeKind) -> Self {
-        Self { x, y, mesh, kind }
+    fn new(x: f32, y: f32, mesh: Mesh, shape: Box<dyn Shape>) -> Self {
+        Self { x, y, mesh, shape }
     }
 
     pub fn set_position(&mut self, x: f32, y: f32) {
         self.x = x;
         self.y = y;
     }
-    pub fn from_shape<S: Shape>(x: f32, y: f32, shape: S, color: Color) -> Self
-    where
-        S: Shape
-    {
+    pub fn from_shape(x: f32, y: f32, shape: Box<dyn Shape>, color: Color) -> Self {
         match &shape.kind() {
             ShapeKind::Point => ShapeRenderable::point(x, y, color),
 
@@ -183,7 +183,7 @@ impl ShapeRenderable {
     pub fn point(x: GLfloat, y: GLfloat, color: Color) -> Self {
         let geometry = ShapeRenderable::point_geometry();
         let mesh = Mesh::with_color(point_shader(), geometry, Some(color));
-        ShapeRenderable::new(x, y, mesh, ShapeKind::Point {})
+        ShapeRenderable::new(x, y, mesh, Box::new(Point))
     }
 
     pub fn points(points: &[(GLfloat, GLfloat)], color: Color) -> Self {
@@ -196,7 +196,7 @@ impl ShapeRenderable {
         let geometry = ShapeRenderable::point_list_geometry(&rel_points);
         let mesh = Mesh::with_color(point_shader(), geometry, Some(color));
 
-        ShapeRenderable::new(x0, y0, mesh, ShapeKind::MultiPoint { points: rel_points })
+        ShapeRenderable::new(x0, y0, mesh, Box::new(MultiPoint::new(rel_points)))
     }
 
     pub fn simple_line(x1: GLfloat, y1: GLfloat, x2: GLfloat, y2: GLfloat, stroke: Color) -> Self {
@@ -220,7 +220,7 @@ impl ShapeRenderable {
         let mesh = Mesh::with_color(default_shader(), geometry, Some(stroke));
 
         // Drawable positioned at the original start point (x1, y1)
-        ShapeRenderable::new(x1, y1, mesh, ShapeKind::Line { x2, y2 })
+        ShapeRenderable::new(x1, y1, mesh, Box::new(Line::new(x2, y2)))
     }
 
     pub fn polyline(points: &[(GLfloat, GLfloat)], stroke: Color, stroke_width: f32) -> Self {
@@ -234,7 +234,7 @@ impl ShapeRenderable {
         let geometry = ShapeRenderable::polyline_geometry(&rel_points, stroke_width);
         let mesh = Mesh::with_color(default_shader(), geometry, Some(stroke));
 
-        ShapeRenderable::new(x0, y0, mesh, ShapeKind::Polyline { points: rel_points })
+        ShapeRenderable::new(x0, y0, mesh, Box::new(Polyline::new(rel_points)))
     }
 
     pub fn arc(
@@ -273,22 +273,15 @@ impl ShapeRenderable {
         let geometry = ShapeRenderable::triangle_geometry(vertices);
         let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
 
-        ShapeRenderable::new(
-            x,
-            y,
-            mesh,
-            ShapeKind::Triangle {
-                vertices: vertices.clone(),
-            },
-        )
+        ShapeRenderable::new(x, y, mesh, Box::new(Triangle::new(*vertices)))
     }
 
     pub fn rectangle(x: f32, y: f32, width: f32, height: f32, color: Color) -> Self {
         // Geometry is created at (0, 0) with given width and height
-        let geometry = ShapeRenderable::rectangle_geometry(width,height);
+        let geometry = ShapeRenderable::rectangle_geometry(width, height);
         let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
         // Drawable will be positioned at (x, y) — the top-left corner
-        ShapeRenderable::new(x, y, mesh, ShapeKind::Rectangle { width, height })
+        ShapeRenderable::new(x, y, mesh, Box::new(Rectangle::new(width, height)))
     }
 
     pub fn rounded_rectangle(
@@ -301,16 +294,7 @@ impl ShapeRenderable {
     ) -> Self {
         let geometry = ShapeRenderable::rounded_rectangle_geometry(width, height, radius, 8);
         let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
-        ShapeRenderable::new(
-            x,
-            y,
-            mesh,
-            ShapeKind::RoundedRectangle {
-                width,
-                height,
-                radius,
-            },
-        )
+        ShapeRenderable::new(x, y, mesh, Box::new(RoundedRectangle::new(width, height, radius)))
     }
 
     pub fn polygon(points: &[(GLfloat, GLfloat)], color: Color) -> Self {
@@ -322,20 +306,20 @@ impl ShapeRenderable {
         let geometry = ShapeRenderable::polygon_geometry(&rel_points);
         let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
 
-        ShapeRenderable::new(x0, y0, mesh, ShapeKind::Polygon { points: rel_points })
+        ShapeRenderable::new(x0, y0, mesh, Box::new(Polygon::new(rel_points)))
     }
     pub fn circle(x: f32, y: f32, radius: f32, color: Color) -> Self {
         // Geometry is built as a circle centered at (0, 0)
         let geometry = ShapeRenderable::circle_geometry(radius, 100);
         let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
         // Drawable is positioned at (x, y), which will be the circle's center
-        ShapeRenderable::new(x, y, mesh, ShapeKind::Circle { radius })
+        ShapeRenderable::new(x, y, mesh, Box::new(Circle::new(radius)))
     }
 
     pub fn ellipse(x: f32, y: f32, radius_x: f32, radius_y: f32, color: Color) -> Self {
         let geometry = ShapeRenderable::ellipse_geometry(radius_x, radius_y, 64); // 64 segments for smoothness
         let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
-        ShapeRenderable::new(x, y, mesh, ShapeKind::Ellipse { radius_x, radius_y })
+        ShapeRenderable::new(x, y, mesh, Box::new(Ellipse::new(radius_x, radius_y)))
     }
 
     pub fn image_with_size(x: f32, y: f32, path: &str, width: f32, height: f32) -> ShapeRenderable {
@@ -355,7 +339,7 @@ impl ShapeRenderable {
         let shader = image_shader(); // assumes you have an Rc<Shader> loader
         let mesh = Mesh::with_texture(shader, geometry, Some(texture_id));
 
-        ShapeRenderable::new(x, y, mesh, ShapeKind::Image { width, height })
+        ShapeRenderable::new(x, y, mesh, Box::new(Image::new(width, height)))
     }
 
     pub fn image(x: f32, y: f32, path: &str) -> Self {
@@ -790,9 +774,9 @@ impl ShapeRenderable {
             .unwrap_or_else(|| "#000000".to_string())
     }
 }
-impl ToSvg for ShapeRenderable{
+impl ToSvg for ShapeRenderable {
     fn to_svg(&self) -> String {
-        match &self.kind {
+        match &self.shape.kind() {
             ShapeKind::Line { x2, y2 } => {
                 format!(
                     r#"<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{color}" stroke-width="1"/>"#,
