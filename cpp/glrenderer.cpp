@@ -380,4 +380,9 @@ extern "C"
     {
         glBlendFunc(sfactor, dfactor);
     }
+
+    int _glfwGetPlatform()
+    {
+        return glfwGetPlatform();
+    }
 }
