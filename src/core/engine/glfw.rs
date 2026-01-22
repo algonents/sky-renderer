@@ -5,6 +5,13 @@ use std::os::raw::c_double;
 use std::os::raw::c_int;
 
 pub const GLFW_SAMPLES: i32 = 0x0002100D;
+
+pub const GLFW_PLATFORM_WIN32: i32 = 0x00060001;
+pub const GLFW_PLATFORM_COCOA: i32 = 0x00060002;
+pub const GLFW_PLATFORM_WAYLAND: i32 = 0x00060003;
+pub const GLFW_PLATFORM_X11: i32 = 0x00060004;
+pub const GLFW_PLATFORM_NULL: i32 = 0x00060005;
+
 pub enum GLFWwindow {}
 
 pub type GLFWframebuffersizefun =
@@ -47,6 +54,7 @@ unsafe extern "C" {
     fn _glfwSetCursorPosCallback(window: *const GLFWwindow, callback: GLFWcursorposfun);
     fn _glfwGetWindowSize(window: *const GLFWwindow, width: *mut c_int, height: *mut c_int);
 
+    fn _glfwGetPlatform() -> c_int;
 }
 
 pub fn glfw_get_time() -> f64 {
@@ -138,4 +146,14 @@ pub fn glfw_destroy_window(window: *const GLFWwindow) {
 
 pub fn glfw_terminate() {
     unsafe { _glfwTerminate() };
+}
+
+/// Returns the currently selected platform.
+///
+/// Returns one of: `GLFW_PLATFORM_WIN32`, `GLFW_PLATFORM_COCOA`,
+/// `GLFW_PLATFORM_WAYLAND`, `GLFW_PLATFORM_X11`, or `GLFW_PLATFORM_NULL`.
+///
+/// Must be called after GLFW initialization (window creation).
+pub fn glfw_get_platform() -> i32 {
+    unsafe { _glfwGetPlatform() }
 }

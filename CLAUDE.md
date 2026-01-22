@@ -58,6 +58,37 @@ cd examples/bouncing_balls && cargo run
 - **Component-Based Meshes**: Mesh = Geometry + Shader + Transform
 - **Callback-Driven App Loop**: App uses closures for render logic
 
+### Performance Architecture
+
+The current architecture supports scaling to 10,000+ shapes through evolutionary changes:
+
+**Existing Foundation:**
+- Direct FFI access to OpenGL instancing (`glVertexAttribDivisor`, `glDrawArraysInstanced`)
+- Working instancing in `Geometry` (`enable_instancing_xy`, `update_instance_xy`) - proven with 1000+ shapes
+- Singleton shaders via OnceCell - shapes share shaders, minimizing shader switches
+- Simple VAO/VBO abstraction without deep hierarchies blocking optimization
+
+**Current Limitation:**
+`ShapeRenderable` uses 1 draw call per shape, which becomes a CPU bottleneck at high counts.
+
+**Scaling Strategy (additive, not rewrite):**
+
+1. **Extended Instancing**: Add per-instance rotation, color, scale attributes to the existing instancing infrastructure. Mechanical change to VBO layout and shaders.
+
+2. **BatchRenderer** (future component): A new renderer that collects similar shapes and issues minimal draw calls:
+   ```rust
+   // Conceptual API - coexists with ShapeRenderable
+   let mut batch = BatchRenderer::new();
+   batch.add_circles(&circle_data);  // 10k circles
+   batch.add_lines(&line_data);      // 5k lines
+   batch.render(&renderer);          // 2 draw calls total
+   ```
+   This is additive - existing `ShapeRenderable` code continues to work for simple cases.
+
+3. **Frustum Culling**: CPU-side viewport bounds check before batching, with optional spatial index (quadtree).
+
+No architectural blockers exist. The path from current state to high-performance rendering is incremental.
+
 ### C++ FFI Build
 
 `build.rs` uses CMake to compile the C++ layer (`cpp/`). Platform-specific linking:
@@ -79,7 +110,7 @@ Point, MultiPoint, Line, Polyline, Arc, Triangle, Rectangle, RoundedRectangle, C
 
 ## Platform Notes
 
-- Uses Wayland on Linux (GLFW dynamically loads Wayland libraries at runtime)
+- Supports both Wayland and X11 on Linux (GLFW selects backend at runtime)
 - OpenGL 3.3 Core Profile for macOS compatibility
 - MSAA 4x multisampling enabled by default
 
