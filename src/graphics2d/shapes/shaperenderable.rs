@@ -115,10 +115,56 @@ impl ShapeRenderable {
         S: Shape
     {
         match &shape.kind() {
+            ShapeKind::Point => ShapeRenderable::point(x, y, color),
+
+            ShapeKind::MultiPoint { points } => {
+                // Convert relative points to absolute
+                let abs_points: Vec<(f32, f32)> = points
+                    .iter()
+                    .map(|(px, py)| (x + px, y + py))
+                    .collect();
+                ShapeRenderable::points(&abs_points, color)
+            }
+
+            ShapeKind::Line { x2, y2 } => ShapeRenderable::line(x, y, *x2, *y2, color, 1.0),
+
+            ShapeKind::Polyline { points } => {
+                let abs_points: Vec<(f32, f32)> = points
+                    .iter()
+                    .map(|(px, py)| (x + px, y + py))
+                    .collect();
+                ShapeRenderable::polyline(&abs_points, color, 1.0)
+            }
+
+            ShapeKind::Triangle { vertices } => ShapeRenderable::triangle(x, y, vertices, color),
+
             ShapeKind::Rectangle { width, height } => {
                 ShapeRenderable::rectangle(x, y, *width, *height, color)
-            },
-            _ => unimplemented!("ShapeRenderable::from_shape not implemented for this shape kind"),
+            }
+
+            ShapeKind::RoundedRectangle {
+                width,
+                height,
+                radius,
+            } => ShapeRenderable::rounded_rectangle(x, y, *width, *height, *radius, color),
+
+            ShapeKind::Polygon { points } => {
+                let abs_points: Vec<(f32, f32)> = points
+                    .iter()
+                    .map(|(px, py)| (x + px, y + py))
+                    .collect();
+                ShapeRenderable::polygon(&abs_points, color)
+            }
+
+            ShapeKind::Circle { radius } => ShapeRenderable::circle(x, y, *radius, color),
+
+            ShapeKind::Ellipse { radius_x, radius_y } => {
+                ShapeRenderable::ellipse(x, y, *radius_x, *radius_y, color)
+            }
+
+            ShapeKind::Image { .. } => {
+                unimplemented!("ShapeRenderable::from_shape cannot create Image without path")
+            }
         }
     }
 
