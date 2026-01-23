@@ -1,7 +1,7 @@
 extern crate sky_renderer;
 
-use sky_renderer::core::{App, Color, Renderable, Renderer, Window, Vec2};
-use sky_renderer::graphics2d::shapes::ShapeRenderable;
+use sky_renderer::core::{App, Color, Renderable, Renderer, Vec2, Window};
+use sky_renderer::graphics2d::shapes::{Circle, ShapeRenderable, ShapeStyle};
 
 const WIDTH: i32 = 1600;
 const HEIGHT: i32 = 1000;
@@ -19,14 +19,17 @@ fn main() {
     let mut window = Window::new("Instancing Demo", WIDTH, HEIGHT);
     window.on_resize(|w, h| println!("Window resized: {}x{}", w, h));
     let renderer = Renderer::new(window.handle());
-    
 
     // One shape, many instances
-    let mut dots = ShapeRenderable::circle(
+    let mut dots = ShapeRenderable::from_shape(
         0.0,
         0.0,
-        RADIUS,
-        Color::from_rgb(STEEL_BLUE.0, STEEL_BLUE.1, STEEL_BLUE.2),
+        Box::new(Circle::new(RADIUS)),
+        ShapeStyle {
+            fill: Some(Color::from_rgb(STEEL_BLUE.0, STEEL_BLUE.1, STEEL_BLUE.2)),
+            stroke_color: None,
+            stroke_width: None,
+        },
     );
     let instance_count = COLS * ROWS;
     dots.create_multiple_instances(instance_count);
@@ -46,13 +49,13 @@ fn main() {
     dots.set_instance_positions(&positions);
 
     let mut app = App::new(window);
-    
+
     // render loop
     app.on_render(move || {
         // Compute dt (if you want time-based motion later)
         let now = renderer.get_time();
-        
-        // “Wiggle” deformation (feel free to swap with your physics later)
+
+        // "Wiggle" deformation (feel free to swap with your physics later)
         let t = now as f32;
         let wiggle = (t * 2.0).sin() * 3.0;
 

@@ -61,7 +61,7 @@ impl Renderer {
         let color_loc = gl_get_uniform_location(mesh.shader.program(), "geometryColor");
         if color_loc != -1 {
             if let Some(color) = mesh.color.as_ref() {
-                gl_uniform_3f(color_loc, color.red(), color.green(), color.blue());
+                gl_uniform_3f(color_loc, color.red_value(), color.green_value(), color.blue_value());
             }
         }
 
@@ -104,7 +104,7 @@ impl Renderer {
         let color_loc = gl_get_uniform_location(mesh.shader.program(), "geometryColor");
         if color_loc != -1 {
             if let Some(color) = mesh.color.as_ref() {
-                gl_uniform_3f(color_loc, color.red(), color.green(), color.blue());
+                gl_uniform_3f(color_loc, color.red_value(), color.green_value(), color.blue_value());
             }
         }
 
