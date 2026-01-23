@@ -1,5 +1,5 @@
 use sky_renderer::core::{App, Color, Renderable, Renderer, Window};
-use sky_renderer::graphics2d::shapes::ShapeRenderable;
+use sky_renderer::graphics2d::shapes::{Circle, ShapeRenderable, ShapeStyle};
 
 use std::sync::{Arc, RwLock};
 use tokio::runtime::Runtime;
@@ -46,13 +46,16 @@ fn main() {
         let pos_data = positions_render.read().unwrap();
 
         if pos_data.len() > shapes.len() {
-            let extra = pos_data.len() - shapes.len();
             for snap in &pos_data[shapes.len()..] {
-                shapes.push(ShapeRenderable::circle(
+                shapes.push(ShapeRenderable::from_shape(
                     snap.x,
                     snap.y,
-                    BALL_RADIUS,
-                    Color::from_rgb(snap.r, snap.g, snap.b),
+                    Box::new(Circle::new(BALL_RADIUS)),
+                    ShapeStyle {
+                        fill: Some(Color::from_rgb(snap.r, snap.g, snap.b)),
+                        stroke_color: None,
+                        stroke_width: None,
+                    },
                 ));
             }
         }

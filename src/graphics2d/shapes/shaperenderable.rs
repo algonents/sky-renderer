@@ -1,18 +1,22 @@
-use glam::{Mat4, Vec3};
-use std::rc::Rc;
-use std::cell::OnceCell;
-use std::f32::consts::PI;
-use crate::core::engine::opengl::{GLfloat, GL_POINTS, GL_TRIANGLES, GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP, Vec2};
-use crate::core::{Color, Mesh, Renderable, Renderer, Shader, generate_texture_from_image, load_image, Geometry, Attribute};
+use crate::core::engine::opengl::{
+    GL_POINTS, GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP, GL_TRIANGLES, GLfloat, Vec2,
+};
+use crate::core::{
+    Attribute, Color, Geometry, Mesh, Renderable, Renderer, Shader, generate_texture_from_image,
+    load_image,
+};
 use crate::graphics2d::shapes::{
     Circle, Ellipse, Image, Line, MultiPoint, Point, Polygon, Polyline, Rectangle,
     RoundedRectangle, Shape, ShapeKind, Triangle,
 };
 use crate::graphics2d::svg::ToSvg;
+use glam::{Mat4, Vec3};
+use std::cell::OnceCell;
+use std::f32::consts::PI;
+use std::rc::Rc;
 
 const MIN_STROKE_WIDTH: f32 = 1.5;
 const SCALE_FACTOR: f32 = 1.0;
-
 
 #[derive(Clone, Debug)]
 pub struct ShapeStyle {
@@ -44,7 +48,8 @@ fn default_shader() -> Rc<Shader> {
                 Shader::compile(vert_src, frag_src, None)
                     .expect("Failed to compile default shader"),
             )
-        }).clone()
+        })
+        .clone()
     })
 }
 
@@ -58,14 +63,12 @@ fn point_shader() -> Rc<Shader> {
             let vert_src = include_str!("../shaders/shape.vert");
             let frag_src = include_str!("../shaders/point.frag");
             Rc::new(
-                Shader::compile(vert_src, frag_src, None)
-                    .expect("Failed to compile point shader"),
+                Shader::compile(vert_src, frag_src, None).expect("Failed to compile point shader"),
             )
         })
-            .clone()
+        .clone()
     })
 }
-
 
 thread_local! {
     static IMAGE_SHADER: OnceCell<Rc<Shader>> = OnceCell::new();
@@ -76,14 +79,12 @@ fn image_shader() -> Rc<Shader> {
             let vert_src = include_str!("../shaders/image.vert");
             let frag_src = include_str!("../shaders/image.frag");
             Rc::new(
-                Shader::compile(vert_src, frag_src, None)
-                    .expect("Failed to compile image shader"),
+                Shader::compile(vert_src, frag_src, None).expect("Failed to compile image shader"),
             )
         })
-            .clone()
+        .clone()
     })
 }
-
 
 fn ortho_2d_with_zoom(width: f32, height: f32, zoom: f32) -> Mat4 {
     let half_w = width * 0.5 / zoom;
@@ -133,52 +134,98 @@ impl ShapeRenderable {
     }
     pub fn from_shape(x: f32, y: f32, shape: Box<dyn Shape>, style: ShapeStyle) -> Self {
         match &shape.kind() {
-            ShapeKind::Point => ShapeRenderable::point(x, y, style.fill.unwrap_or(Color::white())),
+            ShapeKind::Point => {
+                ShapeRenderable::point(x, y, shape, style.fill.unwrap_or(Color::white()))
+            }
             ShapeKind::MultiPoint { points } => {
                 // Convert relative points to absolute
-                let abs_points: Vec<(f32, f32)> = points
-                    .iter()
-                    .map(|(px, py)| (x + px, y + py))
-                    .collect();
-                ShapeRenderable::points(&abs_points, style.fill.unwrap_or(Color::white()))
+                let abs_points: Vec<(f32, f32)> =
+                    points.iter().map(|(px, py)| (x + px, y + py)).collect();
+                ShapeRenderable::points(&abs_points, shape, style.fill.unwrap_or(Color::white()))
             }
 
-            ShapeKind::Line { x2, y2 } => ShapeRenderable::line(x, y, *x2, *y2, style.stroke_color.unwrap_or_else(Color::white), style.stroke_width.unwrap_or(1.0)),
+            ShapeKind::Line { x2, y2 } => ShapeRenderable::line(
+                x,
+                y,
+                *x2,
+                *y2,
+                shape,
+                style.stroke_color.unwrap_or_else(Color::white),
+                style.stroke_width.unwrap_or(1.0),
+            ),
 
             ShapeKind::Polyline { points } => {
-                let abs_points: Vec<(f32, f32)> = points
-                    .iter()
-                    .map(|(px, py)| (x + px, y + py))
-                    .collect();
-                ShapeRenderable::polyline(&abs_points, style.stroke_color.unwrap_or(Color::white()), style.stroke_width.unwrap_or(1.0))
+                let abs_points: Vec<(f32, f32)> =
+                    points.iter().map(|(px, py)| (x + px, y + py)).collect();
+                ShapeRenderable::polyline(
+                    &abs_points,
+                    shape,
+                    style.stroke_color.unwrap_or(Color::white()),
+                    style.stroke_width.unwrap_or(1.0),
+                )
             }
 
-            ShapeKind::Triangle { vertices } => ShapeRenderable::triangle(x, y, vertices, style.fill.unwrap_or(Color::white())),
+            ShapeKind::Triangle { vertices } => ShapeRenderable::triangle(
+                x,
+                y,
+                vertices,
+                shape,
+                style.fill.unwrap_or(Color::white()),
+            ),
 
-            ShapeKind::Rectangle { width, height } => {
-                ShapeRenderable::rectangle(x, y, *width, *height, style.fill.unwrap_or(Color::white()))
-            }
+            ShapeKind::Rectangle { width, height } => ShapeRenderable::rectangle(
+                x,
+                y,
+                *width,
+                *height,
+                shape,
+                style.fill.unwrap_or(Color::white()),
+            ),
 
             ShapeKind::RoundedRectangle {
                 width,
                 height,
                 radius,
-            } => ShapeRenderable::rounded_rectangle(x, y, *width, *height, *radius, style.fill.unwrap_or(Color::white())),
+            } => ShapeRenderable::rounded_rectangle(
+                x,
+                y,
+                *width,
+                *height,
+                *radius,
+                shape,
+                style.fill.unwrap_or(Color::white()),
+            ),
 
             ShapeKind::Polygon { points } => {
-                let abs_points: Vec<(f32, f32)> = points
-                    .iter()
-                    .map(|(px, py)| (x + px, y + py))
-                    .collect();
-                ShapeRenderable::polygon(&abs_points, style.fill.unwrap_or(Color::white()))
+                let abs_points: Vec<(f32, f32)> =
+                    points.iter().map(|(px, py)| (x + px, y + py)).collect();
+                ShapeRenderable::polygon(&abs_points, shape, style.fill.unwrap_or(Color::white()))
             }
-            ShapeKind::Circle { radius } => ShapeRenderable::circle(x, y, *radius, style.fill.unwrap_or(Color::white())),
-            ShapeKind::Ellipse { radius_x, radius_y } => {
-                ShapeRenderable::ellipse(x, y, *radius_x, *radius_y, style.fill.unwrap_or(Color::white()))
-            },
-            ShapeKind::Arc {radius, start_angle, end_angle} => {
-                ShapeRenderable::arc((x,y), *radius, *start_angle, *end_angle, style.fill.unwrap_or(Color::white()), 1.0, 64)
-            },
+            ShapeKind::Circle { radius } => {
+                ShapeRenderable::circle(x, y, *radius, shape, style.fill.unwrap_or(Color::white()))
+            }
+            ShapeKind::Ellipse { radius_x, radius_y } => ShapeRenderable::ellipse(
+                x,
+                y,
+                *radius_x,
+                *radius_y,
+                shape,
+                style.fill.unwrap_or(Color::white()),
+            ),
+            ShapeKind::Arc {
+                radius,
+                start_angle,
+                end_angle,
+            } => ShapeRenderable::arc(
+                (x, y),
+                *radius,
+                *start_angle,
+                *end_angle,
+                shape,
+                style.fill.unwrap_or(Color::white()),
+                1.0,
+                64,
+            ),
             ShapeKind::Image { .. } => {
                 unimplemented!("ShapeRenderable::from_shape cannot create Image without path")
             }
@@ -197,13 +244,13 @@ impl ShapeRenderable {
         self.mesh.geometry.clear_instancing();
     }
 
-    pub fn point(x: GLfloat, y: GLfloat, color: Color) -> Self {
+    fn point(x: GLfloat, y: GLfloat, shape: Box<dyn Shape>, color: Color) -> Self {
         let geometry = ShapeRenderable::point_geometry();
         let mesh = Mesh::with_color(point_shader(), geometry, Some(color));
         ShapeRenderable::new(x, y, mesh, Box::new(Point))
     }
 
-    pub fn points(points: &[(GLfloat, GLfloat)], color: Color) -> Self {
+    fn points(points: &[(GLfloat, GLfloat)], shape: Box<dyn Shape>, color: Color) -> Self {
         let (x0, y0) = points[0];
 
         // Shift points to be relative to anchor
@@ -213,18 +260,20 @@ impl ShapeRenderable {
         let geometry = ShapeRenderable::point_list_geometry(&rel_points);
         let mesh = Mesh::with_color(point_shader(), geometry, Some(color));
 
-        ShapeRenderable::new(x0, y0, mesh, Box::new(MultiPoint::new(rel_points)))
+        ShapeRenderable::new(x0, y0, mesh, shape)
     }
 
+    /*
     pub fn simple_line(x1: GLfloat, y1: GLfloat, x2: GLfloat, y2: GLfloat, stroke: Color) -> Self {
         ShapeRenderable::line(x1, y1, x2, y2, stroke, 1.0)
-    }
+    }*/
 
-    pub fn line(
+    fn line(
         x1: GLfloat,
         y1: GLfloat,
         x2: GLfloat,
         y2: GLfloat,
+        shape: Box<dyn Shape>,
         stroke: Color,
         stroke_width: f32,
     ) -> Self {
@@ -240,7 +289,12 @@ impl ShapeRenderable {
         ShapeRenderable::new(x1, y1, mesh, Box::new(Line::new(x2, y2)))
     }
 
-    pub fn polyline(points: &[(GLfloat, GLfloat)], stroke: Color, stroke_width: f32) -> Self {
+    fn polyline(
+        points: &[(GLfloat, GLfloat)],
+        shape: Box<dyn Shape>,
+        stroke: Color,
+        stroke_width: f32,
+    ) -> Self {
         assert!(points.len() >= 2, "Polyline requires at least two points");
 
         assert!(points.len() >= 2);
@@ -251,14 +305,15 @@ impl ShapeRenderable {
         let geometry = ShapeRenderable::polyline_geometry(&rel_points, stroke_width);
         let mesh = Mesh::with_color(default_shader(), geometry, Some(stroke));
 
-        ShapeRenderable::new(x0, y0, mesh, Box::new(Polyline::new(rel_points)))
+        ShapeRenderable::new(x0, y0, mesh, shape)
     }
 
-    pub fn arc(
+    fn arc(
         center: (f32, f32),
         radius: f32,
         start_angle: f32,
         end_angle: f32,
+        shape: Box<dyn Shape>,
         stroke: Color,
         stroke_width: f32,
         segments: usize,
@@ -283,17 +338,30 @@ impl ShapeRenderable {
             points.push((x, y));
         }
 
-        Self::polyline(&points, stroke, stroke_width)
+        Self::polyline(&points, shape, stroke, stroke_width)
     }
 
-    pub fn triangle(x: f32, y: f32, vertices: &[(f32, f32); 3], color: Color) -> Self {
+    fn triangle(
+        x: f32,
+        y: f32,
+        vertices: &[(f32, f32); 3],
+        shape: Box<dyn Shape>,
+        color: Color,
+    ) -> Self {
         let geometry = ShapeRenderable::triangle_geometry(vertices);
         let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
 
-        ShapeRenderable::new(x, y, mesh, Box::new(Triangle::new(*vertices)))
+        ShapeRenderable::new(x, y, mesh, shape)
     }
 
-    pub fn rectangle(x: f32, y: f32, width: f32, height: f32, color: Color) -> Self {
+    fn rectangle(
+        x: f32,
+        y: f32,
+        width: f32,
+        height: f32,
+        shape: Box<dyn Shape>,
+        color: Color,
+    ) -> Self {
         // Geometry is created at (0, 0) with given width and height
         let geometry = ShapeRenderable::rectangle_geometry(width, height);
         let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
@@ -301,20 +369,26 @@ impl ShapeRenderable {
         ShapeRenderable::new(x, y, mesh, Box::new(Rectangle::new(width, height)))
     }
 
-    pub fn rounded_rectangle(
+    fn rounded_rectangle(
         x: f32,
         y: f32,
         width: f32,
         height: f32,
         radius: f32,
+        shape: Box<dyn Shape>,
         color: Color,
     ) -> Self {
         let geometry = ShapeRenderable::rounded_rectangle_geometry(width, height, radius, 8);
         let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
-        ShapeRenderable::new(x, y, mesh, Box::new(RoundedRectangle::new(width, height, radius)))
+        ShapeRenderable::new(
+            x,
+            y,
+            mesh,
+            shape,
+        )
     }
 
-    pub fn polygon(points: &[(GLfloat, GLfloat)], color: Color) -> Self {
+    fn polygon(points: &[(GLfloat, GLfloat)], shape: Box<dyn Shape>, color: Color) -> Self {
         assert!(points.len() >= 3, "Polygon requires at least 3 points");
 
         let (x0, y0) = points[0]; // Anchor
@@ -323,20 +397,27 @@ impl ShapeRenderable {
         let geometry = ShapeRenderable::polygon_geometry(&rel_points);
         let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
 
-        ShapeRenderable::new(x0, y0, mesh, Box::new(Polygon::new(rel_points)))
+        ShapeRenderable::new(x0, y0, mesh, shape)
     }
-    pub fn circle(x: f32, y: f32, radius: f32, color: Color) -> Self {
+    fn circle(x: f32, y: f32, radius: f32, shape: Box<dyn Shape>, color: Color) -> Self {
         // Geometry is built as a circle centered at (0, 0)
         let geometry = ShapeRenderable::circle_geometry(radius, 100);
         let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
         // Drawable is positioned at (x, y), which will be the circle's center
-        ShapeRenderable::new(x, y, mesh, Box::new(Circle::new(radius)))
+        ShapeRenderable::new(x, y, mesh, shape)
     }
 
-    pub fn ellipse(x: f32, y: f32, radius_x: f32, radius_y: f32, color: Color) -> Self {
+    fn ellipse(
+        x: f32,
+        y: f32,
+        radius_x: f32,
+        radius_y: f32,
+        shape: Box<dyn Shape>,
+        color: Color,
+    ) -> Self {
         let geometry = ShapeRenderable::ellipse_geometry(radius_x, radius_y, 64); // 64 segments for smoothness
         let mesh = Mesh::with_color(default_shader(), geometry, Some(color));
-        ShapeRenderable::new(x, y, mesh, Box::new(Ellipse::new(radius_x, radius_y)))
+        ShapeRenderable::new(x, y, mesh, shape)
     }
 
     pub fn image_with_size(x: f32, y: f32, path: &str, width: f32, height: f32) -> ShapeRenderable {
@@ -397,7 +478,13 @@ impl ShapeRenderable {
         geometry
     }
 
-    fn line_geometry(x1: GLfloat, y1: GLfloat, x2: GLfloat, y2: GLfloat, stroke_width:f32) -> Geometry {
+    fn line_geometry(
+        x1: GLfloat,
+        y1: GLfloat,
+        x2: GLfloat,
+        y2: GLfloat,
+        stroke_width: f32,
+    ) -> Geometry {
         let stroke_width = stroke_width.max(MIN_STROKE_WIDTH);
         let dx = x2 - x1;
         let dy = y2 - y1;
@@ -423,12 +510,7 @@ impl ShapeRenderable {
         let v3 = [x1 + ox, y1 + oy];
 
         let vertices: Vec<GLfloat> = vec![
-            v0[0], v0[1],
-            v1[0], v1[1],
-            v2[0], v2[1],
-            v2[0], v2[1],
-            v3[0], v3[1],
-            v0[0], v0[1],
+            v0[0], v0[1], v1[0], v1[1], v2[0], v2[1], v2[0], v2[1], v3[0], v3[1], v0[0], v0[1],
         ];
 
         let position_values_per_vertex = 2;
@@ -445,7 +527,6 @@ impl ShapeRenderable {
         geometry
     }
 
-
     /// Polyline triangulation adapted from JVPolyline by Julien Vernay (2025)
     ///
     /// Original C implementation:
@@ -454,7 +535,7 @@ impl ShapeRenderable {
     ///
     /// This implementation is based on the original algorithm,
     /// restructured and translated to idiomatic Rust for use in sky_renderer.
-    fn polyline_geometry(points: &[(GLfloat, GLfloat)], stroke_width:f32) -> Geometry {
+    fn polyline_geometry(points: &[(GLfloat, GLfloat)], stroke_width: f32) -> Geometry {
         const MITER_LIMIT: f32 = 4.0; // Equivalent to JV default
 
         if points.len() < 2 {
@@ -484,7 +565,10 @@ impl ShapeRenderable {
 
             let ab = (b.0 - a.0, b.1 - a.1);
             let len_ab = (ab.0 * ab.0 + ab.1 * ab.1).sqrt();
-            let normal_ab = (-ab.1 / len_ab * half_thickness, ab.0 / len_ab * half_thickness);
+            let normal_ab = (
+                -ab.1 / len_ab * half_thickness,
+                ab.0 / len_ab * half_thickness,
+            );
 
             let a1 = (a.0 + normal_ab.0, a.1 + normal_ab.1);
             let a2 = (a.0 - normal_ab.0, a.1 - normal_ab.1);
@@ -493,19 +577,16 @@ impl ShapeRenderable {
 
             // segment quad
             vertices.extend_from_slice(&[
-                a1.0, a1.1,
-                a2.0, a2.1,
-                b1.0, b1.1,
-
-                a2.0, a2.1,
-                b1.0, b1.1,
-                b2.0, b2.1,
+                a1.0, a1.1, a2.0, a2.1, b1.0, b1.1, a2.0, a2.1, b1.0, b1.1, b2.0, b2.1,
             ]);
 
             let bc = (c.0 - b.0, c.1 - b.1);
             let len_bc = (bc.0 * bc.0 + bc.1 * bc.1).sqrt();
             if len_bc > 0.0 {
-                let normal_bc = (-bc.1 / len_bc * half_thickness, bc.0 / len_bc * half_thickness);
+                let normal_bc = (
+                    -bc.1 / len_bc * half_thickness,
+                    bc.0 / len_bc * half_thickness,
+                );
                 let b3 = (b.0 + normal_bc.0, b.1 + normal_bc.1);
                 let b4 = (b.0 - normal_bc.0, b.1 - normal_bc.1);
 
@@ -514,26 +595,14 @@ impl ShapeRenderable {
 
                 // bevel join
                 if z < 0.0 {
-                    vertices.extend_from_slice(&[
-                        b.0, b.1,
-                        b1.0, b1.1,
-                        b3.0, b3.1,
-                    ]);
+                    vertices.extend_from_slice(&[b.0, b.1, b1.0, b1.1, b3.0, b3.1]);
                 } else if z > 0.0 {
-                    vertices.extend_from_slice(&[
-                        b.0, b.1,
-                        b2.0, b2.1,
-                        b4.0, b4.1,
-                    ]);
+                    vertices.extend_from_slice(&[b.0, b.1, b2.0, b2.1, b4.0, b4.1]);
                 }
 
                 // optional miter
                 if z != 0.0 {
-                    let (a_j, b_j, norm_j) = if z < 0.0 {
-                        (a1, b3, ab)
-                    } else {
-                        (a2, b4, ab)
-                    };
+                    let (a_j, b_j, norm_j) = if z < 0.0 { (a1, b3, ab) } else { (a2, b4, ab) };
 
                     let denom = z;
                     let alpha = (bc.1 * (b_j.0 - a_j.0) + bc.0 * (a_j.1 - b_j.1)) / denom;
@@ -543,17 +612,9 @@ impl ShapeRenderable {
                     let dist2 = (mx - b.0).powi(2) + (my - b.1).powi(2);
                     if dist2 <= miter_limit_squared {
                         if z < 0.0 {
-                            vertices.extend_from_slice(&[
-                                mx, my,
-                                b1.0, b1.1,
-                                b3.0, b3.1,
-                            ]);
+                            vertices.extend_from_slice(&[mx, my, b1.0, b1.1, b3.0, b3.1]);
                         } else {
-                            vertices.extend_from_slice(&[
-                                mx, my,
-                                b2.0, b2.1,
-                                b4.0, b4.1,
-                            ]);
+                            vertices.extend_from_slice(&[mx, my, b2.0, b2.1, b4.0, b4.1]);
                         }
                     }
                 }
@@ -569,11 +630,9 @@ impl ShapeRenderable {
         geometry
     }
 
-    fn triangle_geometry(vertices: &[(f32, f32);3])->Geometry{
+    fn triangle_geometry(vertices: &[(f32, f32); 3]) -> Geometry {
         let mut geometry = Geometry::new(GL_TRIANGLES);
-        let flattened: Vec<f32> = vertices.iter()
-            .flat_map(|(x, y)| [*x, *y])
-            .collect();
+        let flattened: Vec<f32> = vertices.iter().flat_map(|(x, y)| [*x, *y]).collect();
 
         geometry.add_buffer(&flattened, 2);
         geometry.add_vertex_attribute(Attribute::new(0, 2, 2, 0));
@@ -683,10 +742,10 @@ impl ShapeRenderable {
 
         // 2. Define arcs for each corner: (cx, cy, start_angle, end_angle)
         let corners = [
-            (radius, radius, PI, 1.5 * PI),                      // top-left
-            (width - radius, radius, 1.5 * PI, 2.0 * PI),        // top-right
-            (width - radius, height - radius, 0.0, 0.5 * PI),    // bottom-right
-            (radius, height - radius, 0.5 * PI, PI),             // bottom-left
+            (radius, radius, PI, 1.5 * PI),                   // top-left
+            (width - radius, radius, 1.5 * PI, 2.0 * PI),     // top-right
+            (width - radius, height - radius, 0.0, 0.5 * PI), // bottom-right
+            (radius, height - radius, 0.5 * PI, PI),          // bottom-left
         ];
 
         let mut first_arc_x = 0.0;
@@ -696,7 +755,8 @@ impl ShapeRenderable {
         // 3. Generate corner arcs
         for &(cx, cy, start_angle, end_angle) in &corners {
             for i in 0..=segments {
-                let theta = start_angle + (end_angle - start_angle) * (i as f32) / (segments as f32);
+                let theta =
+                    start_angle + (end_angle - start_angle) * (i as f32) / (segments as f32);
                 let x = cx + radius * theta.cos();
                 let y = cy + radius * theta.sin();
 
@@ -743,21 +803,19 @@ impl ShapeRenderable {
         geometry.add_buffer(&vertices, values_per_vertex);
         geometry.add_vertex_attribute(Attribute::new(0, 2, values_per_vertex as usize, 0));
         geometry
-
     }
 
     pub fn image_geometry(width: f32, height: f32) -> Geometry {
         // Vertex format: [x, y, u, v]
         let vertices: Vec<f32> = vec![
             // Triangle 1
-            0.0,      0.0,       0.0, 0.0, // bottom-left
-            width,    0.0,       1.0, 0.0, // bottom-right
-            width,    height,    1.0, 1.0, // top-right
-
+            0.0, 0.0, 0.0, 0.0, // bottom-left
+            width, 0.0, 1.0, 0.0, // bottom-right
+            width, height, 1.0, 1.0, // top-right
             // Triangle 2
-            0.0,      0.0,       0.0, 0.0, // bottom-left
-            width,    height,    1.0, 1.0, // top-right
-            0.0,      height,    0.0, 1.0, // top-left
+            0.0, 0.0, 0.0, 0.0, // bottom-left
+            width, height, 1.0, 1.0, // top-right
+            0.0, height, 0.0, 1.0, // top-left
         ];
 
         let values_per_vertex = 4; // x, y, u, v
@@ -781,7 +839,6 @@ impl ShapeRenderable {
 
         geometry
     }
-
 
     fn svg_color(&self) -> String {
         self.mesh
@@ -910,8 +967,8 @@ impl ToSvg for ShapeRenderable {
                     points = points,
                     color = self.svg_color(),
                 )
-            },
-            ShapeKind::Arc {..}=>{
+            }
+            ShapeKind::Arc { .. } => {
                 unimplemented!("Arc shapes are not yet implemented")
             }
         }

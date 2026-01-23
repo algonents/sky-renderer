@@ -1,9 +1,9 @@
 extern crate sky_renderer;
 
 use sky_renderer::core::{App, Color, Renderable, Renderer, Window};
-use sky_renderer::graphics2d::shapes::ShapeRenderable;
+use sky_renderer::graphics2d::shapes::{Circle, ShapeRenderable, ShapeStyle};
 
-use rand::{Rng, rngs::ThreadRng};
+use rand::{rngs::ThreadRng, Rng};
 use rand::distr::Uniform;
 
 #[derive(Clone, Copy)]
@@ -17,14 +17,9 @@ struct Ball {
 const BALL_RADIUS: f32 = 10.0;
 
 fn main() {
-
     let mut balls = initialize_balls(50, 800.0, 600.0);
 
     let window = Window::new("Bouncing Balls", 800, 600);
-
-    // so we can access window properties after the window has been moved to app
-    //
-
 
     let renderer = Renderer::new(window.handle());
     renderer.set_point_size(6.0);
@@ -34,11 +29,19 @@ fn main() {
 
     let mut shapes: Vec<ShapeRenderable> = (0..balls.len())
         .map(|_| {
-            ShapeRenderable::circle(
+            ShapeRenderable::from_shape(
                 0.0,
                 0.0,
-                BALL_RADIUS,
-                Color::from_rgb(rand_f32(&mut rng), rand_f32(&mut rng), rand_f32(&mut rng)),
+                Box::new(Circle::new(BALL_RADIUS)),
+                ShapeStyle {
+                    fill: Some(Color::from_rgb(
+                        rand_f32(&mut rng),
+                        rand_f32(&mut rng),
+                        rand_f32(&mut rng),
+                    )),
+                    stroke_color: None,
+                    stroke_width: None,
+                },
             )
         })
         .collect();
@@ -49,13 +52,11 @@ fn main() {
     let h_wnd = window.handle();
     let mut app = App::new(window);
 
-
     // 5) Render loop: update physics, update shapes, render
     app.on_render(move || {
         let current_time = renderer.get_time();
         let dt = (current_time - last_time) as f32;
         last_time = current_time;
-
 
         // -- update physics
         for ball in balls.iter_mut() {
