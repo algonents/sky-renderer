@@ -1,7 +1,7 @@
 extern crate sky_renderer;
 
 use sky_renderer::core::{App, Color, Renderable, Renderer, Window};
-use sky_renderer::graphics2d::shapes::{Rectangle, ShapeRenderable};
+use sky_renderer::graphics2d::shapes::{Rectangle, ShapeRenderable, ShapeStyle};
 
 use std::cell::Cell;
 
@@ -81,7 +81,7 @@ fn main() {
             600.0,
             400.0,
             Box::new(Rectangle::new(100.0, 50.0)),
-            Color::from_rgb(0.0, 1.0, 0.0),
+            ShapeStyle::default(),
         ),
         ShapeRenderable::image_with_size(200.0, 300.0, "images/smiley.png", 40.0, 40.0),
         ShapeRenderable::image(400.0, 500.0, "images/bunny.png"),

@@ -13,6 +13,24 @@ use crate::graphics2d::svg::ToSvg;
 const MIN_STROKE_WIDTH: f32 = 1.5;
 const SCALE_FACTOR: f32 = 1.0;
 
+
+#[derive(Clone, Debug)]
+pub struct ShapeStyle {
+    pub fill: Option<Color>,
+    pub stroke_color: Option<Color>,
+    pub stroke_width: Option<f32>,
+}
+
+impl Default for ShapeStyle {
+    fn default() -> Self {
+        Self {
+            fill: Some(Color::from_rgb(1.0, 1.0, 1.0)),
+            stroke_color: Some(Color::from_rgb(1.0, 1.0, 1.0)),
+            stroke_width: Some(5.0),
+        }
+    }
+}
+
 thread_local! {
     static DEFAULT_SHADER: OnceCell<Rc<Shader>> = OnceCell::new();
 }
@@ -113,55 +131,54 @@ impl ShapeRenderable {
         self.x = x;
         self.y = y;
     }
-    pub fn from_shape(x: f32, y: f32, shape: Box<dyn Shape>, color: Color) -> Self {
+    pub fn from_shape(x: f32, y: f32, shape: Box<dyn Shape>, style: ShapeStyle) -> Self {
         match &shape.kind() {
-            ShapeKind::Point => ShapeRenderable::point(x, y, color),
-
+            ShapeKind::Point => ShapeRenderable::point(x, y, style.fill.unwrap_or(Color::white())),
             ShapeKind::MultiPoint { points } => {
                 // Convert relative points to absolute
                 let abs_points: Vec<(f32, f32)> = points
                     .iter()
                     .map(|(px, py)| (x + px, y + py))
                     .collect();
-                ShapeRenderable::points(&abs_points, color)
+                ShapeRenderable::points(&abs_points, style.fill.unwrap_or(Color::white()))
             }
 
-            ShapeKind::Line { x2, y2 } => ShapeRenderable::line(x, y, *x2, *y2, color, 1.0),
+            ShapeKind::Line { x2, y2 } => ShapeRenderable::line(x, y, *x2, *y2, style.stroke_color.unwrap_or_else(Color::white), style.stroke_width.unwrap_or(1.0)),
 
             ShapeKind::Polyline { points } => {
                 let abs_points: Vec<(f32, f32)> = points
                     .iter()
                     .map(|(px, py)| (x + px, y + py))
                     .collect();
-                ShapeRenderable::polyline(&abs_points, color, 1.0)
+                ShapeRenderable::polyline(&abs_points, style.stroke_color.unwrap_or(Color::white()), style.stroke_width.unwrap_or(1.0))
             }
 
-            ShapeKind::Triangle { vertices } => ShapeRenderable::triangle(x, y, vertices, color),
+            ShapeKind::Triangle { vertices } => ShapeRenderable::triangle(x, y, vertices, style.fill.unwrap_or(Color::white())),
 
             ShapeKind::Rectangle { width, height } => {
-                ShapeRenderable::rectangle(x, y, *width, *height, color)
+                ShapeRenderable::rectangle(x, y, *width, *height, style.fill.unwrap_or(Color::white()))
             }
 
             ShapeKind::RoundedRectangle {
                 width,
                 height,
                 radius,
-            } => ShapeRenderable::rounded_rectangle(x, y, *width, *height, *radius, color),
+            } => ShapeRenderable::rounded_rectangle(x, y, *width, *height, *radius, style.fill.unwrap_or(Color::white())),
 
             ShapeKind::Polygon { points } => {
                 let abs_points: Vec<(f32, f32)> = points
                     .iter()
                     .map(|(px, py)| (x + px, y + py))
                     .collect();
-                ShapeRenderable::polygon(&abs_points, color)
+                ShapeRenderable::polygon(&abs_points, style.fill.unwrap_or(Color::white()))
             }
-
-            ShapeKind::Circle { radius } => ShapeRenderable::circle(x, y, *radius, color),
-
+            ShapeKind::Circle { radius } => ShapeRenderable::circle(x, y, *radius, style.fill.unwrap_or(Color::white())),
             ShapeKind::Ellipse { radius_x, radius_y } => {
-                ShapeRenderable::ellipse(x, y, *radius_x, *radius_y, color)
-            }
-
+                ShapeRenderable::ellipse(x, y, *radius_x, *radius_y, style.fill.unwrap_or(Color::white()))
+            },
+            ShapeKind::Arc {radius, start_angle, end_angle} => {
+                ShapeRenderable::arc((x,y), *radius, *start_angle, *end_angle, style.fill.unwrap_or(Color::white()), 1.0, 64)
+            },
             ShapeKind::Image { .. } => {
                 unimplemented!("ShapeRenderable::from_shape cannot create Image without path")
             }
@@ -893,6 +910,9 @@ impl ToSvg for ShapeRenderable {
                     points = points,
                     color = self.svg_color(),
                 )
+            },
+            ShapeKind::Arc {..}=>{
+                unimplemented!("Arc shapes are not yet implemented")
             }
         }
     }

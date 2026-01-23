@@ -1,6 +1,7 @@
 mod shaperenderable;
 
 pub use shaperenderable::ShapeRenderable;
+pub use shaperenderable::ShapeStyle;
 
 #[derive(Debug, Clone)]
 pub enum ShapeKind {
@@ -14,7 +15,8 @@ pub enum ShapeKind {
     Polygon { points: Vec<(f32, f32)> },
     Circle { radius: f32 },
     Ellipse { radius_x: f32, radius_y: f32 },
-    Image {width:f32, height: f32}
+    Arc {radius:f32, start_angle:f32, end_angle:f32},
+    Image {width:f32, height: f32},
 }
 /// A trait representing a 2D shape.
 pub trait Shape {
@@ -22,6 +24,11 @@ pub trait Shape {
 }
 
 pub struct Point;
+impl Point{
+    pub fn new() -> Self{
+        Self{}
+    }
+}
 
 impl Shape for Point {
     fn kind(&self) -> ShapeKind {
@@ -217,6 +224,28 @@ impl Shape for Image {
         ShapeKind::Image {
             width: self.width,
             height: self.height,
+        }
+    }
+}
+
+pub struct Arc{
+    pub radius: f32,
+    pub start_angle: f32,
+    pub end_angle: f32,
+}
+
+impl Arc {
+    pub fn new(radius: f32, start_angle: f32, end_angle: f32) -> Self {
+        Self { radius, start_angle, end_angle }
+    }
+}
+
+impl Shape for Arc {
+    fn kind(&self) -> ShapeKind {
+        ShapeKind::Arc {
+            radius: self.radius,
+            start_angle: self.start_angle,
+            end_angle: self.end_angle,
         }
     }
 }
