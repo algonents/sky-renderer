@@ -1,26 +1,35 @@
 mod shaperenderable;
 
+use std::any::Any;
 pub use shaperenderable::ShapeRenderable;
 pub use shaperenderable::ShapeStyle;
 
 #[derive(Debug, Clone)]
 pub enum ShapeKind {
     Point,
-    MultiPoint { points: Vec<(f32, f32)> },
-    Line { x2: f32, y2: f32 },
-    Polyline { points: Vec<(f32, f32)> },
-    Triangle {vertices:[(f32, f32); 3]},
-    Rectangle { width: f32, height: f32 },
-    RoundedRectangle { width: f32, height: f32, radius: f32 },
-    Polygon { points: Vec<(f32, f32)> },
-    Circle { radius: f32 },
-    Ellipse { radius_x: f32, radius_y: f32 },
-    Arc {radius:f32, start_angle:f32, end_angle:f32},
-    Image {width:f32, height: f32},
+    MultiPoint,
+    Line,
+    Polyline,
+    Triangle,
+    Rectangle,
+    RoundedRectangle,
+    Polygon,
+    Circle,
+    Ellipse,
+    Arc,
+    Image,
 }
 /// A trait representing a 2D shape.
 pub trait Shape {
     fn kind(&self) -> ShapeKind;
+    fn as_any(&self) -> &dyn Any;
+}
+
+pub fn cast_shape<T: Shape + 'static>(shape: &dyn Shape) -> &T {
+    shape
+        .as_any()
+        .downcast_ref::<T>()
+        .expect("Invalid shape type")
 }
 
 pub struct Point;
@@ -33,6 +42,10 @@ impl Point{
 impl Shape for Point {
     fn kind(&self) -> ShapeKind {
         ShapeKind::Point
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 
@@ -48,9 +61,11 @@ impl MultiPoint {
 
 impl Shape for MultiPoint {
     fn kind(&self) -> ShapeKind {
-        ShapeKind::MultiPoint {
-            points: self.points.clone(),
-        }
+        ShapeKind::MultiPoint
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 
@@ -67,10 +82,11 @@ impl Line {
 
 impl Shape for Line {
     fn kind(&self) -> ShapeKind {
-        ShapeKind::Line {
-            x2: self.x2,
-            y2: self.y2,
-        }
+        ShapeKind::Line
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 
@@ -86,9 +102,11 @@ impl Polyline {
 
 impl Shape for Polyline {
     fn kind(&self) -> ShapeKind {
-        ShapeKind::Polyline {
-            points: self.points.clone(),
-        }
+        ShapeKind::Polyline
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 
@@ -104,9 +122,11 @@ impl Triangle {
 
 impl Shape for Triangle {
     fn kind(&self) -> ShapeKind {
-        ShapeKind::Triangle {
-            vertices: self.vertices,
-        }
+        ShapeKind::Triangle
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 
@@ -123,10 +143,11 @@ impl Rectangle {
 
 impl Shape for Rectangle {
     fn kind(&self) -> ShapeKind {
-        ShapeKind::Rectangle {
-            width: self.width,
-            height: self.height,
-        }
+        ShapeKind::Rectangle
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 
@@ -144,11 +165,11 @@ impl RoundedRectangle {
 
 impl Shape for RoundedRectangle {
     fn kind(&self) -> ShapeKind {
-        ShapeKind::RoundedRectangle {
-            width: self.width,
-            height: self.height,
-            radius: self.radius,
-        }
+        ShapeKind::RoundedRectangle
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 
@@ -164,9 +185,11 @@ impl Polygon {
 
 impl Shape for Polygon {
     fn kind(&self) -> ShapeKind {
-        ShapeKind::Polygon {
-            points: self.points.clone(),
-        }
+        ShapeKind::Polygon
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 
@@ -182,9 +205,11 @@ impl Circle {
 
 impl Shape for Circle {
     fn kind(&self) -> ShapeKind {
-        ShapeKind::Circle {
-            radius: self.radius,
-        }
+        ShapeKind::Circle
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 
@@ -201,10 +226,11 @@ impl Ellipse {
 
 impl Shape for Ellipse {
     fn kind(&self) -> ShapeKind {
-        ShapeKind::Ellipse {
-            radius_x: self.radius_x,
-            radius_y: self.radius_y,
-        }
+        ShapeKind::Ellipse
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 
@@ -221,10 +247,11 @@ impl Image {
 
 impl Shape for Image {
     fn kind(&self) -> ShapeKind {
-        ShapeKind::Image {
-            width: self.width,
-            height: self.height,
-        }
+        ShapeKind::Image
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 
@@ -242,10 +269,10 @@ impl Arc {
 
 impl Shape for Arc {
     fn kind(&self) -> ShapeKind {
-        ShapeKind::Arc {
-            radius: self.radius,
-            start_angle: self.start_angle,
-            end_angle: self.end_angle,
-        }
+        ShapeKind::Arc
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
