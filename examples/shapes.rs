@@ -2,8 +2,8 @@ extern crate sky_renderer;
 
 use sky_renderer::core::{App, Color, Renderable, Renderer, Window};
 use sky_renderer::graphics2d::shapes::{
-    Arc, Circle, Ellipse, Line, MultiPoint, Point, Polygon, Polyline, Rectangle,
-    RoundedRectangle, ShapeRenderable, ShapeStyle, Triangle,
+    Arc, Circle, Ellipse, Line, MultiPoint, Polygon, Polyline, Rectangle, RoundedRectangle,
+    ShapeKind, ShapeRenderable, ShapeStyle, Triangle,
 };
 
 fn create_equilateral_triangle() -> [(f32, f32); 3] {
@@ -95,91 +95,91 @@ fn main() {
         ShapeRenderable::from_shape(
             100.0,
             200.0,
-            Box::new(Line::new(300.0, 250.0)),
+            ShapeKind::Line(Line::new(300.0, 250.0)),
             stroke_style(Color::from_rgb(0.0, 1.0, 0.0), 1.0),
         ),
         // Polyline starting at (100, 300)
         ShapeRenderable::from_shape(
             100.0,
             300.0,
-            Box::new(Polyline::new(polyline_points)),
+            ShapeKind::Polyline(Polyline::new(polyline_points)),
             stroke_style(Color::from_rgb(1.0, 0.0, 0.0), 10.0),
         ),
         // Arc centered at (700, 600)
         ShapeRenderable::from_shape(
             700.0,
             600.0,
-            Box::new(Arc::new(70.0, 0.0, std::f32::consts::PI / 2.0)),
+            ShapeKind::Arc(Arc::new(70.0, 0.0, std::f32::consts::PI / 2.0)),
             stroke_style(Color::from_rgb(0.0, 0.0, 1.0), 10.0),
         ),
         // Rectangle at (50, 50)
         ShapeRenderable::from_shape(
             50.0,
             50.0,
-            Box::new(Rectangle::new(200.0, 80.0)),
+            ShapeKind::Rectangle(Rectangle::new(200.0, 80.0)),
             fill_style(Color::from_rgb(0.2, 0.5, 0.9)),
         ),
         // Triangle at (50, 50)
         ShapeRenderable::from_shape(
             50.0,
             50.0,
-            Box::new(Triangle::new(create_equilateral_triangle())),
+            ShapeKind::Triangle(Triangle::new(create_equilateral_triangle())),
             fill_style(Color::from_rgb(1.0, 0.0, 0.0)),
         ),
         // Rectangle at (400, 200)
         ShapeRenderable::from_shape(
             400.0,
             200.0,
-            Box::new(Rectangle::new(100.0, 50.0)),
+            ShapeKind::Rectangle(Rectangle::new(100.0, 50.0)),
             fill_style(Color::from_rgb(1.0, 0.0, 0.0)),
         ),
         // Circle at (400, 400)
         ShapeRenderable::from_shape(
             400.0,
             400.0,
-            Box::new(Circle::new(50.0)),
+            ShapeKind::Circle(Circle::new(50.0)),
             fill_style(Color::from_rgb(0.0, 0.0, 1.0)),
         ),
         // Point at (600, 300)
         ShapeRenderable::from_shape(
             600.0,
             300.0,
-            Box::new(Point::new()),
+            ShapeKind::Point,
             fill_style(Color::from_rgb(1.0, 0.0, 0.0)),
         ),
         // MultiPoint (sine wave)
         ShapeRenderable::from_shape(
             sine_x,
             sine_y,
-            Box::new(MultiPoint::new(sine_wave_rel)),
+            ShapeKind::MultiPoint(MultiPoint::new(sine_wave_rel)),
             fill_style(Color::from_rgb(0.0, 0.0, 1.0)),
         ),
         // Ellipse at (600, 200)
         ShapeRenderable::from_shape(
             600.0,
             200.0,
-            Box::new(Ellipse::new(80.0, 40.0)),
+            ShapeKind::Ellipse(Ellipse::new(80.0, 40.0)),
             fill_style(Color::from_rgb(0.5, 0.2, 0.8)),
         ),
         // Rounded rectangle at (100, 600)
         ShapeRenderable::from_shape(
             100.0,
             600.0,
-            Box::new(RoundedRectangle::new(200.0, 80.0, 10.0)),
+            ShapeKind::RoundedRectangle(RoundedRectangle::new(200.0, 80.0, 10.0)),
             fill_style(Color::from_rgb(0.3, 0.6, 0.9)),
         ),
         // Polygon (hexagon)
         ShapeRenderable::from_shape(
             poly_x,
             poly_y,
-            Box::new(Polygon::new(polygon_rel)),
+            ShapeKind::Polygon(Polygon::new(polygon_rel)),
             fill_style(Color::from_rgb(1.0, 0.0, 0.0)),
         ),
-        // Rectangle using from_shape (was already using it)
+        // Rectangle using from_shape
         ShapeRenderable::from_shape(
             600.0,
             400.0,
-            Box::new(Rectangle::new(100.0, 50.0)),
+            ShapeKind::Rectangle(Rectangle::new(100.0, 50.0)),
             fill_style(Color::from_rgb(0.0, 1.0, 0.0)),
         ),
         // Images (still use dedicated methods)
