@@ -1,7 +1,7 @@
 extern crate sky_renderer;
 
 use sky_renderer::core::{App, Color, Renderable, Renderer, Vec2, Window};
-use sky_renderer::graphics2d::shapes::{Circle, ShapeRenderable, ShapeStyle};
+use sky_renderer::graphics2d::shapes::{Circle, ShapeKind, ShapeRenderable, ShapeStyle};
 
 use rand::{rngs::ThreadRng, Rng};
 use rand::distr::Uniform;
@@ -28,7 +28,7 @@ fn main() {
     let mut dots = ShapeRenderable::from_shape(
         0.0,
         0.0,
-        Box::new(Circle::new(BALL_RADIUS)),
+        ShapeKind::Circle(Circle::new(BALL_RADIUS)),
         ShapeStyle {
             fill: Some(Color::from_rgb(0.254902, 0.411765, 0.882353)),
             stroke_color: None,

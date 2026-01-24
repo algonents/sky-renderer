@@ -1,5 +1,5 @@
 use sky_renderer::core::{App, Color, Renderable, Renderer, Window};
-use sky_renderer::graphics2d::shapes::{Circle, ShapeRenderable, ShapeStyle};
+use sky_renderer::graphics2d::shapes::{Circle, ShapeKind, ShapeRenderable, ShapeStyle};
 
 use std::sync::{Arc, RwLock};
 use tokio::runtime::Runtime;
@@ -50,7 +50,7 @@ fn main() {
                 shapes.push(ShapeRenderable::from_shape(
                     snap.x,
                     snap.y,
-                    Box::new(Circle::new(BALL_RADIUS)),
+                    ShapeKind::Circle(Circle::new(BALL_RADIUS)),
                     ShapeStyle {
                         fill: Some(Color::from_rgb(snap.r, snap.g, snap.b)),
                         stroke_color: None,

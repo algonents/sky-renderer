@@ -1,7 +1,7 @@
 extern crate sky_renderer;
 
 use sky_renderer::core::{App, Color, Renderable, Renderer, Vec2, Window};
-use sky_renderer::graphics2d::shapes::{Circle, ShapeRenderable, ShapeStyle};
+use sky_renderer::graphics2d::shapes::{Circle, ShapeKind, ShapeRenderable, ShapeStyle};
 
 const WIDTH: i32 = 1600;
 const HEIGHT: i32 = 1000;
@@ -24,7 +24,7 @@ fn main() {
     let mut dots = ShapeRenderable::from_shape(
         0.0,
         0.0,
-        Box::new(Circle::new(RADIUS)),
+        ShapeKind::Circle(Circle::new(RADIUS)),
         ShapeStyle {
             fill: Some(Color::from_rgb(STEEL_BLUE.0, STEEL_BLUE.1, STEEL_BLUE.2)),
             stroke_color: None,
