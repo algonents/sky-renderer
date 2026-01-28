@@ -1,15 +1,18 @@
 [package]
 name = "sky_renderer"
-version = "0.5.0"
+version = "0.5.1"
 edition = "2024"
 authors = ["Anwar Ludin anwar.ludin@algonents.com"]
 license = "MIT"
 
-description = "A minimalist 2D data rendering engine"
+description = "[DEPRECATED: use wilhelm_renderer instead] A minimalist 2D data rendering engine"
 repository = "https://github.com/algonents/sky-renderer"
 readme = "README.md"
-keywords = ["opengl", "visualization"]
+keywords = ["opengl", "visualization", "deprecated"]
 categories = ["graphics", "rendering::graphics-api"]
+
+[badges]
+maintenance = { status = "deprecated" }
 
 [dependencies]
 glam = "0.30.4"
