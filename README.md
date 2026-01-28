@@ -1,5 +1,9 @@
 # sky_renderer
 
+> **This repository has been archived.** Development has moved to [wilhelm_renderer](https://github.com/algonents/wilhelm_renderer).
+
+---
+
 sky_renderer is a minimalist 2D graphics engine written in Rust with native OpenGL bindings. 
 Its goal is to provide a robust foundation for rendering 2D shapes and visualizing 2-dimensional 
 data in real time.
